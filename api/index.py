@@ -5,15 +5,23 @@ Provides WSGI application entrypoint 'app' compatible with @vercel/python runtim
 import sys
 import os
 import json
+import traceback
 from typing import Dict, Any, Optional
 
 # Add src to Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
+root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+src_dir = os.path.join(root_dir, "src")
+if src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
 
-from sentinel.db import SentinelDB
-from sentinel.types import Project, Claim, EvidenceItem
-from sentinel.api import SentinelCitizenAPI
-from sentinel.vision.construction_adapter import ConstructionPerceptionAdapter
+try:
+    from sentinel.db import SentinelDB
+    from sentinel.types import Project, Claim, EvidenceItem
+    from sentinel.api import SentinelCitizenAPI
+    from sentinel.vision.construction_adapter import ConstructionPerceptionAdapter
+except Exception as e:
+    SentinelDB = None
+    SentinelCitizenAPI = None
 
 DEMO_PROJECT_WARD7_ID = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
 DEMO_PROJECT_WARD8_ID = "b1ffcd00-8d1c-5fg9-cc7e-7cc0ce491b22"
@@ -87,17 +95,21 @@ def init_demo_db():
     db_instance.save_evidence(e1_4)
 
     # Construction perception adapter
-    adapter = ConstructionPerceptionAdapter(db=db_instance, confidence_threshold=0.25)
-    sample_img = os.path.join(os.path.dirname(__file__), "..", "data", "vision_eval_real", "real_eval_02_construction_works_osaka.jpg")
-    if os.path.exists(sample_img):
-        adapter.detect_and_adapt(
-            image_path=sample_img,
-            project_id=p1.id,
-            claim=c1_2,
-            source_evidence_id="evi_osaka_real_ward7",
-            location_override={"latitude": 12.9720, "longitude": 77.5950, "address": "Ward 7 Sector B"},
-            timestamp_override="2026-09-18T10:30:00Z"
-        )
+    if ConstructionPerceptionAdapter:
+        try:
+            adapter = ConstructionPerceptionAdapter(db=db_instance, confidence_threshold=0.25)
+            sample_img = os.path.join(root_dir, "data", "vision_eval_real", "real_eval_02_construction_works_osaka.jpg")
+            if os.path.exists(sample_img):
+                adapter.detect_and_adapt(
+                    image_path=sample_img,
+                    project_id=p1.id,
+                    claim=c1_2,
+                    source_evidence_id="evi_osaka_real_ward7",
+                    location_override={"latitude": 12.9720, "longitude": 77.5950, "address": "Ward 7 Sector B"},
+                    timestamp_override="2026-09-18T10:30:00Z"
+                )
+        except Exception:
+            pass
 
     # Project 2: Ward 8
     p2 = Project(
@@ -141,79 +153,93 @@ def init_demo_db():
 
 def app(environ, start_response):
     """Standard WSGI entrypoint for Vercel Python Serverless Function."""
-    init_demo_db()
+    try:
+        init_demo_db()
 
-    path = environ.get("PATH_INFO", "")
-    query_string = environ.get("QUERY_STRING", "")
-    method = environ.get("REQUEST_METHOD", "GET").upper()
+        path = environ.get("PATH_INFO", "")
+        query_string = environ.get("QUERY_STRING", "")
+        method = environ.get("REQUEST_METHOD", "GET").upper()
 
-    if method == "OPTIONS":
+        if method == "OPTIONS":
+            headers = [
+                ("Content-Type", "application/json"),
+                ("Access-Control-Allow-Origin", "*"),
+                ("Access-Control-Allow-Methods", "GET, POST, OPTIONS"),
+                ("Access-Control-Allow-Headers", "Content-Type")
+            ]
+            start_response("200 OK", headers)
+            return [b""]
+
+        content_length = 0
+        try:
+            content_length = int(environ.get("CONTENT_LENGTH", 0) or 0)
+        except Exception:
+            content_length = 0
+
+        body = {}
+        if content_length > 0 and method == "POST":
+            try:
+                raw_body = environ["wsgi.input"].read(content_length).decode("utf-8")
+                body = json.loads(raw_body)
+            except Exception:
+                body = {}
+
+        project_id = DEMO_PROJECT_WARD7_ID
+        if "project_id=" in query_string:
+            project_id = query_string.split("project_id=")[-1].split("&")[0]
+        elif "project_id=" in path:
+            project_id = path.split("project_id=")[-1].split("&")[0]
+        elif body.get("project_id"):
+            project_id = body["project_id"]
+
+        response_data: Dict[str, Any] = {}
+
+        if method == "POST" and "/api/investigate" in path:
+            response_data = api_instance.trigger_investigation(project_id)
+        elif method == "POST" and "/api/human-correction" in path:
+            response_data = api_instance.submit_human_correction(
+                project_id=project_id,
+                investigation_id=body.get("investigation_id", "inv_manual_001"),
+                claim_id=body.get("claim_id"),
+                corrected_interpretation=body.get("corrected_interpretation", "The missing section was underground/backfilled and therefore was not visible during inspection."),
+                reason_for_correction=body.get("reason_for_correction", "Underground/backfilled infrastructure may not remain visually observable after completion."),
+                evidence_ids=body.get("evidence_ids", ["e1-mb", "e2-photo"]),
+                corrected_by=body.get("corrected_by", "auditor_human_01")
+            )
+        elif "/api/project" in path:
+            response_data = api_instance.get_public_project(project_id)
+        elif "/api/money-trail" in path:
+            response_data = api_instance.get_money_trail(project_id)
+        elif "/api/evidence-graph" in path:
+            response_data = api_instance.get_evidence_graph(project_id)
+        elif "/api/investigation-status" in path or "/api/explanation" in path:
+            response_data = api_instance.get_investigation_status(project_id)
+        else:
+            response_data = {"error": f"Invalid API endpoint: {path}"}
+
+        response_bytes = json.dumps(response_data).encode("utf-8")
+        status = "200 OK"
         headers = [
             ("Content-Type", "application/json"),
+            ("Content-Length", str(len(response_bytes))),
             ("Access-Control-Allow-Origin", "*"),
-            ("Access-Control-Allow-Methods", "GET, POST, OPTIONS"),
-            ("Access-Control-Allow-Headers", "Content-Type")
+            ("Access-Control-Allow-Headers", "Content-Type"),
+            ("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         ]
-        start_response("200 OK", headers)
-        return [b""]
 
-    # Read request body if POST
-    content_length = 0
-    try:
-        content_length = int(environ.get("CONTENT_LENGTH", 0) or 0)
-    except Exception:
-        content_length = 0
+        start_response(status, headers)
+        return [response_bytes]
 
-    body = {}
-    if content_length > 0 and method == "POST":
-        try:
-            raw_body = environ["wsgi.input"].read(content_length).decode("utf-8")
-            body = json.loads(raw_body)
-        except Exception:
-            body = {}
-
-    project_id = DEMO_PROJECT_WARD7_ID
-    if "project_id=" in query_string:
-        project_id = query_string.split("project_id=")[-1].split("&")[0]
-    elif "project_id=" in path:
-        project_id = path.split("project_id=")[-1].split("&")[0]
-    elif body.get("project_id"):
-        project_id = body["project_id"]
-
-    response_data: Dict[str, Any] = {}
-
-    if method == "POST" and "/api/investigate" in path:
-        response_data = api_instance.trigger_investigation(project_id)
-    elif method == "POST" and "/api/human-correction" in path:
-        response_data = api_instance.submit_human_correction(
-            project_id=project_id,
-            investigation_id=body.get("investigation_id", "inv_manual_001"),
-            claim_id=body.get("claim_id"),
-            corrected_interpretation=body.get("corrected_interpretation", "The missing section was underground/backfilled and therefore was not visible during inspection."),
-            reason_for_correction=body.get("reason_for_correction", "Underground/backfilled infrastructure may not remain visually observable after completion."),
-            evidence_ids=body.get("evidence_ids", ["e1-mb", "e2-photo"]),
-            corrected_by=body.get("corrected_by", "auditor_human_01")
-        )
-    elif "/api/project" in path:
-        response_data = api_instance.get_public_project(project_id)
-    elif "/api/money-trail" in path:
-        response_data = api_instance.get_money_trail(project_id)
-    elif "/api/evidence-graph" in path:
-        response_data = api_instance.get_evidence_graph(project_id)
-    elif "/api/investigation-status" in path or "/api/explanation" in path:
-        response_data = api_instance.get_investigation_status(project_id)
-    else:
-        response_data = {"error": f"Invalid API endpoint: {path}"}
-
-    response_bytes = json.dumps(response_data).encode("utf-8")
-    status = "200 OK"
-    headers = [
-        ("Content-Type", "application/json"),
-        ("Content-Length", str(len(response_bytes))),
-        ("Access-Control-Allow-Origin", "*"),
-        ("Access-Control-Allow-Headers", "Content-Type"),
-        ("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-    ]
-
-    start_response(status, headers)
-    return [response_bytes]
+    except Exception as exc:
+        err_payload = {
+            "error": str(exc),
+            "traceback": traceback.format_exc(),
+            "sys_path": sys.path,
+            "root_dir": root_dir
+        }
+        err_bytes = json.dumps(err_payload).encode("utf-8")
+        start_response("500 Internal Server Error", [
+            ("Content-Type", "application/json"),
+            ("Content-Length", str(len(err_bytes)))
+        ])
+        return [err_bytes]
