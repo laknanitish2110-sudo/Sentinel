@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENTINEL — Public Infrastructure Evidence Portal</title>
+    <meta name="description" content="Agentic Evidence Intelligence System for transparent public infrastructure fund utilization.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="logo-shield">🛡️</div>
+                <div class="brand-text">
+                    <h1>SENTINEL</h1>
+                    <p class="subtitle">Public Infrastructure Evidence Portal</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="live-dot"></span> Public Transparency Core
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- SCREEN 1: PROJECT DISCOVERY -->
+        <section class="section discovery-section" id="screen-discovery">
+            <div class="discovery-bar">
+                <div class="selector-group">
+                    <label for="project-select">Select Infrastructure Project:</label>
+                    <select id="project-select" class="custom-select">
+                        <option value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11" selected>Ward 7 Drainage Improvement [DEMO DATA]</option>
+                    </select>
+                </div>
+                <div class="demo-tag">DEMO DATA — VERIFIABLE SAMPLE</div>
+            </div>
+
+            <div class="project-hero-card">
+                <div class="project-title-row">
+                    <div>
+                        <h2 id="proj-name">Loading project...</h2>
+                        <p id="proj-desc" class="proj-desc">Fetching project parameters...</p>
+                        <p class="proj-location">📍 <span id="proj-location">Zone 3</span></p>
+                    </div>
+                    <div class="status-pill" id="proj-status-pill">UNDER VERIFICATION</div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <span class="metric-label">Sanctioned Amount</span>
+                        <span class="metric-val" id="metric-sanctioned">₹0</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Released to Date</span>
+                        <span class="metric-val highlight-blue" id="metric-released">₹0</span>
+                        <span class="metric-sub" id="metric-released-pct">0% of budget</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Claimed Work Value</span>
+                        <span class="metric-val highlight-amber" id="metric-claimed">₹0</span>
+                        <span class="metric-sub" id="metric-claimed-pct">0% physical claim</span>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Reported Completion</span>
+                        <span class="metric-val highlight-green" id="metric-completion">0%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: MONEY TRAIL -->
+        <section class="section money-trail-section" id="screen-money-trail">
+            <div class="section-header">
+                <h2>💰 1. Where Did the Money Go? (Money Trail)</h2>
+                <p>Mapping government fund releases against contractor completion claims and physical bills.</p>
+            </div>
+
+            <div class="money-trail-cards">
+                <div class="trail-card card-sanctioned">
+                    <div class="card-header">
+                        <span class="card-title">SANCTIONED BUDGET</span>
+                        <span class="badge-tag">GOVERNMENT ALLOCATION</span>
+                    </div>
+                    <div class="amount-display" id="trail-sanctioned">₹18,00,000</div>
+                    <p class="trail-note">Total authorized budget for Ward 7 storm water drain.</p>
+                </div>
+
+                <div class="trail-card card-released">
+                    <div class="card-header">
+                        <span class="card-title">FUNDS RELEASED</span>
+                        <span class="badge-tag tag-blue">40.0% DISBURSED</span>
+                    </div>
+                    <div class="amount-display" id="trail-released">₹7,20,000</div>
+                    <p class="trail-note">Tranche 1 released via treasury treasury voucher.</p>
+                </div>
+
+                <div class="trail-card card-claimed">
+                    <div class="card-header">
+                        <span class="card-title">CONTRACTOR CLAIM</span>
+                        <span class="badge-tag tag-amber">80.0% WORK CLAIM</span>
+                    </div>
+                    <div class="amount-display" id="trail-claimed">₹14,40,000</div>
+                    <p class="trail-note">Submitted via 2nd Running Account (RA) Bill.</p>
+                </div>
+            </div>
+
+            <div class="milestones-box">
+                <h3>Financial Evidence & Milestone Verification</h3>
+                <div id="financial-evidence-list" class="evidence-list">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: EVIDENCE GRAPH -->
+        <section class="section graph-section" id="screen-evidence-graph">
+            <div class="section-header">
+                <h2>📊 2. Does the Evidence Support What is Claimed? (Evidence Graph)</h2>
+                <p>Interactive evidence graph mapping contractor claims directly to verified physical & financial observations.</p>
+            </div>
+
+            <div class="graph-container">
+                <!-- CLAIM NODE -->
+                <div class="graph-tier tier-claim">
+                    <div class="tier-label">TARGET CONTRACTOR CLAIM</div>
+                    <div class="claim-node-card" id="claim-node-display">
+                        <div class="claim-ref" id="claim-ref-tag">CLAIM-WARD7-PIPE-400M</div>
+                        <h3 id="claim-desc-text">Installation of 400m of 600mm RCC hume pipes</h3>
+                        <div class="claim-meta">
+                            <span>Claimed Value: <strong id="claim-val-text">400 meters</strong></span>
+                            <span>Submitted By: <strong id="claim-by-text">Apex Infra Works Ltd</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-arrow">↓ MAPS TO EMPIRICAL EVIDENCE OBSERVATIONS ↓</div>
+
+                <!-- EVIDENCE NODES GRID -->
+                <div class="graph-tier tier-evidence">
+                    <div class="tier-label">VERIFIED EVIDENCE OBSERVATIONS</div>
+                    <div class="evidence-nodes-grid" id="evidence-nodes-container">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="flow-arrow">↓ ACCUMULATED EVIDENCE EVALUATION ↓</div>
+
+                <!-- INVESTIGATION DECISION NODE -->
+                <div class="graph-tier tier-decision">
+                    <div class="tier-label">INVESTIGATION DECISION</div>
+                    <div class="decision-node-card" id="decision-node-card">
+                        <div class="decision-icon" id="decision-icon">⚖️</div>
+                        <div class="decision-info">
+                            <span class="decision-state-tag" id="decision-state-tag">HUMAN REVIEW REQUIRED</span>
+                            <p id="decision-summary-text">Evaluating physical discrepancy...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 4: INVESTIGATION STATUS -->
+        <section class="section status-section" id="screen-status">
+            <div class="section-header">
+                <h2>🔍 3. Investigation Pipeline Status</h2>
+                <p>Traceable execution record showing Sentinel's verification stages.</p>
+            </div>
+
+            <div class="pipeline-card">
+                <div class="headline-box">
+                    <span class="pulse-dot"></span>
+                    <h3 id="headline-status">Sentinel is reviewing project evidence</h3>
+                </div>
+
+                <div class="stages-timeline" id="stages-timeline">
+                    <!-- Timeline items -->
+                </div>
+
+                <div class="human-review-box" id="human-review-box">
+                    <div class="review-icon">⚖️</div>
+                    <div class="review-text">
+                        <h4>Human Auditor Review Required</h4>
+                        <p id="review-notice-text">Some evidence conflicts or important evidence is missing. Sentinel cannot resolve the difference automatically.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 5: WHY & CASE MEMORY -->
+        <section class="section why-section" id="screen-why">
+            <div class="section-header">
+                <h2>💡 4. Evidence-Grounded Explanation & Institutional Memory</h2>
+                <p>Understand Sentinel's conclusion and how past human auditor corrections informed the system.</p>
+            </div>
+
+            <div class="explanation-card">
+                <h3>Clear Citizen Explanation</h3>
+                <p class="explanation-body" id="explanation-body-text">
+                    Sentinel found that the contractor reported 400m of pipe installation. The available Measurement Book record supports 400m, while one physical site photo inspection reports 180m visible inside the active trench. Because the records describe different observations and the available context requires auditor clarification, human review is required.
+                </p>
+                <div class="grounding-note">
+                    🔒 <strong>Evidence Grounding Guarantee:</strong> Every factual statement shown above is traced directly to stored empirical evidence.
+                </div>
+            </div>
+
+            <!-- CASE MEMORY SECTION -->
+            <div class="case-memory-card" id="case-memory-card">
+                <div class="memory-badge">🧠 Sentinel Learned from a Previous Auditor Correction</div>
+                <h3 id="memory-title">Pattern: Staged Material Discrepancy</h3>
+                <p id="memory-plain-explanation" class="memory-text">
+                    Previously, Sentinel treated underground pipe work as unexecuted physical progress based solely on trench photos. A human reviewer clarified that contractor staging yard records verify Hume pipes delivered to site awaiting laying. Sentinel now cross-references site delivery bills whenever similar linear trench photo discrepancies appear.
+                </p>
+                <div class="precedent-rule-box">
+                    <strong>Precedent Rule Established:</strong> <span id="memory-precedent-rule">Check supplier delivery invoices before flagging trench photo discrepancies.</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p><strong>SENTINEL</strong> — Agentic Evidence Intelligence System for Public Infrastructure Fund Utilization</p>
+            <p class="footer-sub">Database is Source of Truth • Evidence Grounded Reasoning • No Fraud Accusations</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
