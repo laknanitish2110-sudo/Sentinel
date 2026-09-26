@@ -676,6 +676,61 @@ async function loadInvestigationStatus(projectId) {
     } else {
         memCard.style.display = "none";
     }
+
+    updateVerdictBanner(data);
+}
+
+// ========== VERDICT BANNER ==========
+function updateVerdictBanner(statusData) {
+    const section = document.getElementById("verdict-banner-section");
+    const banner = document.getElementById("verdict-banner");
+    const icon = document.getElementById("verdict-banner-icon");
+    const headline = document.getElementById("verdict-banner-headline");
+    const detail = document.getElementById("verdict-banner-detail");
+    const tag = document.getElementById("verdict-banner-tag");
+    if (!section || !banner) return;
+
+    const stateRaw = statusData.final_state_raw || "";
+    const explanation = statusData.evidence_grounded_explanation || {};
+    const findings = explanation.what_sentinel_found || [];
+
+    let mbValue = "", photoValue = "", gap = "";
+    for (const f of findings) {
+        const mbMatch = f.match(/(\d+)\s*m.*certified/i);
+        const photoMatch = f.match(/approximately\s*(\d+)\s*m/i);
+        if (mbMatch) mbValue = mbMatch[1];
+        if (photoMatch) photoValue = photoMatch[1];
+    }
+
+    if (stateRaw.includes("CONTRADICTED") || stateRaw.includes("HUMAN_REVIEW")) {
+        icon.innerText = "⚠";
+        headline.innerText = "Evidence Discrepancy Detected";
+
+        if (mbValue && photoValue) {
+            const diff = parseInt(mbValue) - parseInt(photoValue);
+            detail.innerText = `Contractor claims ${mbValue}m completed — only ${photoValue}m independently verified. ${diff}m gap identified.`;
+        } else {
+            detail.innerText = explanation.why_this_matters || "The available evidence does not fully reconcile the reported completion.";
+        }
+
+        tag.innerText = stateRaw.replace(/_/g, " ");
+        banner.className = "verdict-banner";
+    } else if (stateRaw.includes("SUPPORTED")) {
+        icon.innerText = "✓";
+        headline.innerText = "Evidence Supports Claim";
+        detail.innerText = "All independent sources are consistent with the contractor's reported completion.";
+        tag.innerText = "VERIFIED";
+        banner.className = "verdict-banner verdict-ok";
+    } else {
+        icon.innerText = "◐";
+        headline.innerText = "Partial Evidence Match";
+        detail.innerText = explanation.why_this_matters || "Some evidence supports the claim, but gaps remain.";
+        tag.innerText = stateRaw.replace(/_/g, " ");
+        banner.className = "verdict-banner";
+    }
+
+    section.style.display = "";
+    section.style.animation = "fadeInUp 0.5s ease both";
 }
 
 // ========== PEGASUS STAR FIELD ==========

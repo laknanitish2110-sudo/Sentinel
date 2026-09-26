@@ -80,6 +80,18 @@
             </div>
         </section>
 
+        <!-- VERDICT BANNER — The punchline nobody can miss -->
+        <section class="section verdict-banner-section" id="verdict-banner-section" style="display:none;">
+            <div class="verdict-banner" id="verdict-banner">
+                <div class="verdict-banner-icon" id="verdict-banner-icon">⚠</div>
+                <div class="verdict-banner-content">
+                    <div class="verdict-banner-headline" id="verdict-banner-headline">Evidence Discrepancy Detected</div>
+                    <div class="verdict-banner-detail" id="verdict-banner-detail">Contractor claims 400m completed — only 180m independently verified. ₹7.2L gap identified.</div>
+                </div>
+                <div class="verdict-banner-tag" id="verdict-banner-tag">HUMAN REVIEW REQUIRED</div>
+            </div>
+        </section>
+
         <!-- SCREEN 1: PROJECT DISCOVERY -->
         <section class="section discovery-section" id="screen-discovery">
             <div class="discovery-bar">
@@ -294,6 +306,142 @@
             </div>
         </section>
 
+        <!-- DATA SOURCES — Where does this data come from? -->
+        <section class="section data-sources-section" id="screen-data-sources">
+            <div class="section-header">
+                <h2>📡 Where Does This Data Come From?</h2>
+                <p>Every evidence source Sentinel uses is publicly accessible under Indian law. No private or classified data is required — transparency is already mandated.</p>
+            </div>
+
+            <div class="data-sources-grid">
+                <div class="source-card">
+                    <div class="source-icon">📋</div>
+                    <div class="source-info">
+                        <h4>Measurement Book (MB) Records</h4>
+                        <p>Official certified quantities recorded by Junior Engineers. Accessible via RTI Act 2005 from PWD/Municipal offices.</p>
+                        <div class="source-legal-tag">RTI Act 2005, Section 4(1)(b)</div>
+                    </div>
+                    <div class="source-status source-live">LIVE</div>
+                </div>
+
+                <div class="source-card">
+                    <div class="source-icon">🏦</div>
+                    <div class="source-info">
+                        <h4>Treasury Disbursement Records</h4>
+                        <p>Fund release vouchers from PFMS (Public Financial Management System). Published by Controller General of Accounts.</p>
+                        <div class="source-legal-tag">PFMS Portal — pfms.nic.in</div>
+                    </div>
+                    <div class="source-status source-live">LIVE</div>
+                </div>
+
+                <div class="source-card">
+                    <div class="source-icon">🧾</div>
+                    <div class="source-info">
+                        <h4>Supplier Invoices &amp; GEM Orders</h4>
+                        <p>Material procurement records from Government e-Marketplace. All government purchases above ₹25K must go through GEM.</p>
+                        <div class="source-legal-tag">GEM Portal — gem.gov.in</div>
+                    </div>
+                    <div class="source-status source-live">LIVE</div>
+                </div>
+
+                <div class="source-card">
+                    <div class="source-icon">📸</div>
+                    <div class="source-info">
+                        <h4>Geotagged Site Photos</h4>
+                        <p>Timestamped, GPS-tagged photos from site inspections. Analyzed by Sentinel's PIL-based computer vision engine.</p>
+                        <div class="source-legal-tag">Field Inspection Protocol</div>
+                    </div>
+                    <div class="source-status source-live">LIVE</div>
+                </div>
+
+                <div class="source-card">
+                    <div class="source-icon">👥</div>
+                    <div class="source-info">
+                        <h4>Citizen Verification Reports</h4>
+                        <p>On-ground observations from local residents. Ward committee members can submit independent verification.</p>
+                        <div class="source-legal-tag">74th Constitutional Amendment</div>
+                    </div>
+                    <div class="source-status source-ready">READY</div>
+                </div>
+
+                <div class="source-card">
+                    <div class="source-icon">📰</div>
+                    <div class="source-info">
+                        <h4>CAG Audit Reports</h4>
+                        <p>Comptroller &amp; Auditor General performance audit findings. Published annually for all state infrastructure spending.</p>
+                        <div class="source-legal-tag">CAG — cag.gov.in</div>
+                    </div>
+                    <div class="source-status source-ready">READY</div>
+                </div>
+            </div>
+
+            <div class="data-sources-note">
+                All data sources are legally mandated for public disclosure. Sentinel does not require any special government cooperation — it uses data the government is <strong>already required</strong> to publish.
+            </div>
+        </section>
+
+        <!-- WHY TRUST SENTINEL — 5-Source Independence Architecture -->
+        <section class="section trust-section" id="screen-trust">
+            <div class="section-header">
+                <h2>🔐 Why Trust Sentinel?</h2>
+                <p>Sentinel's power isn't any single data source — it's the cross-verification of five independent sources that can't be simultaneously compromised.</p>
+            </div>
+
+            <div class="trust-architecture">
+                <div class="trust-principle">
+                    <div class="trust-number">01</div>
+                    <div class="trust-content">
+                        <h4>5 Independent Sources, 1 Truth</h4>
+                        <p>The contractor submits the MB record. The bank holds the payment. The supplier has the invoice. The photo is GPS-stamped. The citizen walks the site. <strong>No single entity controls all five.</strong></p>
+                    </div>
+                </div>
+
+                <div class="trust-principle">
+                    <div class="trust-number">02</div>
+                    <div class="trust-content">
+                        <h4>Collusion Is Expensive</h4>
+                        <p>To fool Sentinel, a contractor would need to falsify the MB record AND forge bank statements AND fake supplier invoices AND doctor geotagged photos AND silence local citizens. That's not one bribe — it's an entire conspiracy across independent institutions.</p>
+                    </div>
+                </div>
+
+                <div class="trust-principle">
+                    <div class="trust-number">03</div>
+                    <div class="trust-content">
+                        <h4>AI Finds — Humans Decide</h4>
+                        <p>Sentinel never accuses. It flags discrepancies with evidence, then hands the case to a human auditor. The AI can be wrong — that's why auditor corrections are preserved and the system learns from them.</p>
+                    </div>
+                </div>
+
+                <div class="trust-principle">
+                    <div class="trust-number">04</div>
+                    <div class="trust-content">
+                        <h4>Every Claim Is Traceable</h4>
+                        <p>No black boxes. Every finding links to a specific document, a specific measurement, a specific photo. The database is the source of truth — not the AI's opinion.</p>
+                    </div>
+                </div>
+
+                <div class="trust-cross-check-visual">
+                    <div class="cross-check-title">THE CROSS-CHECK MATRIX</div>
+                    <div class="cross-check-desc">Each source is checked against every other. If any two disagree, it's flagged.</div>
+                    <div class="cross-check-grid">
+                        <div class="cc-node cc-mb">MB Record<br><span>400m certified</span></div>
+                        <div class="cc-line cc-line-1"></div>
+                        <div class="cc-node cc-photo">Site Photo<br><span>180m visible</span></div>
+                        <div class="cc-line cc-line-2"></div>
+                        <div class="cc-node cc-bank">Bank Record<br><span>₹7.2L released</span></div>
+                        <div class="cc-line cc-line-3"></div>
+                        <div class="cc-node cc-invoice">Invoice<br><span>Materials for 400m</span></div>
+                        <div class="cc-line cc-line-4"></div>
+                        <div class="cc-node cc-citizen">Citizen Report<br><span>Partial work seen</span></div>
+                    </div>
+                    <div class="cross-check-result">
+                        <span class="cc-result-icon">✕</span>
+                        <span>MB claims 400m but photo shows 180m — <strong>220m discrepancy flagged</strong></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- AGENTIC ARCHITECTURE VISUALIZATION -->
         <section class="section" id="screen-architecture">
             <div class="section-header">
@@ -345,6 +493,28 @@
                     <span class="tech-chip">Evidence Contract</span>
                     <span class="tech-chip">Vercel Serverless</span>
                     <span class="tech-chip">Case-Based Learning</span>
+                </div>
+            </div>
+
+            <!-- VIABILITY / REVENUE MODEL -->
+            <div class="viability-card">
+                <div class="viability-header">
+                    <span class="viability-icon">💡</span>
+                    <h4>Path to Sustainability</h4>
+                </div>
+                <div class="viability-models">
+                    <div class="viability-item">
+                        <span class="viability-tag primary">PRIMARY</span>
+                        <span><strong>B2G SaaS for Municipal Audit Departments</strong> — CAG mandates infrastructure audits. Sentinel automates what's currently done manually. Municipalities pay per-project or annual license.</span>
+                    </div>
+                    <div class="viability-item">
+                        <span class="viability-tag secondary">SCALE</span>
+                        <span><strong>NGO &amp; Development Agency Tool</strong> — World Bank, UNDP, and CSR-funded transparency programs (SDG 16: Strong Institutions) fund audit infrastructure.</span>
+                    </div>
+                    <div class="viability-item">
+                        <span class="viability-tag tertiary">EXPAND</span>
+                        <span><strong>Media &amp; Investigative Licensing</strong> — News organizations pay for structured evidence packages on suspect infrastructure projects.</span>
+                    </div>
                 </div>
             </div>
         </section>
