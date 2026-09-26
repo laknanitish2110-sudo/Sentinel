@@ -148,8 +148,7 @@ function initConstellationCanvas() {
             const nx = n.x * canvas.width + 40;
             const ny = n.y * canvas.height + 10;
             const glow = ctx.createRadialGradient(nx, ny, 0, nx, ny, 30);
-            const c = n.color;
-            glow.addColorStop(0, c.replace(")", ",0.15)").replace("rgb", "rgba"));
+            glow.addColorStop(0, hexToRgba(n.color, 0.15));
             glow.addColorStop(1, "transparent");
             ctx.fillStyle = glow;
             ctx.beginPath();
@@ -183,13 +182,12 @@ async function runInvestigationFlow() {
     investigationRunning = true;
 
     const btn = document.getElementById("btn-trigger-investigation");
-    const origText = btn.innerHTML;
+    const origText = btn ? btn.innerHTML : "";
     const traceLog = document.getElementById("trace-log");
     const traceStatus = document.getElementById("trace-status-text");
 
     try {
-        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> INITIALIZING...';
-        btn.disabled = true;
+        if (btn) { btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> INITIALIZING...'; btn.disabled = true; }
 
         const smSection = document.getElementById("state-machine-section");
         if (smSection) {
@@ -242,11 +240,13 @@ async function runInvestigationFlow() {
         updateStarProgress(finalState);
         showSuccess(`Investigation complete: ${finalState.replace(/_/g, ' ')}. ${agentResult.contradiction_count || 0} discrepancies found.`);
 
-        await fetch("/api/investigate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ project_id: currentProjectId })
-        });
+        try {
+            await fetch("/api/investigate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ project_id: currentProjectId })
+            });
+        } catch {}
 
         await loadProjectInfo(currentProjectId);
         await loadMoneyTrail(currentProjectId);
@@ -258,8 +258,7 @@ async function runInvestigationFlow() {
         if (traceStatus) traceStatus.innerText = "Agent error";
         showError("Investigation failed. Please try again.");
     } finally {
-        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run AI Investigation';
-        btn.disabled = false;
+        if (btn) { btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run AI Investigation'; btn.disabled = false; }
         investigationRunning = false;
     }
 }
@@ -284,9 +283,12 @@ function updateStarProgress(state) {
 }
 
 async function submitAuditorCorrection() {
-    const interp = document.getElementById("corr-interp").value;
-    const reason = document.getElementById("corr-reason").value;
+    const interpEl = document.getElementById("corr-interp");
+    const reasonEl = document.getElementById("corr-reason");
+    const interp = interpEl ? interpEl.value : "";
+    const reason = reasonEl ? reasonEl.value : "";
     const btn = document.getElementById("btn-submit-correction");
+    if (!btn) return;
     const origText = btn.innerText;
 
     try {
@@ -362,6 +364,13 @@ function showToast(msg, borderColor, bgColor) {
 }
 
 // ========== UTILITIES ==========
+function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+}
+
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
 function formatINR(val) {
@@ -452,9 +461,12 @@ function appendTraceStep(type, description, data) {
 
 // ========== PROJECT INFO ==========
 async function loadProjectInfo(projectId) {
-    const res = await fetch(`/api/project?project_id=${projectId}`);
-    if (!res.ok) return;
-    const data = await res.json();
+    let res, data;
+    try {
+        res = await fetch(`/api/project?project_id=${projectId}`);
+        if (!res.ok) return;
+        data = await res.json();
+    } catch { return; }
     if (data.error) return;
 
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
@@ -490,9 +502,12 @@ async function loadProjectInfo(projectId) {
 
 // ========== MONEY TRAIL ==========
 async function loadMoneyTrail(projectId) {
-    const res = await fetch(`/api/money-trail?project_id=${projectId}`);
-    if (!res.ok) return;
-    const data = await res.json();
+    let res, data;
+    try {
+        res = await fetch(`/api/money-trail?project_id=${projectId}`);
+        if (!res.ok) return;
+        data = await res.json();
+    } catch { return; }
 
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
 
@@ -539,9 +554,12 @@ async function loadMoneyTrail(projectId) {
 
 // ========== EVIDENCE GRAPH ==========
 async function loadEvidenceGraph(projectId) {
-    const res = await fetch(`/api/evidence-graph?project_id=${projectId}`);
-    if (!res.ok) return;
-    const data = await res.json();
+    let res, data;
+    try {
+        res = await fetch(`/api/evidence-graph?project_id=${projectId}`);
+        if (!res.ok) return;
+        data = await res.json();
+    } catch { return; }
 
     if (data.claims && data.claims.length > 0) {
         const claim = data.claims[0];
@@ -587,9 +605,12 @@ function updateConstellationFromAPI(data) {
 
 // ========== INVESTIGATION STATUS ==========
 async function loadInvestigationStatus(projectId) {
-    const res = await fetch(`/api/investigation-status?project_id=${projectId}`);
-    if (!res.ok) return;
-    const data = await res.json();
+    let res, data;
+    try {
+        res = await fetch(`/api/investigation-status?project_id=${projectId}`);
+        if (!res.ok) return;
+        data = await res.json();
+    } catch { return; }
 
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
 
