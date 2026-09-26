@@ -14,6 +14,7 @@ src_dir = os.path.join(root_dir, "src")
 if src_dir not in sys.path:
     sys.path.insert(0, src_dir)
 
+import_error_str = None
 try:
     from sentinel.db import SentinelDB
     from sentinel.types import Project, Claim, EvidenceItem
@@ -22,6 +23,7 @@ try:
 except Exception as e:
     SentinelDB = None
     SentinelCitizenAPI = None
+    import_error_str = f"{type(e).__name__}: {str(e)}\n{traceback.format_exc()}"
 
 DEMO_PROJECT_WARD7_ID = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
 DEMO_PROJECT_WARD8_ID = "b1ffcd00-8d1c-5fg9-cc7e-7cc0ce491b22"
@@ -34,6 +36,9 @@ def init_demo_db():
     global db_instance, api_instance
     if db_instance is not None and api_instance is not None:
         return
+
+    if SentinelDB is None:
+        raise RuntimeError(f"Failed to import Sentinel modules: {import_error_str}")
 
     db_instance = SentinelDB(":memory:")
 
