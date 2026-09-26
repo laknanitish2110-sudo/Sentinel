@@ -284,9 +284,42 @@ class SentinelDB:
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """, (event_id, investigation_id, event_type, state, agent_name, json.dumps(details or {}), timestamp))
 
-    # -------------------------------------------------------------------------
-    # Retrieval Methods
-    # -------------------------------------------------------------------------
+    def get_investigation(self, investigation_id: str) -> Optional[Dict[str, Any]]:
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM investigations WHERE id = ?", (investigation_id,))
+        row = cur.fetchone()
+        if not row:
+            return None
+        return {
+            "id": row["id"],
+            "project_id": row["project_id"],
+            "title": row["title"],
+            "current_state": row["current_state"],
+            "previous_state": row["previous_state"],
+            "orchestrator_notes": row["orchestrator_notes"],
+            "initiated_by": row["initiated_by"],
+            "completed_at": row["completed_at"],
+            "metadata": json.loads(row["metadata"]) if row["metadata"] else {}
+        }
+
+    def get_latest_investigation_for_project(self, project_id: str) -> Optional[Dict[str, Any]]:
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM investigations WHERE project_id = ? ORDER BY rowid DESC LIMIT 1", (project_id,))
+        row = cur.fetchone()
+        if not row:
+            return None
+        return {
+            "id": row["id"],
+            "project_id": row["project_id"],
+            "title": row["title"],
+            "current_state": row["current_state"],
+            "previous_state": row["previous_state"],
+            "orchestrator_notes": row["orchestrator_notes"],
+            "initiated_by": row["initiated_by"],
+            "completed_at": row["completed_at"],
+            "metadata": json.loads(row["metadata"]) if row["metadata"] else {}
+        }
+
     def get_project(self, project_id: str) -> Optional[Project]:
         cur = self.conn.cursor()
         cur.execute("SELECT * FROM projects WHERE id = ?", (project_id,))

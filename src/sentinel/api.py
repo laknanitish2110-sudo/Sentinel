@@ -132,10 +132,10 @@ class SentinelCitizenAPI:
         }
 
     def trigger_investigation(self, project_id: str) -> Dict[str, Any]:
-        """STEP 1 Entry Point: Triggers/runs investigation lifecycle via Orchestrator."""
+        """STEP 1 Entry Point: Triggers/runs investigation lifecycle via Orchestrator once."""
         orchestrator = Orchestrator(self.db)
         inv_res = orchestrator.run_investigation(project_id=project_id)
-        return self.get_investigation_status(project_id)
+        return self.get_investigation_status(project_id=project_id, investigation_id=inv_res["investigation_id"])
 
     def submit_human_correction(
         self,
@@ -151,7 +151,7 @@ class SentinelCitizenAPI:
         STEPS 7 & 8: Submits human auditor correction and persists CaseMemoryRecord.
         Preserves original interpretation without overwriting.
         """
-        status_info = self.get_investigation_status(project_id)
+        status_info = self.get_investigation_status(project_id, investigation_id)
         inv_id = investigation_id or status_info.get("investigation_id")
         
         # Ensure valid investigation ID exists in DB
@@ -206,10 +206,36 @@ class SentinelCitizenAPI:
             "precedent_rule": memory_record.precedent_rule
         }
 
-    def get_investigation_status(self, project_id: str) -> Dict[str, Any]:
-        """Returns investigation status, citizen-safe explanation, and historical precedent."""
-        orchestrator = Orchestrator(self.db)
-        inv_res = orchestrator.run_investigation(project_id=project_id)
+    def get_investigation_status(self, project_id: str, investigation_id: Optional[str] = None) -> Dict[str, Any]:
+        """Returns investigation status, citizen-safe explanation, and historical precedent. STRICTLY READ-ONLY."""
+        inv_record = None
+        if investigation_id:
+            inv_record = self.db.get_investigation(investigation_id)
+        if not inv_record:
+            inv_record = self.db.get_latest_investigation_for_project(project_id)
+
+        if inv_record:
+            inv_id = inv_record["id"]
+            state_raw = str(inv_record["current_state"]).replace("InvestigationState.", "")
+        else:
+            # Read-only evaluation of existing DB state without creating investigation or running orchestrator
+            inv_id = None
+            evidence_items = self.db.get_evidence_for_project(project_id)
+            cur = self.db.conn.cursor()
+            cur.execute("SELECT * FROM contradictions WHERE project_id = ?", (project_id,))
+            contradiction_rows = cur.fetchall()
+            contradictions = [
+                ContradictionRecord(
+                    id=r["id"], investigation_id=r["investigation_id"], project_id=r["project_id"],
+                    claim_id=r["claim_id"], evidence_a_id=r["evidence_a_id"], evidence_b_id=r["evidence_b_id"],
+                    conflict_description=r["conflict_description"], severity=r["severity"], status=r["status"]
+                ) for r in contradiction_rows
+            ]
+            memories = self.db.get_case_memories_for_pattern("STAGED_MATERIAL_DISCREPANCY")
+            from sentinel.engines.decision_engine import DecisionEngine
+            decision_engine = DecisionEngine()
+            final_state, _ = decision_engine.evaluate_decision([], contradictions, evidence_items, memories)
+            state_raw = str(final_state).replace("InvestigationState.", "")
 
         # Check for historical case memory precedent
         memories = self.db.get_case_memories_for_pattern("STAGED_MATERIAL_DISCREPANCY")
@@ -232,13 +258,11 @@ class SentinelCitizenAPI:
                 "precedent_rule": m.precedent_rule
             }
 
-        state_raw = str(inv_res["final_state"]).replace("InvestigationState.", "")
         state_label = state_raw.replace("_", " ")
-
         explanation = self.get_citizen_explanation(project_id)
 
         return {
-            "investigation_id": inv_res["investigation_id"],
+            "investigation_id": inv_id,
             "project_id": project_id,
             "current_status_headline": "Sentinel Evidence Investigation Summary",
             "completed_stages": [

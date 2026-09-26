@@ -153,6 +153,11 @@ def init_demo_db():
     db_instance.save_evidence(e2_1)
     db_instance.save_evidence(e2_2)
 
+    # Pre-seed initial investigation once so GET status calls are read-only
+    from sentinel.orchestrator import Orchestrator
+    orch = Orchestrator(db_instance)
+    orch.run_investigation(p1.id)
+
     api_instance = SentinelCitizenAPI(db_instance)
 
 
