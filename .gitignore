@@ -20,3 +20,7 @@ Thumbs.db
 
 # Temporary frame artifacts
 frame_*.jpg
+
+# Model weights
+*.pt
+*.onnx
