@@ -210,7 +210,11 @@ def app(environ, start_response):
 
         response_data: Dict[str, Any] = {}
 
-        if method == "POST" and "/api/investigate" in path:
+        if method == "POST" and "/api/agent-investigate" in path:
+            from sentinel.agent_loop import InvestigationAgent
+            agent = InvestigationAgent(db_instance)
+            response_data = agent.investigate(project_id, uploaded_image_path=body.get("image_path"))
+        elif method == "POST" and "/api/investigate" in path:
             response_data = api_instance.trigger_investigation(project_id)
         elif method == "POST" and "/api/human-correction" in path:
             response_data = api_instance.submit_human_correction(

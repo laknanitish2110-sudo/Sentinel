@@ -242,10 +242,33 @@
             </div>
         </section>
 
+        <!-- AGENT TRACE: Live Investigation Loop -->
+        <section class="section agent-trace-section" id="screen-agent-trace">
+            <div class="section-header">
+                <h2>🤖 3. Live Agent Investigation Trace</h2>
+                <p>Watch the autonomous agent plan, execute tools, check results, and deliver conclusions in real-time.</p>
+            </div>
+            <div class="agent-trace-container" id="agent-trace-container">
+                <div class="trace-header">
+                    <div class="trace-status" id="trace-status">
+                        <span class="trace-dot idle"></span>
+                        <span id="trace-status-text">Agent idle — click RUN INVESTIGATION to start</span>
+                    </div>
+                    <div class="trace-meta">
+                        <span id="trace-iteration-count">0 iterations</span>
+                        <span id="trace-tool-count">0 tool calls</span>
+                    </div>
+                </div>
+                <div class="trace-log" id="trace-log">
+                    <!-- Agent steps rendered here dynamically -->
+                </div>
+            </div>
+        </section>
+
         <!-- SCREEN 4: INVESTIGATION STATUS -->
         <section class="section status-section" id="screen-status">
             <div class="section-header">
-                <h2>🔍 3. Investigation Pipeline Status</h2>
+                <h2>🔍 4. Investigation Pipeline Status</h2>
                 <p>Traceable execution record showing Sentinel's verification stages.</p>
             </div>
 
@@ -272,7 +295,7 @@
         <!-- SCREEN 5: WHY, AUDITOR CORRECTION & CASE MEMORY -->
         <section class="section why-section" id="screen-why">
             <div class="section-header">
-                <h2>💡 4. Evidence-Grounded Explanation & Institutional Memory</h2>
+                <h2>💡 5. Evidence-Grounded Explanation & Institutional Memory</h2>
                 <p>Understand Sentinel's conclusion and how past human auditor corrections informed the system.</p>
             </div>
 

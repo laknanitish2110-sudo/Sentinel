@@ -57,55 +57,87 @@ async function runInvestigationFlow() {
 
     const btn = document.getElementById("btn-trigger-investigation");
     const origText = btn.innerText;
+    const traceLog = document.getElementById("trace-log");
+    const traceDot = document.querySelector(".trace-dot");
+    const traceStatus = document.getElementById("trace-status-text");
 
     try {
-        btn.innerText = "INITIALIZING AGENTS...";
+        btn.innerText = "INITIALIZING AGENT...";
         btn.disabled = true;
+        traceLog.innerHTML = "";
+        traceDot.className = "trace-dot running";
+        traceStatus.innerText = "Agent initializing...";
 
         // Stage 1: Discovery
         updateStateMachine("step-discover");
-        btn.innerText = "STAGE 1: DISCOVERING...";
-        await sleep(600);
+        appendTraceStep("system", "Agent waking up — loading project context...");
+        await sleep(400);
 
         // Stage 2: Investigation
         updateStateMachine("step-investigate");
-        btn.innerText = "STAGE 2: AGENTS INVESTIGATING...";
-        await sleep(500);
+        traceStatus.innerText = "Agent running investigation loop...";
+        appendTraceStep("system", "Sending project to autonomous investigation agent...");
+        await sleep(300);
 
-        // Stage 3: Analyzing
+        // Actual agentic API call
         updateStateMachine("step-analyzing");
-        btn.innerText = "STAGE 3: CROSS-CHECKING EVIDENCE...";
-        await sleep(500);
-
-        // Stage 4: Evidence Graph
-        updateStateMachine("step-graph");
-        btn.innerText = "STAGE 4: BUILDING EVIDENCE GRAPH...";
-        await sleep(400);
-
-        // Actual API call
-        const res = await fetch("/api/investigate", {
+        const res = await fetch("/api/agent-investigate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ project_id: currentProjectId })
         });
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
-        await res.json();
+        const agentResult = await res.json();
 
-        // Stage 5: Conflict
-        updateStateMachine("step-conflict");
-        btn.innerText = "STAGE 5: CONFLICTS DETECTED...";
-        await sleep(500);
+        // Render the agent trace steps with animation
+        if (agentResult.trace && agentResult.trace.length > 0) {
+            for (let i = 0; i < agentResult.trace.length; i++) {
+                const step = agentResult.trace[i];
+                await sleep(250);
+                appendTraceStep(step.step_type, step.description, step.data);
 
-        // Stage 6: Review
-        updateStateMachine("step-review");
-        btn.innerText = "STAGE 6: HUMAN REVIEW REQUIRED";
-        await sleep(400);
+                // Update state machine based on step type
+                if (step.step_type === "plan") updateStateMachine("step-investigate");
+                if (step.step_type === "tool_call" && step.data.tool === "cross_check_values") updateStateMachine("step-analyzing");
+                if (step.step_type === "tool_call" && step.data.tool === "flag_discrepancy") updateStateMachine("step-conflict");
+                if (step.step_type === "check") updateStateMachine("step-graph");
+                if (step.step_type === "deliver") updateStateMachine("step-review");
+            }
+        }
 
-        showSuccess("Investigation complete. Evidence pipeline executed successfully.");
+        // Update trace meta
+        const iterations = agentResult.iterations || 0;
+        const toolCalls = (agentResult.trace || []).filter(s => s.step_type === "tool_call").length;
+        document.getElementById("trace-iteration-count").innerText = `${iterations} iteration${iterations !== 1 ? 's' : ''}`;
+        document.getElementById("trace-tool-count").innerText = `${toolCalls} tool call${toolCalls !== 1 ? 's' : ''}`;
+
+        // Final state
+        const finalState = agentResult.final_state || "UNKNOWN";
+        traceDot.className = "trace-dot complete";
+        traceStatus.innerText = `Agent complete — ${finalState.replace(/_/g, ' ')}`;
+
+        if (finalState.includes("HUMAN_REVIEW")) {
+            updateStateMachine("step-review");
+        } else if (finalState.includes("CORRECTION")) {
+            updateStateMachine("step-correction");
+        }
+
+        showSuccess(`Agentic investigation complete: ${finalState.replace(/_/g, ' ')}. ${agentResult.contradiction_count || 0} discrepancies found.`);
+
+        // Also run the legacy orchestrator to populate evidence graph data
+        await fetch("/api/investigate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ project_id: currentProjectId })
+        });
+
         await loadProjectData(currentProjectId);
 
     } catch (err) {
         console.error("Failed to run investigation:", err);
+        traceDot.className = "trace-dot error";
+        traceStatus.innerText = "Agent encountered an error";
+        appendTraceStep("error", `Investigation failed: ${err.message}`, {});
         showError("Investigation failed. Please try again.");
     } finally {
         btn.innerText = origText;
@@ -257,6 +289,61 @@ function formatINR(val) {
         currency: 'INR',
         maximumFractionDigits: 0
     }).format(val);
+}
+
+// ========== AGENT TRACE RENDERER ==========
+function appendTraceStep(type, description, data) {
+    const log = document.getElementById("trace-log");
+    if (!log) return;
+
+    const step = document.createElement("div");
+    step.className = `trace-step trace-${type}`;
+    step.style.animation = "fadeInUp 0.3s ease both";
+
+    const icons = {
+        plan: "📋", tool_call: "🔧", check: "🔍", replan: "🔄",
+        deliver: "📊", system: "⚡", error: "❌"
+    };
+    const labels = {
+        plan: "PLAN", tool_call: "TOOL", check: "CHECK", replan: "RE-PLAN",
+        deliver: "DELIVER", system: "SYSTEM", error: "ERROR"
+    };
+
+    const icon = icons[type] || "•";
+    const label = labels[type] || type.toUpperCase();
+
+    let detailHTML = "";
+    if (data && typeof data === "object" && Object.keys(data).length > 0) {
+        if (data.tool) {
+            detailHTML = `<span class="trace-tool-name">${data.tool}</span>`;
+        }
+        if (data.result && typeof data.result === "object") {
+            const resultPreview = data.result.assessment || data.result.observation ||
+                                  data.result.description || data.result.reason ||
+                                  (data.result.consistent !== undefined ? (data.result.consistent ? "Values consistent" : `INCONSISTENT: ${data.result.discrepancy_pct}% gap`) : "");
+            if (resultPreview) {
+                detailHTML += `<div class="trace-result">${resultPreview}</div>`;
+            }
+        }
+        if (data.conclusion) {
+            detailHTML += `<div class="trace-result trace-conclusion">${data.conclusion}</div>`;
+        }
+        if (data.final_state) {
+            detailHTML += `<span class="trace-state-badge">${data.final_state.replace(/_/g, ' ')}</span>`;
+        }
+    }
+
+    step.innerHTML = `
+        <div class="trace-step-header">
+            <span class="trace-icon">${icon}</span>
+            <span class="trace-label">${label}</span>
+            <span class="trace-desc">${description}</span>
+        </div>
+        ${detailHTML ? `<div class="trace-detail">${detailHTML}</div>` : ""}
+    `;
+
+    log.appendChild(step);
+    log.scrollTop = log.scrollHeight;
 }
 
 // ========== SCREEN 1: PROJECT DISCOVERY ==========
