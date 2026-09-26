@@ -195,8 +195,8 @@ class SentinelRequestHandler(SimpleHTTPRequestHandler):
                 project_id=project_id,
                 investigation_id=body.get("investigation_id", "inv_manual_001"),
                 claim_id=body.get("claim_id"),
-                corrected_interpretation=body.get("corrected_interpretation", "Underground/backfilled pipe work confirmed via staging records."),
-                reason_for_correction=body.get("reason_for_correction", "Subsurface installation completed prior to inspection photo date."),
+                corrected_interpretation=body.get("corrected_interpretation", "The missing section was underground/backfilled and therefore was not visible during inspection."),
+                reason_for_correction=body.get("reason_for_correction", "Underground/backfilled infrastructure may not remain visually observable after completion."),
                 evidence_ids=body.get("evidence_ids", ["e1-mb", "e2-photo"]),
                 corrected_by=body.get("corrected_by", "auditor_human_01")
             )

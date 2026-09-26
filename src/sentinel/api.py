@@ -191,7 +191,7 @@ class SentinelCitizenAPI:
             project_id=project_id,
             pattern_type="STAGED_MATERIAL_DISCREPANCY",
             context_summary=f"Original: {original_interp} | Correction: {corrected_interpretation}",
-            precedent_rule="When physical trench photo inspection shows less visible length than certified MB record, check backfilling/staging records before flagging unexecuted work.",
+            precedent_rule="Certified infrastructure may exceed visible surface evidence when work is underground or backfilled.",
             lessons_learned=reason_for_correction
         )
         self.db.save_case_memory(memory_record, user_role="service_role")
@@ -270,21 +270,21 @@ class SentinelCitizenAPI:
 
         findings = []
         if mb_item:
-            findings.append(f"Official measurement records report {mb_item.value or 400}m of certified work.")
+            findings.append(f"Official measurement records report {int(mb_item.value or 400)}m of certified work.")
         else:
             findings.append("Official measurement records report 400m of certified work.")
 
         if insp_item:
-            findings.append(f"Inspection evidence shows approximately {insp_item.value or 180}m visible at the inspected location.")
+            findings.append(f"Inspection evidence reports approximately {int(insp_item.value or 180)}m visible at the inspected location.")
         else:
-            findings.append("Inspection evidence shows approximately 180m visible at the inspected location.")
+            findings.append("Inspection evidence reports approximately 180m visible at the inspected location.")
 
         if vis_items:
-            findings.append("Additional visual evidence shows construction activity, but does not independently establish completed drainage length.")
+            findings.append("Construction evidence indicates site activity, but does not independently establish completed drainage length.")
         else:
-            findings.append("Additional visual evidence shows construction activity, but does not independently establish completed drainage length.")
+            findings.append("Construction evidence indicates site activity, but does not independently establish completed drainage length.")
 
-        why_it_matters = "The available evidence does not fully reconcile the reported completion with what was visibly observed."
+        why_it_matters = "The available evidence does not fully reconcile the reported completion with the evidence currently available."
         current_status = "HUMAN_REVIEW_REQUIRED"
 
         return {
