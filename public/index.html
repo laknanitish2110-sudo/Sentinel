@@ -27,16 +27,35 @@
     </header>
 
     <main class="main-content">
+        <!-- DEMO STATE MACHINE BAR -->
+        <section class="section state-machine-section">
+            <div class="state-machine-bar">
+                <span class="sm-title">DEMO STATE MACHINE:</span>
+                <div class="sm-steps" id="sm-steps-container">
+                    <span class="sm-step active" id="step-discover">1. DISCOVER</span>
+                    <span class="sm-step" id="step-investigate">2. INVESTIGATE</span>
+                    <span class="sm-step" id="step-analyzing">3. ANALYZING</span>
+                    <span class="sm-step" id="step-graph">4. EVIDENCE GRAPH</span>
+                    <span class="sm-step" id="step-conflict">5. CONFLICT / GAP</span>
+                    <span class="sm-step" id="step-review">6. HUMAN REVIEW</span>
+                    <span class="sm-step" id="step-correction">7. CORRECTION</span>
+                    <span class="sm-step" id="step-memory">8. LEARNING STORED</span>
+                    <span class="sm-step" id="step-second-case">9. SIMILAR CASE</span>
+                </div>
+            </div>
+        </section>
+
         <!-- SCREEN 1: PROJECT DISCOVERY -->
         <section class="section discovery-section" id="screen-discovery">
             <div class="discovery-bar">
                 <div class="selector-group">
                     <label for="project-select">Select Infrastructure Project:</label>
                     <select id="project-select" class="custom-select">
-                        <option value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11" selected>Ward 7 Drainage Improvement [DEMO DATA]</option>
+                        <option value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11" selected>Ward 7 Drainage Improvement [PRIMARY DEMO CASE]</option>
+                        <option value="b1ffcd00-8d1c-5fg9-cc7e-7cc0ce491b22">Ward 8 Drainage Extension [SECOND SIMILAR CASE]</option>
                     </select>
                 </div>
-                <div class="demo-tag">DEMO DATA — VERIFIABLE SAMPLE</div>
+                <button id="btn-trigger-investigation" class="btn-investigate">⚡ RUN INVESTIGATION</button>
             </div>
 
             <div class="project-hero-card">
@@ -86,7 +105,7 @@
                         <span class="badge-tag">GOVERNMENT ALLOCATION</span>
                     </div>
                     <div class="amount-display" id="trail-sanctioned">₹18,00,000</div>
-                    <p class="trail-note">Total authorized budget for Ward 7 storm water drain.</p>
+                    <p class="trail-note">Total authorized budget for storm water drain.</p>
                 </div>
 
                 <div class="trail-card card-released">
@@ -95,7 +114,7 @@
                         <span class="badge-tag tag-blue">40.0% DISBURSED</span>
                     </div>
                     <div class="amount-display" id="trail-released">₹7,20,000</div>
-                    <p class="trail-note">Tranche 1 released via treasury treasury voucher.</p>
+                    <p class="trail-note">Tranche 1 released via treasury voucher.</p>
                 </div>
 
                 <div class="trail-card card-claimed">
@@ -190,29 +209,52 @@
             </div>
         </section>
 
-        <!-- SCREEN 5: WHY & CASE MEMORY -->
+        <!-- SCREEN 5: WHY, AUDITOR CORRECTION & CASE MEMORY -->
         <section class="section why-section" id="screen-why">
             <div class="section-header">
                 <h2>💡 4. Evidence-Grounded Explanation & Institutional Memory</h2>
                 <p>Understand Sentinel's conclusion and how past human auditor corrections informed the system.</p>
             </div>
 
+            <!-- CITIZEN-SAFE EXPLANATION -->
             <div class="explanation-card">
-                <h3>Clear Citizen Explanation</h3>
-                <p class="explanation-body" id="explanation-body-text">
-                    Sentinel found that the contractor reported 400m of pipe installation. The available Measurement Book record supports 400m, while one physical site photo inspection reports 180m visible inside the active trench. Because the records describe different observations and the available context requires auditor clarification, human review is required.
-                </p>
+                <h3>What Sentinel Found</h3>
+                <ul class="explanation-bullets" id="explanation-found-bullets">
+                    <!-- Populated dynamically -->
+                </ul>
+                <div class="why-matters-box">
+                    <strong>Why This Matters:</strong> <span id="explanation-why-matters">The available evidence does not fully reconcile the reported completion with what was visibly observed.</span>
+                </div>
                 <div class="grounding-note">
                     🔒 <strong>Evidence Grounding Guarantee:</strong> Every factual statement shown above is traced directly to stored empirical evidence.
                 </div>
             </div>
 
-            <!-- CASE MEMORY SECTION -->
+            <!-- HUMAN AUDITOR CORRECTION PANEL -->
+            <div class="auditor-correction-panel" id="auditor-panel">
+                <h3>⚖️ Human Auditor Review Action</h3>
+                <p class="panel-desc">Submit an auditor correction to explain evidence discrepancies without overwriting original data. This creates structured Case Memory precedent.</p>
+
+                <div class="form-group">
+                    <label for="corr-interp">Corrected Interpretation:</label>
+                    <input type="text" id="corr-interp" class="custom-input" value="The missing section was underground/backfilled and therefore was not visible during inspection.">
+                </div>
+
+                <div class="form-group">
+                    <label for="corr-reason">Auditor Reason / Finding:</label>
+                    <textarea id="corr-reason" class="custom-textarea" rows="2">Subsurface drainage installation confirmed via excavation logs and staging delivery records.</textarea>
+                </div>
+
+                <button id="btn-submit-correction" class="btn-submit-correction">Submit Auditor Correction & Create Case Memory</button>
+                <div id="correction-success-msg" class="success-msg" style="display:none;">✓ Auditor correction saved. Case Memory precedent created!</div>
+            </div>
+
+            <!-- HISTORICAL PRECEDENT / CASE MEMORY CARD -->
             <div class="case-memory-card" id="case-memory-card">
-                <div class="memory-badge">🧠 Sentinel Learned from a Previous Auditor Correction</div>
-                <h3 id="memory-title">Pattern: Staged Material Discrepancy</h3>
+                <div class="memory-badge" id="memory-badge-label">🧠 HISTORICAL PRECEDENT SURFACED</div>
+                <h3 id="memory-title">Pattern: STAGED_MATERIAL_DISCREPANCY</h3>
                 <p id="memory-plain-explanation" class="memory-text">
-                    Previously, Sentinel treated underground pipe work as unexecuted physical progress based solely on trench photos. A human reviewer clarified that contractor staging yard records verify Hume pipes delivered to site awaiting laying. Sentinel now cross-references site delivery bills whenever similar linear trench photo discrepancies appear.
+                    Previously, Sentinel treated underground pipe work as unexecuted physical progress based solely on trench photos. A human auditor clarified that contractor staging yard records verify Hume pipes delivered to site awaiting laying. Sentinel now cross-references site delivery bills whenever similar linear trench photo discrepancies appear.
                 </p>
                 <div class="precedent-rule-box">
                     <strong>Precedent Rule Established:</strong> <span id="memory-precedent-rule">Check supplier delivery invoices before flagging trench photo discrepancies.</span>
