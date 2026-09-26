@@ -1,4 +1,4 @@
-// SENTINEL Citizen Experience Frontend Logic — Full Investigation Loop
+// SENTINEL × PEGASUS — Dashboard Frontend Logic
 document.addEventListener("DOMContentLoaded", () => {
     initSentinelApp();
 });
@@ -9,7 +9,8 @@ let investigationRunning = false;
 
 async function initSentinelApp() {
     setupEventListeners();
-    animateCounters();
+    initConstellationCanvas();
+    initSidebarNav();
     await loadProjectData(currentProjectId);
 }
 
@@ -35,20 +36,136 @@ function setupEventListeners() {
             await submitAuditorCorrection();
         });
     }
+}
 
-    // Make progress bar tabs clickable — scroll to corresponding section
-    document.querySelectorAll(".sm-step").forEach(step => {
-        step.style.cursor = "pointer";
-        step.addEventListener("click", () => {
-            const targetId = step.dataset.target;
-            if (targetId) {
-                const target = document.getElementById(targetId);
-                if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
+function initSidebarNav() {
+    document.querySelectorAll(".nav-item").forEach(item => {
+        item.addEventListener("click", (e) => {
+            e.preventDefault();
+            document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+            item.classList.add("active");
         });
     });
 }
 
+// ========== CONSTELLATION CANVAS ==========
+function initConstellationCanvas() {
+    const canvas = document.getElementById("constellation-canvas");
+    const viewport = document.getElementById("constellation-viewport");
+    if (!canvas || !viewport) return;
+
+    const ctx = canvas.getContext("2d");
+    let stars = [];
+    let frame = 0;
+
+    const nodes = [
+        { id: "cnode-e1", x: 0.08, y: 0.18, color: "#34D399" },
+        { id: "cnode-e4", x: 0.35, y: 0.08, color: "#F87171" },
+        { id: "cnode-e3", x: 0.66, y: 0.14, color: "#60A5FA" },
+        { id: "cnode-e2", x: 0.12, y: 0.60, color: "#34D399" },
+        { id: "cnode-e5", x: 0.42, y: 0.52, color: "#FBBF24" },
+        { id: "cnode-e6", x: 0.68, y: 0.56, color: "#FBBF24" },
+    ];
+
+    const connections = [
+        [0, 1], [1, 2], [0, 3], [3, 4], [4, 5], [2, 5], [1, 4], [0, 4],
+    ];
+
+    function resize() {
+        const rect = viewport.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        createStars();
+    }
+
+    function createStars() {
+        stars = [];
+        for (let i = 0; i < 80; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 1.2 + 0.3,
+                alpha: Math.random() * 0.4 + 0.1,
+                speed: Math.random() * 0.006 + 0.002,
+                phase: Math.random() * Math.PI * 2,
+            });
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        frame++;
+
+        // Background nebula
+        const grd = ctx.createRadialGradient(
+            canvas.width * 0.4, canvas.height * 0.3, 20,
+            canvas.width * 0.4, canvas.height * 0.3, canvas.width * 0.5
+        );
+        grd.addColorStop(0, "rgba(124,143,255,0.04)");
+        grd.addColorStop(0.5, "rgba(139,92,246,0.02)");
+        grd.addColorStop(1, "transparent");
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Stars
+        for (const s of stars) {
+            const t = Math.sin(frame * s.speed + s.phase) * 0.4 + 0.6;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(200,210,255,${s.alpha * t})`;
+            ctx.fill();
+        }
+
+        // Connections
+        for (const [i, j] of connections) {
+            const a = nodes[i];
+            const b = nodes[j];
+            const ax = a.x * canvas.width + 40;
+            const ay = a.y * canvas.height + 10;
+            const bx = b.x * canvas.width + 40;
+            const by = b.y * canvas.height + 10;
+
+            const pulse = Math.sin(frame * 0.02 + i * 0.5) * 0.3 + 0.5;
+            ctx.beginPath();
+            ctx.moveTo(ax, ay);
+            ctx.lineTo(bx, by);
+            ctx.strokeStyle = `rgba(124,143,255,${0.08 * pulse})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Midpoint glow
+            const mx = (ax + bx) / 2;
+            const my = (ay + by) / 2;
+            const mg = ctx.createRadialGradient(mx, my, 0, mx, my, 12);
+            mg.addColorStop(0, `rgba(124,143,255,${0.06 * pulse})`);
+            mg.addColorStop(1, "transparent");
+            ctx.fillStyle = mg;
+            ctx.fillRect(mx - 12, my - 12, 24, 24);
+        }
+
+        // Node glows
+        for (const n of nodes) {
+            const nx = n.x * canvas.width + 40;
+            const ny = n.y * canvas.height + 10;
+            const glow = ctx.createRadialGradient(nx, ny, 0, nx, ny, 30);
+            const c = n.color;
+            glow.addColorStop(0, c.replace(")", ",0.15)").replace("rgb", "rgba"));
+            glow.addColorStop(1, "transparent");
+            ctx.fillStyle = glow;
+            ctx.beginPath();
+            ctx.arc(nx, ny, 30, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    resize();
+    draw();
+    window.addEventListener("resize", resize);
+}
+
+// ========== DATA LOADING ==========
 async function loadProjectData(projectId) {
     try {
         await loadProjectInfo(projectId);
@@ -56,49 +173,38 @@ async function loadProjectData(projectId) {
         await loadEvidenceGraph(projectId);
         await loadInvestigationStatus(projectId);
     } catch (err) {
-        console.error("Failed to load Sentinel public data:", err);
-        showError("Failed to load project data. Please refresh the page.");
+        console.error("Failed to load Sentinel data:", err);
     }
 }
 
-// ========== ANIMATED INVESTIGATION FLOW ==========
+// ========== INVESTIGATION FLOW ==========
 async function runInvestigationFlow() {
     if (investigationRunning) return;
     investigationRunning = true;
 
     const btn = document.getElementById("btn-trigger-investigation");
-    const origText = btn.innerText;
+    const origText = btn.innerHTML;
     const traceLog = document.getElementById("trace-log");
-    const traceDot = document.querySelector(".trace-dot");
     const traceStatus = document.getElementById("trace-status-text");
 
     try {
-        btn.innerText = "INITIALIZING AGENT...";
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> INITIALIZING...';
         btn.disabled = true;
-        traceLog.innerHTML = "";
-        traceDot.className = "trace-dot running";
-        traceStatus.innerText = "Agent initializing...";
 
-        // Reveal progress bar
         const smSection = document.getElementById("state-machine-section");
         if (smSection) {
             smSection.style.display = "";
-            smSection.style.animation = "fadeInUp 0.4s ease both";
             smSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
 
-        // Stage 1: Discovery
         updateStateMachine("step-discover");
-        appendTraceStep("system", "Agent waking up — loading project context...");
+        if (traceStatus) traceStatus.innerText = "Agent initializing...";
         await sleep(400);
 
-        // Stage 2: Investigation
         updateStateMachine("step-investigate");
-        traceStatus.innerText = "Agent running investigation loop...";
-        appendTraceStep("system", "Sending project to autonomous investigation agent...");
+        if (traceStatus) traceStatus.innerText = "Running investigation loop...";
         await sleep(300);
 
-        // Actual agentic API call
         updateStateMachine("step-analyzing");
         const res = await fetch("/api/agent-investigate", {
             method: "POST",
@@ -108,48 +214,34 @@ async function runInvestigationFlow() {
         if (!res.ok) throw new Error(`Server error: ${res.status}`);
         const agentResult = await res.json();
 
-        // Render the agent trace steps with animation
         if (agentResult.trace && agentResult.trace.length > 0) {
             for (let i = 0; i < agentResult.trace.length; i++) {
                 const step = agentResult.trace[i];
                 await sleep(250);
                 appendTraceStep(step.step_type, step.description, step.data);
 
-                // Update state machine based on step type
-                if (step.step_type === "plan" || step.step_type === "replan") updateStateMachine("step-investigate");
-                if (step.step_type === "tool_call" && step.data.tool === "analyze_photo" && step.data.result) updateVisionPanel(step.data.result);
-                if (step.step_type === "tool_call" && (step.data.tool === "cross_check_values" || step.description.includes("Cross-check"))) updateStateMachine("step-analyzing");
-                if (step.step_type === "tool_call" && (step.data.tool === "flag_discrepancy" || step.description.includes("Discrepancy"))) updateStateMachine("step-conflict");
-                if (step.step_type === "tool_call" && (step.data.tool === "search_precedents" || step.description.includes("case memory"))) updateStateMachine("step-graph");
-                if (step.step_type === "tool_call" && (step.data.tool === "verify_financial_trail" || step.description.includes("financial"))) updateStateMachine("step-graph");
+                if (step.step_type === "tool_call" && step.data.tool === "analyze_photo" && step.data.result) {
+                    updateVisionPanel(step.data.result);
+                }
                 if (step.step_type === "deliver") {
-                    const state = step.data.final_state || "";
-                    if (state.includes("HUMAN_REVIEW")) updateStateMachine("step-review");
-                    else updateStateMachine("step-review");
+                    updateStateMachine("step-review");
                 }
             }
         }
 
-        // Update trace meta
         const iterations = agentResult.iterations || 0;
         const toolCalls = (agentResult.trace || []).filter(s => s.step_type === "tool_call").length;
-        document.getElementById("trace-iteration-count").innerText = `${iterations} iteration${iterations !== 1 ? 's' : ''}`;
-        document.getElementById("trace-tool-count").innerText = `${toolCalls} tool call${toolCalls !== 1 ? 's' : ''}`;
+        const iterEl = document.getElementById("trace-iteration-count");
+        const toolEl = document.getElementById("trace-tool-count");
+        if (iterEl) iterEl.innerText = `${iterations} iteration${iterations !== 1 ? 's' : ''}`;
+        if (toolEl) toolEl.innerText = `${toolCalls} tool call${toolCalls !== 1 ? 's' : ''}`;
 
-        // Final state
         const finalState = agentResult.final_state || "UNKNOWN";
-        traceDot.className = "trace-dot complete";
-        traceStatus.innerText = `Agent complete — ${finalState.replace(/_/g, ' ')}`;
+        if (traceStatus) traceStatus.innerText = `Agent complete — ${finalState.replace(/_/g, ' ')}`;
 
-        if (finalState.includes("HUMAN_REVIEW")) {
-            updateStateMachine("step-review");
-        } else if (finalState.includes("CORRECTION")) {
-            updateStateMachine("step-correction");
-        }
+        updateStarProgress(finalState);
+        showSuccess(`Investigation complete: ${finalState.replace(/_/g, ' ')}. ${agentResult.contradiction_count || 0} discrepancies found.`);
 
-        showSuccess(`Agentic investigation complete: ${finalState.replace(/_/g, ' ')}. ${agentResult.contradiction_count || 0} discrepancies found.`);
-
-        // Reload data sections without resetting state machine
         await fetch("/api/investigate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -162,24 +254,41 @@ async function runInvestigationFlow() {
         await loadInvestigationStatus(currentProjectId);
 
     } catch (err) {
-        console.error("Failed to run investigation:", err);
-        traceDot.className = "trace-dot error";
-        traceStatus.innerText = "Agent encountered an error";
-        appendTraceStep("error", `Investigation failed: ${err.message}`, {});
+        console.error("Investigation failed:", err);
+        if (traceStatus) traceStatus.innerText = "Agent error";
         showError("Investigation failed. Please try again.");
     } finally {
-        btn.innerText = origText;
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run AI Investigation';
         btn.disabled = false;
         investigationRunning = false;
     }
 }
 
+function updateStarProgress(state) {
+    const stars = document.querySelectorAll("#star-progress .ss");
+    if (!stars.length) return;
+
+    let activeIdx = 2;
+    if (state.includes("COLLECT")) activeIdx = 0;
+    else if (state.includes("VERIF")) activeIdx = 1;
+    else if (state.includes("CONTRADICT") || state.includes("ANALYZ")) activeIdx = 2;
+    else if (state.includes("SYNTH") || state.includes("FINDING")) activeIdx = 3;
+    else if (state.includes("REVIEW") || state.includes("COMPLETE")) activeIdx = 4;
+
+    stars.forEach((s, i) => {
+        s.classList.remove("completed", "active", "pending");
+        if (i < activeIdx) s.classList.add("completed");
+        else if (i === activeIdx) s.classList.add("active");
+        else s.classList.add("pending");
+    });
+}
+
 async function submitAuditorCorrection() {
     const interp = document.getElementById("corr-interp").value;
     const reason = document.getElementById("corr-reason").value;
-
     const btn = document.getElementById("btn-submit-correction");
     const origText = btn.innerText;
+
     try {
         btn.innerText = "STORING CORRECTION...";
         btn.disabled = true;
@@ -207,12 +316,11 @@ async function submitAuditorCorrection() {
 
         updateStateMachine("step-memory");
         showSuccess("Auditor correction stored. Case memory precedent created!");
-
         await sleep(800);
         await loadInvestigationStatus(currentProjectId);
     } catch (err) {
-        console.error("Failed to submit correction:", err);
-        showError("Correction submission failed. Please try again.");
+        console.error("Correction failed:", err);
+        showError("Correction submission failed.");
     } finally {
         btn.innerText = origText;
         btn.disabled = false;
@@ -227,23 +335,15 @@ function updateStateMachine(activeStepId) {
         const el = document.getElementById(id);
         if (el) {
             el.classList.remove("active", "completed");
-            if (id === activeStepId) {
-                el.classList.add("active");
-            } else if (activeIdx >= 0 && idx < activeIdx) {
-                el.classList.add("completed");
-            }
+            if (id === activeStepId) el.classList.add("active");
+            else if (activeIdx >= 0 && idx < activeIdx) el.classList.add("completed");
         }
     });
 }
 
 // ========== NOTIFICATIONS ==========
-function showError(msg) {
-    showToast(msg, "#DC2626", "rgba(220,38,38,0.15)");
-}
-
-function showSuccess(msg) {
-    showToast(msg, "#10B981", "rgba(16,185,129,0.15)");
-}
+function showError(msg) { showToast(msg, "#DC2626", "rgba(220,38,38,0.15)"); }
+function showSuccess(msg) { showToast(msg, "#10B981", "rgba(16,185,129,0.15)"); }
 
 function showToast(msg, borderColor, bgColor) {
     const existing = document.querySelector(".sentinel-toast");
@@ -261,486 +361,320 @@ function showToast(msg, borderColor, bgColor) {
     }, 4000);
 }
 
-// ========== ANIMATED COUNTERS ==========
-function animateCounters() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const el = entry.target;
-                const text = el.innerText;
-                const match = text.match(/[\d,]+/);
-                if (match) {
-                    const target = parseInt(match[0].replace(/,/g, ''));
-                    if (target > 0 && !el.dataset.animated) {
-                        el.dataset.animated = "true";
-                        animateValue(el, 0, target, 1200, text);
-                    }
-                }
-                observer.unobserve(el);
-            }
-        });
-    }, { threshold: 0.5 });
+// ========== UTILITIES ==========
+function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-    document.querySelectorAll(".metric-val, .amount-display").forEach(el => {
-        observer.observe(el);
+function formatINR(val) {
+    if (val === null || val === undefined) return "₹0";
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val);
+}
+
+function animateCounters() {
+    document.querySelectorAll(".fin-amt, .risk-num").forEach(el => {
+        const text = el.innerText;
+        const match = text.match(/[\d,]+/);
+        if (match && !el.dataset.animated) {
+            const target = parseInt(match[0].replace(/,/g, ''));
+            if (target > 0) {
+                el.dataset.animated = "true";
+                animateValue(el, 0, target, 1200, text);
+            }
+        }
     });
 }
 
 function animateValue(el, start, end, duration, template) {
     const startTime = performance.now();
     const prefix = template.match(/^[^\d]*/)[0] || '';
-
     function update(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
         const eased = 1 - Math.pow(1 - progress, 3);
         const current = Math.floor(start + (end - start) * eased);
         el.innerText = prefix + new Intl.NumberFormat('en-IN').format(current);
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        } else {
-            el.innerText = template;
-        }
+        if (progress < 1) requestAnimationFrame(update);
+        else el.innerText = template;
     }
     requestAnimationFrame(update);
-}
-
-// ========== UTILITIES ==========
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function formatINR(val) {
-    if (val === null || val === undefined) return "₹0";
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0
-    }).format(val);
 }
 
 // ========== VISION PANEL ==========
 function updateVisionPanel(result) {
     if (!result || !result.analyzed) return;
-
-    const edgeDensity = result.edge_density || 0;
-    const activity = result.activity_level || "unknown";
-    const brightness = result.brightness || 0;
-    const dims = result.dimensions || "—";
-    const colors = result.dominant_colors || {};
-    const obs = result.observation || "";
-
     const el = (id) => document.getElementById(id);
 
-    el("vision-edge-density").innerText = edgeDensity.toFixed(3);
-    el("vision-activity-level").innerText = activity;
-    el("vision-brightness").innerText = brightness.toFixed(1);
-    el("vision-dimensions").innerText = dims;
-    el("vision-observation").innerText = obs;
-
-    setTimeout(() => {
-        el("vision-edge-bar").style.width = `${Math.min(edgeDensity * 333, 100)}%`;
-        el("vision-brightness-bar").style.width = `${(brightness / 255) * 100}%`;
-    }, 100);
-
-    const badge = el("vision-activity-badge");
-    badge.innerText = `${activity.toUpperCase()} ACTIVITY`;
-    badge.className = "vision-badge " + (activity === "high" ? "high" : activity === "low" ? "low" : "");
-
-    const dots = el("vision-panel").querySelectorAll(".vision-activity-dots .dot");
-    const level = activity === "high" ? 3 : activity === "moderate" ? 2 : 1;
-    dots.forEach((d, i) => d.classList.toggle("active", i < level));
-
-    if (colors.r !== undefined) {
-        el("swatch-r").style.background = `rgb(${Math.round(colors.r)},${Math.round(colors.g)},${Math.round(colors.b)})`;
-    }
-
-    el("vision-analysis-tier").style.animation = "fadeInUp 0.5s ease both";
+    const edEl = el("vision-edge-density");
+    if (edEl) edEl.innerText = (result.edge_density || 0).toFixed(3);
+    const alEl = el("vision-activity-level");
+    if (alEl) alEl.innerText = result.activity_level || "unknown";
+    const brEl = el("vision-brightness");
+    if (brEl) brEl.innerText = (result.brightness || 0).toFixed(1);
+    const diEl = el("vision-dimensions");
+    if (diEl) diEl.innerText = result.dimensions || "—";
+    const obEl = el("vision-observation");
+    if (obEl) obEl.innerText = result.observation || "";
 }
 
-// ========== AGENT TRACE RENDERER ==========
+// ========== TRACE RENDERER ==========
 function appendTraceStep(type, description, data) {
     const log = document.getElementById("trace-log");
     if (!log) return;
 
-    const step = document.createElement("div");
-    step.className = `trace-step trace-${type}`;
-    step.style.animation = "fadeInUp 0.3s ease both";
+    const icons = { plan: "📋", tool_call: "🔧", check: "🔍", replan: "🔄", deliver: "📊", system: "⚡", error: "❌" };
+    const icon = icons[type] || "•";
 
-    const icons = {
-        plan: "📋", tool_call: "🔧", check: "🔍", replan: "🔄",
-        deliver: "📊", system: "⚡", error: "❌"
-    };
-    const labels = {
-        plan: "PLAN", tool_call: "TOOL", check: "CHECK", replan: "RE-PLAN",
-        deliver: "DELIVER", system: "SYSTEM", error: "ERROR"
-    };
+    const item = document.createElement("div");
+    item.className = "tl-item";
+    item.style.animation = "fadeInUp 0.3s ease both";
 
-    let icon = icons[type] || "•";
-    let label = labels[type] || type.toUpperCase();
-    if (type === "tool_call" && data && data.tool === "analyze_photo") {
-        icon = "📸";
-        label = "VISION";
+    const dotClass = type === "deliver" ? "done" : type === "error" ? "pending" : "done";
+    let detail = description;
+    if (data && data.tool) detail += ` → ${data.tool}`;
+    if (data && data.result && typeof data.result === "object") {
+        const preview = data.result.assessment || data.result.observation || data.result.description || "";
+        if (preview) detail += `: ${preview}`;
     }
 
-    let detailHTML = "";
-    if (data && typeof data === "object" && Object.keys(data).length > 0) {
-        if (data.tool) {
-            detailHTML = `<span class="trace-tool-name">${data.tool}</span>`;
-        }
-        if (data.result && typeof data.result === "object") {
-            const resultPreview = data.result.assessment || data.result.observation ||
-                                  data.result.description || data.result.reason ||
-                                  (data.result.consistent !== undefined ? (data.result.consistent ? "Values consistent" : `INCONSISTENT: ${data.result.discrepancy_pct}% gap`) : "");
-            if (resultPreview) {
-                detailHTML += `<div class="trace-result">${resultPreview}</div>`;
-            }
-        }
-        if (data.conclusion) {
-            detailHTML += `<div class="trace-result trace-conclusion">${data.conclusion}</div>`;
-        }
-        if (data.final_state) {
-            detailHTML += `<span class="trace-state-badge">${data.final_state.replace(/_/g, ' ')}</span>`;
-        }
-    }
+    const now = new Date();
+    const time = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
 
-    step.innerHTML = `
-        <div class="trace-step-header">
-            <span class="trace-icon">${icon}</span>
-            <span class="trace-label">${label}</span>
-            <span class="trace-desc">${description}</span>
+    item.innerHTML = `
+        <div class="tl-dots"><span class="tl-dot ${dotClass}"></span><span class="tl-line"></span></div>
+        <div class="tl-body">
+            <div class="tl-row"><strong>${icon} ${description}</strong><span class="tl-time">${time}</span></div>
+            ${data && data.tool ? `<p style="font-size:10px;color:var(--text-muted);font-family:'JetBrains Mono',monospace">${data.tool}</p>` : ''}
         </div>
-        ${detailHTML ? `<div class="trace-detail">${detailHTML}</div>` : ""}
     `;
 
-    log.appendChild(step);
+    log.appendChild(item);
     log.scrollTop = log.scrollHeight;
 }
 
-// ========== SCREEN 1: PROJECT DISCOVERY ==========
+// ========== PROJECT INFO ==========
 async function loadProjectInfo(projectId) {
     const res = await fetch(`/api/project?project_id=${projectId}`);
-    if (!res.ok) throw new Error(`Project API error: ${res.status}`);
+    if (!res.ok) return;
     const data = await res.json();
-    if (data.error) throw new Error(data.error);
+    if (data.error) return;
 
-    document.getElementById("proj-name").innerText = data.name || "Infrastructure Project";
-    document.getElementById("proj-desc").innerText = data.description || "";
-    document.getElementById("proj-location").innerText = data.location_name || "Zone";
-    document.getElementById("proj-status-pill").innerText = data.status || "UNDER VERIFICATION";
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
 
-    document.getElementById("metric-sanctioned").innerText = formatINR(data.sanctioned_amount);
-    document.getElementById("metric-released").innerText = formatINR(data.released_amount);
-    document.getElementById("metric-released-pct").innerText = `${data.released_percentage || 0}% of total budget`;
+    set("proj-name", data.name || "Infrastructure Project");
+    set("proj-desc", data.description || "");
+    set("proj-location", data.location_name || "Zone");
 
-    document.getElementById("metric-claimed").innerText = formatINR(data.claimed_amount);
-    document.getElementById("metric-claimed-pct").innerText = `${data.claimed_percentage || 0}% physical claim`;
-    document.getElementById("metric-completion").innerText = `${data.claimed_percentage || 0}%`;
+    const pill = document.getElementById("proj-status-pill");
+    if (pill) pill.innerText = data.status || "UNDER VERIFICATION";
 
-    setTimeout(animateCounters, 100);
+    set("proj-agency", data.implementing_agency || "Municipal Corp.");
+    set("metric-sanctioned", formatINR(data.sanctioned_amount));
+    set("metric-released", formatINR(data.released_amount));
+
+    const relPct = data.released_percentage || (data.sanctioned_amount ? Math.round((data.released_amount / data.sanctioned_amount) * 100) : 0);
+    set("metric-released-pct", `(${relPct}%)`);
+
+    const balance = (data.sanctioned_amount || 0) - (data.released_amount || 0);
+    set("fin-balance", formatINR(balance));
+
+    const barFill = document.getElementById("bar-released");
+    if (barFill) barFill.style.width = `${relPct}%`;
+    set("bar-released-label", `${relPct}% Released`);
+    set("bar-claimed-label", `${100 - relPct}% Remaining`);
+
+    set("metric-claimed", formatINR(data.claimed_amount));
+    set("metric-claimed-pct", `${data.claimed_percentage || 0}%`);
+    set("metric-completion", `${data.claimed_percentage || 0}%`);
+
+    setTimeout(animateCounters, 200);
 }
 
-// ========== SCREEN 2: MONEY TRAIL ==========
+// ========== MONEY TRAIL ==========
 async function loadMoneyTrail(projectId) {
     const res = await fetch(`/api/money-trail?project_id=${projectId}`);
-    if (!res.ok) throw new Error(`Money trail API error: ${res.status}`);
+    if (!res.ok) return;
     const data = await res.json();
 
-    document.getElementById("trail-sanctioned").innerText = formatINR(data.sanctioned_amount);
-    document.getElementById("trail-released").innerText = formatINR(data.released_amount);
-    document.getElementById("trail-claimed").innerText = formatINR(data.claimed_amount);
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
 
-    // Update percentage badges dynamically
+    set("trail-sanctioned", formatINR(data.sanctioned_amount));
+    set("trail-released", formatINR(data.released_amount));
+    set("trail-claimed", formatINR(data.claimed_amount));
+
     const sanctioned = data.sanctioned_amount || 0;
     const released = data.released_amount || 0;
     const claimed = data.claimed_amount || 0;
     const releasedPct = sanctioned > 0 ? ((released / sanctioned) * 100).toFixed(1) : 0;
     const claimedPct = sanctioned > 0 ? ((claimed / sanctioned) * 100).toFixed(1) : 0;
 
-    const relBadge = document.getElementById("badge-released-pct");
-    if (relBadge) relBadge.innerText = `${releasedPct}% DISBURSED`;
-    const clmBadge = document.getElementById("badge-claimed-pct");
-    if (clmBadge) clmBadge.innerText = `${claimedPct}% WORK CLAIM`;
+    set("badge-released-pct", `${releasedPct}% DISBURSED`);
+    set("badge-claimed-pct", `${claimedPct}% WORK CLAIM`);
 
-    // Discrepancy bar
-    const barContainer = document.getElementById("discrepancy-bar-container");
-    if (barContainer && sanctioned > 0) {
-        barContainer.style.display = "block";
-        const barReleased = document.getElementById("bar-released");
-        const barClaimed = document.getElementById("bar-claimed");
-        if (barReleased) setTimeout(() => { barReleased.style.width = `${Math.min(releasedPct, 100)}%`; }, 100);
-        if (barClaimed) setTimeout(() => { barClaimed.style.width = `${Math.min(claimedPct, 100)}%`; }, 100);
-        const relLabel = document.getElementById("bar-released-label");
-        const clmLabel = document.getElementById("bar-claimed-label");
-        const gapLabel = document.getElementById("bar-gap-label");
-        if (relLabel) relLabel.innerText = `${releasedPct}% released`;
-        if (clmLabel) clmLabel.innerText = `${claimedPct}% claimed`;
-        if (gapLabel && claimed > released) {
-            const gapPct = (((claimed - released) / sanctioned) * 100).toFixed(1);
-            gapLabel.innerText = `⚠ ${gapPct}% gap`;
-        }
-    }
+    const barReleased = document.getElementById("bar-released");
+    const barClaimed = document.getElementById("bar-claimed");
+    if (barReleased) setTimeout(() => { barReleased.style.width = `${Math.min(releasedPct, 100)}%`; }, 100);
+    if (barClaimed) setTimeout(() => { barClaimed.style.width = `${Math.min(claimedPct, 100)}%`; }, 100);
 
-    // Dynamic callout
     const callout = document.getElementById("money-callout");
     const calloutText = document.getElementById("money-callout-text");
     if (callout && calloutText && claimed > released && released > 0) {
-        const claimedL = (claimed / 100000).toFixed(1);
-        const releasedL = (released / 100000).toFixed(1);
-        calloutText.innerText = `Notice: The contractor claims ₹${claimedL}L of work done, but the government has only released ₹${releasedL}L. That's a gap worth investigating.`;
+        calloutText.innerText = `Notice: Contractor claims ₹${(claimed/100000).toFixed(1)}L but only ₹${(released/100000).toFixed(1)}L released.`;
         callout.style.display = "flex";
     } else if (callout) {
         callout.style.display = "none";
     }
 
     const listContainer = document.getElementById("financial-evidence-list");
-    listContainer.innerHTML = "";
-
-    if (data.financial_evidence && data.financial_evidence.length > 0) {
-        data.financial_evidence.forEach((item, idx) => {
-            const row = document.createElement("div");
-            row.className = "evidence-item-row";
-            row.style.animationDelay = `${idx * 0.1}s`;
-            row.style.animation = "fadeInUp 0.4s ease both";
-
-            const amountText = item.amount ? formatINR(item.amount) : "Verified Document";
-            let relBadge, relColor;
-            if (item.relationship === "SUPPORTS") {
-                relBadge = "✓ Verified"; relColor = "var(--color-supports)";
-            } else if (item.relationship === "CONTRADICTS") {
-                relBadge = "✕ Conflict"; relColor = "var(--color-contradicts)";
-            } else if (item.relationship === "INSUFFICIENT") {
-                relBadge = "⚠ Missing"; relColor = "var(--color-insufficient)";
-            } else {
-                relBadge = "ℹ Reference"; relColor = "var(--color-neutral)";
-            }
-
-            row.innerHTML = `
-                <div class="ev-info">
-                    <h4>${item.source_name} (${item.document_id})</h4>
-                    <p>${item.observation}</p>
-                </div>
-                <div style="text-align: right;">
-                    <div style="font-weight: 800; font-size: 15px;">${amountText}</div>
-                    <div style="font-size: 12px; color: ${relColor}; margin-top: 4px; font-weight: 700;">${relBadge}</div>
-                </div>
-            `;
-            listContainer.appendChild(row);
-        });
-    } else {
-        listContainer.innerHTML = "<p style='color: var(--text-muted);'>No financial evidence records found.</p>";
+    if (listContainer) {
+        listContainer.innerHTML = "";
+        if (data.financial_evidence) {
+            data.financial_evidence.forEach(item => {
+                const row = document.createElement("div");
+                row.style.cssText = "font-size:12px;color:var(--text-secondary);padding:6px 0;border-bottom:1px solid rgba(124,143,255,0.06)";
+                row.innerText = `${item.source_name}: ${item.observation}`;
+                listContainer.appendChild(row);
+            });
+        }
     }
 }
 
-// ========== SCREEN 3: EVIDENCE GRAPH ==========
+// ========== EVIDENCE GRAPH ==========
 async function loadEvidenceGraph(projectId) {
     const res = await fetch(`/api/evidence-graph?project_id=${projectId}`);
-    if (!res.ok) throw new Error(`Evidence graph API error: ${res.status}`);
+    if (!res.ok) return;
     const data = await res.json();
 
     if (data.claims && data.claims.length > 0) {
         const claim = data.claims[0];
-        document.getElementById("claim-ref-tag").innerText = claim.claim_ref || "CLAIM-REF";
-        document.getElementById("claim-desc-text").innerText = claim.description || "";
-        document.getElementById("claim-val-text").innerText = `${claim.claimed_value} ${claim.unit}`;
-        document.getElementById("claim-by-text").innerText = claim.claimed_by || "Contractor";
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+        set("claim-ref-tag", claim.claim_ref || "CLAIM-REF");
+        set("claim-desc-text", claim.description || "");
+        set("claim-val-text", `${claim.claimed_value} ${claim.unit}`);
+        set("claim-by-text", claim.claimed_by || "Contractor");
     }
 
     const container = document.getElementById("evidence-nodes-container");
-    container.innerHTML = "";
+    if (container) container.innerHTML = "";
 
     currentEvidenceIds = [];
     if (data.evidence && data.evidence.length > 0) {
-        data.evidence.forEach((node, idx) => {
+        data.evidence.forEach(node => {
             currentEvidenceIds.push(node.id);
-            const card = document.createElement("div");
-            const relClass = `rel-${node.relationship.toLowerCase()}`;
-            card.className = `evidence-card ${relClass}`;
-            card.style.animationDelay = `${idx * 0.15}s`;
-
-            card.innerHTML = `
-                <div>
-                    <div class="ev-badge">
-                        <span>${node.badge_icon}</span>
-                        <span>${node.relationship_label}</span>
-                    </div>
-                    <div class="ev-header">
-                        <h4>${node.source_name}</h4>
-                        <div class="ev-doc-id">Document Ref: ${node.source_id}</div>
-                    </div>
-                    <p class="ev-obs">"${node.observation}"</p>
-                </div>
-                <div class="ev-footer">
-                    <span>Reliability: <strong>${node.reliability}</strong></span>
-                    <span>Confidence: <strong>${node.confidence_score}</strong></span>
-                </div>
-            `;
-            container.appendChild(card);
         });
     }
 
-    // Update evidence count badge
-    const countBadge = document.getElementById("evidence-count-badge");
-    if (countBadge) {
-        countBadge.innerText = `${currentEvidenceIds.length} evidence nodes`;
-    }
+    // Update constellation nodes with live data
+    updateConstellationFromAPI(data);
 }
 
-// ========== SCREEN 4 & 5: INVESTIGATION STATUS ==========
+function updateConstellationFromAPI(data) {
+    if (!data.evidence) return;
+
+    const nodeMap = {
+        0: document.querySelector("#cnode-e1 .c-name"),
+        1: document.querySelector("#cnode-e4 .c-name"),
+        2: document.querySelector("#cnode-e3 .c-name"),
+        3: document.querySelector("#cnode-e2 .c-name"),
+        4: document.querySelector("#cnode-e5 .c-name"),
+        5: document.querySelector("#cnode-e6 .c-name"),
+    };
+
+    data.evidence.forEach((ev, i) => {
+        if (i < 6 && nodeMap[i]) {
+            nodeMap[i].innerText = ev.source_name || nodeMap[i].innerText;
+        }
+    });
+}
+
+// ========== INVESTIGATION STATUS ==========
 async function loadInvestigationStatus(projectId) {
     const res = await fetch(`/api/investigation-status?project_id=${projectId}`);
-    if (!res.ok) throw new Error(`Investigation status API error: ${res.status}`);
+    if (!res.ok) return;
     const data = await res.json();
 
-    document.getElementById("headline-status").innerText = data.current_status_headline || "Sentinel Evidence Investigation Summary";
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+
+    set("headline-status", data.current_status_headline || "Analyzing Contradictions");
 
     const timeline = document.getElementById("stages-timeline");
-    timeline.innerHTML = "";
-    if (data.completed_stages) {
-        data.completed_stages.forEach((stage, idx) => {
-            const item = document.createElement("div");
-            item.className = "timeline-stage completed";
-            item.style.animation = "fadeInUp 0.3s ease both";
-            item.style.animationDelay = `${idx * 0.1}s`;
-            item.innerHTML = `
-                <div class="stage-check">✓</div>
-                <span>${stage.name}</span>
-            `;
-            timeline.appendChild(item);
-        });
+    if (timeline) {
+        timeline.innerHTML = "";
+        if (data.completed_stages) {
+            data.completed_stages.forEach(stage => {
+                const item = document.createElement("div");
+                item.className = "timeline-stage completed";
+                item.innerHTML = `<div class="stage-check">✓</div><span>${stage.name}</span>`;
+                timeline.appendChild(item);
+            });
+        }
     }
 
-    // Update decision node styling based on state
-    const stateTag = document.getElementById("decision-state-tag");
-    const decisionCard = document.getElementById("decision-node-card");
-    const decisionIcon = document.getElementById("decision-icon");
-    const stateRaw = data.final_state_raw || "";
-
-    stateTag.innerText = data.final_state || "HUMAN REVIEW REQUIRED";
-    document.getElementById("decision-summary-text").innerText = data.human_review_notice || "Sentinel completed verification pipeline.";
-
-    if (stateRaw.includes("SUPPORTED") && !stateRaw.includes("PARTIALLY")) {
-        decisionCard.style.borderColor = "var(--border-supports)";
-        decisionCard.style.background = "var(--bg-supports)";
-        stateTag.style.backgroundColor = "var(--border-supports)";
-        decisionIcon.innerText = "✓";
-    } else if (stateRaw.includes("CONTRADICTED")) {
-        decisionCard.style.borderColor = "var(--border-contradicts)";
-        decisionCard.style.background = "var(--bg-contradicts)";
-        stateTag.style.backgroundColor = "var(--border-contradicts)";
-        decisionIcon.innerText = "✕";
-    } else if (stateRaw.includes("HUMAN_REVIEW")) {
-        decisionCard.style.borderColor = "var(--border-insufficient)";
-        decisionCard.style.background = "rgba(245, 158, 11, 0.1)";
-        stateTag.style.backgroundColor = "var(--border-insufficient)";
-        decisionIcon.innerText = "⚖️";
-    } else if (stateRaw.includes("PARTIALLY")) {
-        decisionCard.style.borderColor = "var(--accent-blue)";
-        decisionCard.style.background = "rgba(99, 102, 241, 0.1)";
-        stateTag.style.backgroundColor = "var(--accent-blue)";
-        decisionIcon.innerText = "◐";
-    }
+    set("decision-state-tag", data.final_state || "HUMAN REVIEW REQUIRED");
+    set("decision-summary-text", data.human_review_notice || "Verification pipeline complete.");
 
     if (data.human_review_notice) {
-        document.getElementById("human-review-box").style.display = "flex";
-        document.getElementById("review-notice-text").innerText = data.human_review_notice;
-    } else {
-        document.getElementById("human-review-box").style.display = "none";
+        set("review-notice-text", data.human_review_notice);
     }
 
-    // Render Citizen Explanation Bullets
     const bulletsList = document.getElementById("explanation-found-bullets");
-    bulletsList.innerHTML = "";
-    if (data.evidence_grounded_explanation && data.evidence_grounded_explanation.what_sentinel_found) {
-        data.evidence_grounded_explanation.what_sentinel_found.forEach((bullet, idx) => {
-            const li = document.createElement("li");
-            li.style.animation = "fadeInUp 0.3s ease both";
-            li.style.animationDelay = `${idx * 0.15}s`;
-            li.innerText = bullet;
-            bulletsList.appendChild(li);
-        });
-        document.getElementById("explanation-why-matters").innerText = data.evidence_grounded_explanation.why_this_matters || "";
+    if (bulletsList) {
+        bulletsList.innerHTML = "";
+        if (data.evidence_grounded_explanation && data.evidence_grounded_explanation.what_sentinel_found) {
+            data.evidence_grounded_explanation.what_sentinel_found.forEach(bullet => {
+                const li = document.createElement("li");
+                li.innerText = bullet;
+                bulletsList.appendChild(li);
+            });
+            set("explanation-why-matters", data.evidence_grounded_explanation.why_this_matters || "");
+        }
     }
 
-    // Render Case Memory / Historical Precedent
-    const memCard = document.getElementById("case-memory-card");
     if (data.historical_precedent) {
-        memCard.style.display = "block";
-        memCard.style.animation = "fadeInUp 0.5s ease both";
-        if (data.historical_precedent.label) {
-            document.getElementById("memory-badge-label").innerText = `🧠 ${data.historical_precedent.label}`;
-        }
-        document.getElementById("memory-title").innerText = `Pattern: ${data.historical_precedent.pattern_type}`;
-        document.getElementById("memory-plain-explanation").innerText = data.historical_precedent.context_summary;
-        document.getElementById("memory-precedent-rule").innerText = data.historical_precedent.precedent_rule;
-    } else {
-        memCard.style.display = "none";
+        set("memory-plain-explanation", data.historical_precedent.context_summary || "");
+        set("memory-precedent-rule", data.historical_precedent.precedent_rule || "");
+        set("memory-badge-label", `🧠 ${data.historical_precedent.label || "CASE MEMORY"}`);
+        set("memory-title", `Pattern: ${data.historical_precedent.pattern_type || ""}`);
     }
 
     updateVerdictBanner(data);
+
+    if (data.final_state_raw) {
+        updateStarProgress(data.final_state_raw);
+    }
 }
 
 // ========== VERDICT BANNER ==========
 function updateVerdictBanner(statusData) {
     const section = document.getElementById("verdict-banner-section");
     const banner = document.getElementById("verdict-banner");
-    const icon = document.getElementById("verdict-banner-icon");
-    const headline = document.getElementById("verdict-banner-headline");
-    const detail = document.getElementById("verdict-banner-detail");
-    const tag = document.getElementById("verdict-banner-tag");
     if (!section || !banner) return;
 
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
     const stateRaw = statusData.final_state_raw || "";
     const explanation = statusData.evidence_grounded_explanation || {};
-    const findings = explanation.what_sentinel_found || [];
-
-    let mbValue = "", photoValue = "", gap = "";
-    for (const f of findings) {
-        const mbMatch = f.match(/(\d+)\s*m.*certified/i);
-        const photoMatch = f.match(/approximately\s*(\d+)\s*m/i);
-        if (mbMatch) mbValue = mbMatch[1];
-        if (photoMatch) photoValue = photoMatch[1];
-    }
 
     if (stateRaw.includes("CONTRADICTED") || stateRaw.includes("HUMAN_REVIEW")) {
-        icon.innerText = "⚠";
-        headline.innerText = "Evidence Discrepancy Detected";
-
-        if (mbValue && photoValue) {
-            const diff = parseInt(mbValue) - parseInt(photoValue);
-            detail.innerText = `Contractor claims ${mbValue}m completed — only ${photoValue}m independently verified. ${diff}m gap identified.`;
-        } else {
-            detail.innerText = explanation.why_this_matters || "The available evidence does not fully reconcile the reported completion.";
-        }
-
-        tag.innerText = stateRaw.replace(/_/g, " ");
-        banner.className = "verdict-banner";
+        set("verdict-banner-icon", "⚠");
+        set("verdict-banner-headline", "Evidence Discrepancy Detected");
+        set("verdict-banner-detail", explanation.why_this_matters || "Evidence does not reconcile.");
+        set("verdict-banner-tag", stateRaw.replace(/_/g, " "));
     } else if (stateRaw.includes("SUPPORTED")) {
-        icon.innerText = "✓";
-        headline.innerText = "Evidence Supports Claim";
-        detail.innerText = "All independent sources are consistent with the contractor's reported completion.";
-        tag.innerText = "VERIFIED";
-        banner.className = "verdict-banner verdict-ok";
-    } else {
-        icon.innerText = "◐";
-        headline.innerText = "Partial Evidence Match";
-        detail.innerText = explanation.why_this_matters || "Some evidence supports the claim, but gaps remain.";
-        tag.innerText = stateRaw.replace(/_/g, " ");
-        banner.className = "verdict-banner";
+        set("verdict-banner-icon", "✓");
+        set("verdict-banner-headline", "Evidence Supports Claim");
+        set("verdict-banner-detail", "All sources consistent.");
+        set("verdict-banner-tag", "VERIFIED");
     }
 
     section.style.display = "";
-    section.style.animation = "fadeInUp 0.5s ease both";
 }
 
-// ========== PEGASUS STAR FIELD ==========
+// ========== STAR FIELD ==========
 (function initStarField() {
     const canvas = document.getElementById("star-canvas");
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
 
     let stars = [];
-    const STAR_COUNT = 120;
+    const STAR_COUNT = 100;
 
     function resize() {
         canvas.width = window.innerWidth;
@@ -753,10 +687,10 @@ function updateVerdictBanner(statusData) {
             stars.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                r: Math.random() * 1.6 + 0.3,
-                alpha: Math.random() * 0.6 + 0.2,
-                drift: (Math.random() - 0.5) * 0.15,
-                twinkleSpeed: Math.random() * 0.008 + 0.003,
+                r: Math.random() * 1.4 + 0.3,
+                alpha: Math.random() * 0.5 + 0.15,
+                drift: (Math.random() - 0.5) * 0.1,
+                speed: Math.random() * 0.006 + 0.002,
                 phase: Math.random() * Math.PI * 2
             });
         }
@@ -768,18 +702,16 @@ function updateVerdictBanner(statusData) {
         frame++;
 
         for (const s of stars) {
-            const twinkle = Math.sin(frame * s.twinkleSpeed + s.phase) * 0.3 + 0.7;
-            const a = s.alpha * twinkle;
-
+            const t = Math.sin(frame * s.speed + s.phase) * 0.3 + 0.7;
             ctx.beginPath();
             ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(200, 210, 255, ${a})`;
+            ctx.fillStyle = `rgba(200,210,255,${s.alpha * t})`;
             ctx.fill();
 
             if (s.r > 1.2) {
                 ctx.beginPath();
                 ctx.arc(s.x, s.y, s.r * 2.5, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(124, 143, 255, ${a * 0.12})`;
+                ctx.fillStyle = `rgba(124,143,255,${s.alpha * t * 0.12})`;
                 ctx.fill();
             }
 

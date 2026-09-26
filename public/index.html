@@ -8,628 +8,270 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <canvas id="star-canvas"></canvas>
+
+    <!-- ===== HEADER ===== -->
     <header class="app-header">
-        <div class="header-container">
-            <div class="brand">
-                <div class="logo-shield">✦</div>
-                <div class="brand-text">
-                    <h1>SENTINEL</h1>
-                    <p class="subtitle">Public Infrastructure Accountability System</p>
-                </div>
+        <div class="header-left">
+            <svg class="pegasus-logo" viewBox="0 0 70 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="pgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#60A5FA"/>
+                        <stop offset="50%" stop-color="#7C8FFF"/>
+                        <stop offset="100%" stop-color="#A78BFA"/>
+                    </linearGradient>
+                </defs>
+                <path d="M42 44C40 38 36 32 32 28C30 25 28 23 27 20C26 16 27 12 30 9C31 7 32 5 31 3C29 1 27 1 25 3C23 5 22 8 21 12C20 16 22 20 24 23C20 24 16 28 14 33C12 38 14 43 16 46L20 54L24 54L22 46L28 54L32 54L28 44C34 47 40 46 44 42L47 54L51 54L48 43L53 54L57 54L52 42C50 37 46 34 42 34L36 38Z" fill="url(#pgGrad)" opacity="0.9"/>
+                <path d="M27 20C22 12 14 7 6 5C4 5 3 7 5 8C10 7 16 10 21 16C24 19 26 20 27 20Z" fill="url(#pgGrad)" opacity="0.7"/>
+                <path d="M25 17C20 9 12 5 4 3C2 3 1 5 3 6C8 5 14 8 19 14C22 17 24 18 25 17Z" fill="url(#pgGrad)" opacity="0.5"/>
+                <path d="M23 14C18 7 10 3 3 1C1 1 0 3 2 4C7 3 12 6 17 11C19 14 22 15 23 14Z" fill="url(#pgGrad)" opacity="0.35"/>
+            </svg>
+            <div class="brand-text">
+                <h1>SENTINEL</h1>
+                <p class="brand-sub">PUBLIC FUNDS. REAL EVIDENCE. BRIGHTER TOMORROW.</p>
+                <p class="brand-team">BY TEAM PEGASUS</p>
             </div>
-            <div style="display:flex;align-items:center;gap:12px;">
-                <div class="team-tag">
-                    <span class="team-star">✦</span> Team Pegasus
-                </div>
-                <div class="header-badge">
-                    <span class="live-dot"></span> Live Evidence Verification
+        </div>
+        <div class="header-center">
+            <div class="search-bar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <input type="text" placeholder="Search projects, claims, evidence...">
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="gov-mode-badge">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+                <div>
+                    <strong>Government Mode</strong>
+                    <span>Accountability Dashboard</span>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="main-content">
-        <!-- HERO INTRO -->
-        <section class="section hero-intro-section">
-            <div class="hero-intro">
-                <h2 class="hero-headline">Where is your tax money going?</h2>
-                <p class="hero-body">Sentinel cross-checks government infrastructure claims against <strong>multiple independent evidence sources</strong> — official records, site inspections, financial documents, and photos. When the evidence doesn't match, it flags the discrepancy so auditors and citizens can act.</p>
-                <div class="hero-how">
-                    <div class="hero-how-step">
-                        <span class="hero-how-num">1</span>
-                        <span>Select a project</span>
-                    </div>
-                    <span class="hero-how-arrow">→</span>
-                    <div class="hero-how-step">
-                        <span class="hero-how-num">2</span>
-                        <span>See the evidence</span>
-                    </div>
-                    <span class="hero-how-arrow">→</span>
-                    <div class="hero-how-step">
-                        <span class="hero-how-num">3</span>
-                        <span>Run investigation</span>
-                    </div>
-                    <span class="hero-how-arrow">→</span>
-                    <div class="hero-how-step">
-                        <span class="hero-how-num">4</span>
-                        <span>See the verdict</span>
-                    </div>
-                </div>
-            </div>
-        </section>
+    <!-- ===== APP LAYOUT ===== -->
+    <div class="app-layout">
 
-        <!-- INVESTIGATION PROGRESS BAR (hidden until investigation runs) -->
-        <section class="section state-machine-section" id="state-machine-section" style="display:none;">
-            <div class="state-machine-bar">
-                <span class="sm-title">INVESTIGATION PROGRESS:</span>
-                <div class="sm-steps" id="sm-steps-container">
-                    <span class="sm-step active" id="step-discover" data-target="screen-discovery">1. DISCOVER</span>
-                    <span class="sm-step" id="step-investigate" data-target="screen-agent-trace">2. INVESTIGATE</span>
-                    <span class="sm-step" id="step-analyzing" data-target="screen-agent-trace">3. ANALYZING</span>
-                    <span class="sm-step" id="step-graph" data-target="screen-evidence-graph">4. EVIDENCE</span>
-                    <span class="sm-step" id="step-conflict" data-target="screen-money-trail">5. CONFLICT</span>
-                    <span class="sm-step" id="step-review" data-target="screen-status">6. REVIEW</span>
-                    <span class="sm-step" id="step-correction" data-target="screen-why">7. CORRECTION</span>
-                    <span class="sm-step" id="step-memory" data-target="screen-why">8. LEARNED</span>
-                    <span class="sm-step" id="step-second-case" data-target="screen-why">9. SIMILAR CASE</span>
-                </div>
+        <!-- SIDEBAR -->
+        <nav class="sidebar">
+            <a href="#" class="nav-item active">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+                <span>Projects</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <span>Investigations</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span>Evidence Hub</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span>Evidence Graph</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+                <span>Case Memory</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                <span>Reports</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                <span>Settings</span>
+            </a>
+            <div class="sidebar-motto">
+                <p>TRANSPARENT<br>INFRASTRUCTURE<br>STRONGER INDIA</p>
             </div>
-        </section>
+            <div class="sidebar-version">v1.0.0 &nbsp;|&nbsp; Team Pegasus</div>
+        </nav>
 
-        <!-- VERDICT BANNER — The punchline nobody can miss -->
-        <section class="section verdict-banner-section" id="verdict-banner-section" style="display:none;">
-            <div class="verdict-banner" id="verdict-banner">
-                <div class="verdict-banner-icon" id="verdict-banner-icon">⚠</div>
-                <div class="verdict-banner-content">
-                    <div class="verdict-banner-headline" id="verdict-banner-headline">Evidence Discrepancy Detected</div>
-                    <div class="verdict-banner-detail" id="verdict-banner-detail">Contractor claims 400m completed — only 180m independently verified. ₹7.2L gap identified.</div>
-                </div>
-                <div class="verdict-banner-tag" id="verdict-banner-tag">HUMAN REVIEW REQUIRED</div>
-            </div>
-        </section>
+        <!-- ===== DASHBOARD ===== -->
+        <main class="dashboard">
 
-        <!-- SCREEN 1: PROJECT DISCOVERY -->
-        <section class="section discovery-section" id="screen-discovery">
-            <div class="discovery-bar">
-                <div class="selector-group">
-                    <label for="project-select">Select Infrastructure Project:</label>
-                    <select id="project-select" class="custom-select">
-                        <option value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11" selected>Ward 7 — Storm Drain Construction (₹18L sanctioned)</option>
-                        <option value="b1ffcd00-8d1c-5fg9-cc7e-7cc0ce491b22">Ward 8 — Drainage Extension (similar case)</option>
+            <!-- ROW 1: Project + Financial + Risk -->
+            <section class="dash-row dash-row-top">
+                <div class="card card-project">
+                    <div class="card-head"><span class="card-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m-7-7h6m6 0h6"/></svg></span><span class="card-title">PROJECT</span><span class="card-tag" id="proj-tag">PRJ-001</span></div>
+                    <h2 class="proj-name" id="proj-name">Riverside Drainage Improvement</h2>
+                    <p class="proj-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> <span id="proj-location">Ward 12, Chennai, Tamil Nadu</span></p>
+                    <div class="proj-grid">
+                        <div class="proj-thumb"></div>
+                        <div class="proj-meta">
+                            <div class="pm"><span>Implementing Agency</span><strong id="proj-agency">Chennai Municipal Corp.</strong></div>
+                            <div class="pm"><span>Start Date</span><strong>12 Mar 2024</strong></div>
+                            <div class="pm"><span>Target Completion</span><strong>30 Dec 2024</strong></div>
+                            <div class="pm"><span>Status</span><span class="status-pill" id="proj-status-pill">IN PROGRESS</span></div>
+                        </div>
+                    </div>
+                    <select id="project-select" class="proj-select">
+                        <option value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11" selected>Ward 7 — Storm Drain (₹18L)</option>
+                        <option value="b1ffcd00-8d1c-5fg9-cc7e-7cc0ce491b22">Ward 8 — Drainage Extension</option>
                     </select>
                 </div>
-                <button id="btn-trigger-investigation" class="btn-investigate">⚡ Run AI Investigation</button>
-            </div>
 
-            <div class="project-hero-card">
-                <div class="project-title-row">
-                    <div>
-                        <h2 id="proj-name">Loading project...</h2>
-                        <p id="proj-desc" class="proj-desc">Fetching project parameters...</p>
-                        <p class="proj-location">📍 <span id="proj-location">Zone 3</span></p>
+                <div class="card card-financial">
+                    <div class="card-head"><span class="card-icon icon-gold"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 00-8 0v2"/></svg></span><span class="card-title">FINANCIAL OVERVIEW</span></div>
+                    <div class="fin-cards">
+                        <div class="fin-item"><div class="fin-icon fin-blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/></svg></div><div class="fin-amt" id="metric-sanctioned">₹ 18,00,000</div><div class="fin-lbl">Sanctioned Amount</div></div>
+                        <div class="fin-item"><div class="fin-icon fin-cyan"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div class="fin-amt cyan" id="metric-released">₹ 7,20,000</div><div class="fin-lbl">Released Amount<br><span class="fin-pct" id="metric-released-pct">(40%)</span></div></div>
+                        <div class="fin-item"><div class="fin-icon fin-teal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></div><div class="fin-amt teal" id="fin-balance">₹ 10,80,000</div><div class="fin-lbl">Balance Amount</div></div>
                     </div>
-                    <div class="status-pill" id="proj-status-pill">UNDER VERIFICATION</div>
-                </div>
-
-                <div class="metrics-grid">
-                    <div class="metric-box">
-                        <span class="metric-label">Sanctioned Amount</span>
-                        <span class="metric-val" id="metric-sanctioned">₹0</span>
-                    </div>
-                    <div class="metric-box">
-                        <span class="metric-label">Released to Date</span>
-                        <span class="metric-val highlight-blue" id="metric-released">₹0</span>
-                        <span class="metric-sub" id="metric-released-pct">0% of budget</span>
-                    </div>
-                    <div class="metric-box">
-                        <span class="metric-label">Claimed Work Value</span>
-                        <span class="metric-val highlight-amber" id="metric-claimed">₹0</span>
-                        <span class="metric-sub" id="metric-claimed-pct">0% physical claim</span>
-                    </div>
-                    <div class="metric-box">
-                        <span class="metric-label">Reported Completion</span>
-                        <span class="metric-val highlight-green" id="metric-completion">0%</span>
+                    <div class="fin-bar-wrap">
+                        <div class="fin-bar-track"><div class="fin-bar-fill" id="bar-released" style="width:40%"></div></div>
+                        <div class="fin-bar-labels"><span id="bar-released-label">40% Released</span><span id="bar-claimed-label">60% Remaining</span></div>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- SCREEN 2: MONEY TRAIL -->
-        <section class="section money-trail-section" id="screen-money-trail">
-            <div class="section-header">
-                <h2>💰 Follow the Money</h2>
-                <p>How much was sanctioned, how much was released, and how much the contractor claims to have earned. Do the numbers add up?</p>
-            </div>
-
-            <div class="money-trail-flow">
-                <div class="trail-card card-sanctioned">
-                    <div class="card-header">
-                        <span class="card-title">SANCTIONED BUDGET</span>
-                        <span class="badge-tag">GOVERNMENT ALLOCATION</span>
-                    </div>
-                    <div class="amount-display" id="trail-sanctioned">₹18,00,000</div>
-                    <p class="trail-note">Total authorized budget for storm water drain.</p>
-                </div>
-
-                <div class="trail-arrow">→</div>
-
-                <div class="trail-card card-released">
-                    <div class="card-header">
-                        <span class="card-title">FUNDS RELEASED</span>
-                        <span class="badge-tag tag-blue" id="badge-released-pct">40.0% DISBURSED</span>
-                    </div>
-                    <div class="amount-display" id="trail-released">₹7,20,000</div>
-                    <p class="trail-note">Tranche 1 released via treasury voucher.</p>
-                </div>
-
-                <div class="trail-arrow">→</div>
-
-                <div class="trail-card card-claimed">
-                    <div class="card-header">
-                        <span class="card-title">CONTRACTOR CLAIM</span>
-                        <span class="badge-tag tag-amber" id="badge-claimed-pct">80.0% WORK CLAIM</span>
-                    </div>
-                    <div class="amount-display" id="trail-claimed">₹14,40,000</div>
-                    <p class="trail-note">Submitted via 2nd Running Account (RA) Bill.</p>
-                </div>
-            </div>
-
-            <!-- Visual discrepancy bar -->
-            <div class="discrepancy-bar-container" id="discrepancy-bar-container" style="display:none;">
-                <div class="discrepancy-label-row">
-                    <span class="discrepancy-label">Budget Utilization</span>
-                    <span class="discrepancy-legend">
-                        <span class="legend-dot" style="background:var(--color-neutral)"></span> Released
-                        <span class="legend-dot" style="background:var(--color-insufficient)"></span> Claimed
-                    </span>
-                </div>
-                <div class="discrepancy-bar-track">
-                    <div class="discrepancy-bar-fill bar-released" id="bar-released" style="width:0%"></div>
-                    <div class="discrepancy-bar-fill bar-claimed" id="bar-claimed" style="width:0%"></div>
-                </div>
-                <div class="discrepancy-label-row" style="margin-top:6px;">
-                    <span class="discrepancy-pct" id="bar-released-label">0% released</span>
-                    <span class="discrepancy-pct discrepancy-gap" id="bar-gap-label"></span>
-                    <span class="discrepancy-pct" id="bar-claimed-label">0% claimed</span>
-                </div>
-            </div>
-
-            <div class="callout-box callout-amber" id="money-callout" style="display:none;">
-                <span class="callout-icon">👀</span>
-                <span id="money-callout-text"></span>
-            </div>
-
-            <div class="milestones-box">
-                <h3>Supporting Financial Documents</h3>
-                <div id="financial-evidence-list" class="evidence-list">
-                    <!-- Populated dynamically -->
-                </div>
-            </div>
-        </section>
-
-        <!-- SCREEN 3: EVIDENCE GRAPH -->
-        <section class="section graph-section" id="screen-evidence-graph">
-            <div class="section-header">
-                <h2>📊 Does the Evidence Match the Claim?</h2>
-                <p>The contractor made a claim. Here's what each independent source — official records, inspections, invoices, photos — actually says. Look for the red "CONTRADICTS" badges.</p>
-            </div>
-
-            <div class="graph-container">
-                <!-- CLAIM NODE -->
-                <div class="graph-tier tier-claim">
-                    <div class="tier-label">WHAT THE CONTRACTOR CLAIMS</div>
-                    <div class="claim-node-card" id="claim-node-display">
-                        <div class="claim-ref" id="claim-ref-tag">CLAIM-WARD7-PIPE-400M</div>
-                        <h3 id="claim-desc-text">Installation of 400m of 600mm RCC hume pipes</h3>
-                        <div class="claim-meta">
-                            <span>Claimed Value: <strong id="claim-val-text">400 meters</strong></span>
-                            <span>Submitted By: <strong id="claim-by-text">Apex Infra Works Ltd</strong></span>
+                <div class="card card-risk">
+                    <div class="card-head"><span class="card-icon icon-red"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span><span class="card-title">PROJECT RISK</span><span class="risk-tag">HIGH RISK</span></div>
+                    <div class="risk-body">
+                        <div class="risk-circle-wrap">
+                            <svg class="risk-circle" viewBox="0 0 120 120">
+                                <circle cx="60" cy="60" r="50" stroke="rgba(100,140,255,0.1)" stroke-width="8" fill="none"/>
+                                <circle cx="60" cy="60" r="50" stroke="url(#riskGrad)" stroke-width="8" fill="none" stroke-dasharray="314" stroke-dashoffset="88" stroke-linecap="round" transform="rotate(-90 60 60)" id="risk-arc"/>
+                                <defs><linearGradient id="riskGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#F87171"/><stop offset="100%" stop-color="#FBBF24"/></linearGradient></defs>
+                            </svg>
+                            <div class="risk-score"><span class="risk-num">72</span><span class="risk-lbl">Risk Score<br>(out of 100)</span></div>
+                        </div>
+                        <div class="risk-list">
+                            <div class="rl"><span class="rd rd-red"></span>Critical Issues<strong>2</strong></div>
+                            <div class="rl"><span class="rd rd-orange"></span>Contradictions<strong>3</strong></div>
+                            <div class="rl"><span class="rd rd-amber"></span>Insufficient Evidence<strong>2</strong></div>
+                            <div class="rl"><span class="rd rd-green"></span>Supporting Evidence<strong>5</strong></div>
                         </div>
                     </div>
                 </div>
+            </section>
 
-                <div class="flow-arrow">↓ CHECKED AGAINST INDEPENDENT EVIDENCE ↓</div>
-
-                <!-- EVIDENCE NODES GRID -->
-                <div class="graph-tier tier-evidence">
-                    <div class="tier-label">WHAT EACH INDEPENDENT SOURCE SAYS</div>
-                    <div class="evidence-nodes-grid" id="evidence-nodes-container">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
-
-                <!-- VISION ANALYSIS PANEL -->
-                <div class="graph-tier tier-vision" id="vision-analysis-tier">
-                    <div class="tier-label">SENTINEL VISION — PIL PHOTO ANALYSIS</div>
-                    <div class="vision-panel" id="vision-panel">
-                        <div class="vision-header">
-                            <span class="vision-icon">📸</span>
-                            <h4>Computer Vision Analysis</h4>
-                            <span class="vision-badge" id="vision-activity-badge">MODERATE ACTIVITY</span>
-                        </div>
-                        <div class="vision-metrics-grid">
-                            <div class="vision-metric">
-                                <div class="vision-metric-label">Edge Density</div>
-                                <div class="vision-metric-value" id="vision-edge-density">0.142</div>
-                                <div class="vision-meter">
-                                    <div class="vision-meter-fill" id="vision-edge-bar" style="width: 47%"></div>
-                                </div>
-                            </div>
-                            <div class="vision-metric">
-                                <div class="vision-metric-label">Activity Level</div>
-                                <div class="vision-metric-value" id="vision-activity-level">moderate</div>
-                                <div class="vision-activity-dots">
-                                    <span class="dot active"></span>
-                                    <span class="dot active"></span>
-                                    <span class="dot"></span>
-                                </div>
-                            </div>
-                            <div class="vision-metric">
-                                <div class="vision-metric-label">Brightness</div>
-                                <div class="vision-metric-value" id="vision-brightness">127.4</div>
-                                <div class="vision-meter">
-                                    <div class="vision-meter-fill brightness-fill" id="vision-brightness-bar" style="width: 50%"></div>
-                                </div>
-                            </div>
-                            <div class="vision-metric">
-                                <div class="vision-metric-label">Dimensions</div>
-                                <div class="vision-metric-value" id="vision-dimensions">1920x1080</div>
-                                <div class="vision-color-swatch" id="vision-colors">
-                                    <span class="swatch" id="swatch-r" style="background: rgb(140,120,100);" title="Dominant color"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="vision-observation" id="vision-observation">
-                            Site photo analysis: moderate construction activity detected. Edge density 0.142 suggests active work zone.
-                        </div>
-                        <div class="vision-tech-tag">PIL/Pillow ImageFilter.FIND_EDGES + ImageStat</div>
-                    </div>
-                </div>
-
-                <div class="flow-arrow">↓ SENTINEL'S CONCLUSION ↓</div>
-
-                <!-- INVESTIGATION DECISION NODE -->
-                <div class="graph-tier tier-decision">
-                    <div class="tier-label">VERDICT — BASED ON ALL EVIDENCE ABOVE</div>
-                    <div class="decision-node-card" id="decision-node-card">
-                        <div class="decision-icon" id="decision-icon">⚖️</div>
-                        <div class="decision-info">
-                            <span class="decision-state-tag" id="decision-state-tag">HUMAN REVIEW REQUIRED</span>
-                            <p id="decision-summary-text">Evaluating physical discrepancy...</p>
+            <!-- ROW 2: Constellation + Right Column -->
+            <section class="dash-row dash-row-main">
+                <div class="card card-constellation">
+                    <div class="const-header">
+                        <div class="const-title"><span class="card-icon icon-blue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><div><h3>EVIDENCE CONSTELLATION</h3><p>CONNECTING FACTS. REVEALING TRUTHS.</p></div></div>
+                        <div class="const-controls">
+                            <div class="legend"><span class="li"><span class="ld ld-green"></span>Supporting</span><span class="li"><span class="ld ld-red"></span>Contradiction</span><span class="li"><span class="ld ld-amber"></span>Insufficient</span><span class="li"><span class="ld ld-blue"></span>Related</span></div>
+                            <div class="vtoggle"><button class="vt active">3D View</button><button class="vt">Map View</button><button class="vt">List View</button></div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- DATA SOURCES — Where does this data come from? -->
-        <section class="section data-sources-section" id="screen-data-sources">
-            <div class="section-header">
-                <h2>📡 Where Does This Data Come From?</h2>
-                <p>Every evidence source Sentinel uses is publicly accessible under Indian law. No private or classified data is required — transparency is already mandated.</p>
-            </div>
-
-            <div class="data-sources-grid">
-                <div class="source-card">
-                    <div class="source-icon">📋</div>
-                    <div class="source-info">
-                        <h4>Measurement Book (MB) Records</h4>
-                        <p>Official certified quantities recorded by Junior Engineers. Accessible via RTI Act 2005 from PWD/Municipal offices.</p>
-                        <div class="source-legal-tag">RTI Act 2005, Section 4(1)(b)</div>
-                    </div>
-                    <div class="source-status source-live">LIVE</div>
-                </div>
-
-                <div class="source-card">
-                    <div class="source-icon">🏦</div>
-                    <div class="source-info">
-                        <h4>Treasury Disbursement Records</h4>
-                        <p>Fund release vouchers from PFMS (Public Financial Management System). Published by Controller General of Accounts.</p>
-                        <div class="source-legal-tag">PFMS Portal — pfms.nic.in</div>
-                    </div>
-                    <div class="source-status source-live">LIVE</div>
-                </div>
-
-                <div class="source-card">
-                    <div class="source-icon">🧾</div>
-                    <div class="source-info">
-                        <h4>Supplier Invoices &amp; GEM Orders</h4>
-                        <p>Material procurement records from Government e-Marketplace. All government purchases above ₹25K must go through GEM.</p>
-                        <div class="source-legal-tag">GEM Portal — gem.gov.in</div>
-                    </div>
-                    <div class="source-status source-live">LIVE</div>
-                </div>
-
-                <div class="source-card">
-                    <div class="source-icon">📸</div>
-                    <div class="source-info">
-                        <h4>Geotagged Site Photos</h4>
-                        <p>Timestamped, GPS-tagged photos from site inspections. Analyzed by Sentinel's PIL-based computer vision engine.</p>
-                        <div class="source-legal-tag">Field Inspection Protocol</div>
-                    </div>
-                    <div class="source-status source-live">LIVE</div>
-                </div>
-
-                <div class="source-card">
-                    <div class="source-icon">👥</div>
-                    <div class="source-info">
-                        <h4>Citizen Verification Reports</h4>
-                        <p>On-ground observations from local residents. Ward committee members can submit independent verification.</p>
-                        <div class="source-legal-tag">74th Constitutional Amendment</div>
-                    </div>
-                    <div class="source-status source-ready">READY</div>
-                </div>
-
-                <div class="source-card">
-                    <div class="source-icon">📰</div>
-                    <div class="source-info">
-                        <h4>CAG Audit Reports</h4>
-                        <p>Comptroller &amp; Auditor General performance audit findings. Published annually for all state infrastructure spending.</p>
-                        <div class="source-legal-tag">CAG — cag.gov.in</div>
-                    </div>
-                    <div class="source-status source-ready">READY</div>
-                </div>
-            </div>
-
-            <div class="data-sources-note">
-                All data sources are legally mandated for public disclosure. Sentinel does not require any special government cooperation — it uses data the government is <strong>already required</strong> to publish.
-            </div>
-        </section>
-
-        <!-- WHY TRUST SENTINEL — 5-Source Independence Architecture -->
-        <section class="section trust-section" id="screen-trust">
-            <div class="section-header">
-                <h2>🔐 Why Trust Sentinel?</h2>
-                <p>Sentinel's power isn't any single data source — it's the cross-verification of five independent sources that can't be simultaneously compromised.</p>
-            </div>
-
-            <div class="trust-architecture">
-                <div class="trust-principle">
-                    <div class="trust-number">01</div>
-                    <div class="trust-content">
-                        <h4>5 Independent Sources, 1 Truth</h4>
-                        <p>The contractor submits the MB record. The bank holds the payment. The supplier has the invoice. The photo is GPS-stamped. The citizen walks the site. <strong>No single entity controls all five.</strong></p>
+                    <div class="const-viewport" id="constellation-viewport">
+                        <canvas id="constellation-canvas"></canvas>
+                        <div class="c-node" id="cnode-e1" style="left:8%;top:18%"><div class="c-star green">&#10022;</div><div class="c-card"><div class="c-head"><span class="c-id">e1-ra2</span><span class="c-badge green">SUPPORTS</span></div><div class="c-thumb blue"></div><div class="c-name">Bank Voucher</div><div class="c-val">&#8377; 7,20,000</div><div class="c-date">10 Feb 2024</div></div></div>
+                        <div class="c-node" id="cnode-e4" style="left:35%;top:8%"><div class="c-star red">&#10038;</div><div class="c-card"><div class="c-head"><span class="c-id">e4-si1</span><span class="c-badge red">CONTRADICTION</span></div><div class="c-thumb red"></div><div class="c-name">Site Inspection</div><div class="c-val warn">180 m (observed)</div><div class="c-date">12 Mar 2024</div></div></div>
+                        <div class="c-node" id="cnode-e3" style="left:66%;top:14%"><div class="c-star blue">&#10022;</div><div class="c-card"><div class="c-head"><span class="c-id">e3-inv1</span><span class="c-badge blue">RELATED</span></div><div class="c-thumb teal"></div><div class="c-name">Material Invoice</div><div class="c-val">Cement Supply</div><div class="c-date">03 Mar 2024</div></div></div>
+                        <div class="c-node" id="cnode-e2" style="left:12%;top:60%"><div class="c-star green">&#10022;</div><div class="c-card"><div class="c-head"><span class="c-id">e2-mb1</span><span class="c-badge green">SUPPORTS</span></div><div class="c-thumb green"></div><div class="c-name">Measurement Book</div><div class="c-val">400 m (claimed)</div><div class="c-date">05 Mar 2024</div></div></div>
+                        <div class="c-node" id="cnode-e5" style="left:42%;top:52%"><div class="c-star amber">&#10022;</div><div class="c-card"><div class="c-head"><span class="c-id">e5-geo1</span><span class="c-badge amber">INSUFFICIENT</span></div><div class="c-thumb amber"></div><div class="c-name">Satellite Image</div><div class="c-val warn">Work Visible (Partial)</div><div class="c-date">08 Mar 2024</div></div></div>
+                        <div class="c-node" id="cnode-e6" style="left:68%;top:56%"><div class="c-star amber">&#10038;</div><div class="c-card"><div class="c-head"><span class="c-id">e6-photo1</span><span class="c-badge amber">INSUFFICIENT</span></div><div class="c-thumb orange"></div><div class="c-name">Field Photo</div><div class="c-val warn">Quality Unclear</div><div class="c-date">11 Mar 2024</div></div></div>
+                        <div class="const-zoom"><button>+</button><button>&minus;</button><button><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></button></div>
                     </div>
                 </div>
 
-                <div class="trust-principle">
-                    <div class="trust-number">02</div>
-                    <div class="trust-content">
-                        <h4>Collusion Is Expensive</h4>
-                        <p>To fool Sentinel, a contractor would need to falsify the MB record AND forge bank statements AND fake supplier invoices AND doctor geotagged photos AND silence local citizens. That's not one bribe — it's an entire conspiracy across independent institutions.</p>
+                <div class="right-col">
+                    <div class="card card-progress">
+                        <div class="card-head"><span class="card-icon icon-blue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span class="card-title">INVESTIGATION PROGRESS</span><span class="inv-id">INV-001</span></div>
+                        <div class="star-row" id="star-progress">
+                            <div class="ss completed"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Data<br>Collection</span></div>
+                            <div class="ss completed"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Cross<br>Verification</span></div>
+                            <div class="ss active"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Contradiction<br>Analysis</span></div>
+                            <div class="ss pending"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Findings<br>Synthesis</span></div>
+                            <div class="ss pending"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Human<br>Review</span></div>
+                        </div>
+                        <div class="stage-info">
+                            <div class="si-head"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> CURRENT STAGE</div>
+                            <h4 id="headline-status">Analyzing Contradictions <span class="spinner"></span></h4>
+                            <p id="review-notice-text">Comparing measurement book claims with site inspection and satellite imagery...</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-trace">
+                        <div class="card-head"><span class="card-icon icon-purple"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg></span><span class="card-title">AGENT INVESTIGATION TRACE</span><span class="live-badge"><span class="live-dot"></span> Live</span></div>
+                        <div class="trace-list" id="trace-log">
+                            <div class="tl-item"><div class="tl-dots"><span class="tl-dot done"></span><span class="tl-line"></span></div><div class="tl-body"><div class="tl-row"><strong>1. Data Ingestion</strong><span class="tl-time">21:28</span></div><p>Loaded project data and financial records</p></div></div>
+                            <div class="tl-item"><div class="tl-dots"><span class="tl-dot done"></span><span class="tl-line"></span></div><div class="tl-body"><div class="tl-row"><strong>2. Evidence Collection</strong><span class="tl-time">21:29</span></div><p>Retrieved 5 claims and 12 evidence items</p></div></div>
+                            <div class="tl-item"><div class="tl-dots"><span class="tl-dot done"></span><span class="tl-line"></span></div><div class="tl-body"><div class="tl-row"><strong>3. Cross-verification</strong><span class="tl-time">21:30</span></div><p>Detected 2 potential contradictions</p></div></div>
+                            <div class="tl-item"><div class="tl-dots"><span class="tl-dot running"></span><span class="tl-line"></span></div><div class="tl-body"><div class="tl-row"><strong class="active-text">4. Analysis &amp; Reasoning</strong><span class="tl-time">21:31</span></div><p>Running comparison and spatial analysis...</p></div></div>
+                            <div class="tl-item"><div class="tl-dots"><span class="tl-dot pending"></span><span class="tl-line"></span></div><div class="tl-body pending-text"><div class="tl-row"><strong>5. Generating Findings</strong><span class="tl-time">&mdash;</span></div><p>Synthesizing evidence and preparing report</p></div></div>
+                            <div class="tl-item"><div class="tl-dots"><span class="tl-dot pending"></span></div><div class="tl-body pending-text"><div class="tl-row"><strong>6. Awaiting Human Review</strong><span class="tl-time">&mdash;</span></div><p>Escalate for auditor verification</p></div></div>
+                        </div>
+                        <button id="btn-trigger-investigation" class="btn-run"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run AI Investigation</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ROW 3: Findings + Evidence + Memory -->
+            <section class="dash-row dash-row-bottom">
+                <div class="card card-findings">
+                    <div class="card-head"><span class="card-icon icon-red"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span><span class="card-title">KEY FINDINGS</span><a class="card-link">View All &rarr;</a></div>
+                    <div class="findings-list">
+                        <div class="fi"><span class="fi-icon fi-high"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><div class="fi-body"><strong>Measurement Mismatch</strong><p>Claimed 400m completed, but only ~180m visible in site inspection.</p></div><span class="sev high">HIGH</span></div>
+                        <div class="fi"><span class="fi-icon fi-med"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><div class="fi-body"><strong>Incomplete Material Records</strong><p>Cement supply invoices do not match claimed quantity.</p></div><span class="sev med">MEDIUM</span></div>
+                        <div class="fi"><span class="fi-icon fi-low"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span><div class="fi-body"><strong>Fund Release Verified</strong><p>Bank voucher confirms ₹7,20,000 released to contractor.</p></div><span class="sev low">LOW</span></div>
                     </div>
                 </div>
 
-                <div class="trust-principle">
-                    <div class="trust-number">03</div>
-                    <div class="trust-content">
-                        <h4>AI Finds — Humans Decide</h4>
-                        <p>Sentinel never accuses. It flags discrepancies with evidence, then hands the case to a human auditor. The AI can be wrong — that's why auditor corrections are preserved and the system learns from them.</p>
+                <div class="card card-evidence">
+                    <div class="card-head"><span class="card-icon icon-cyan"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span><span class="card-title">LATEST EVIDENCE</span><a class="card-link">View All &rarr;</a></div>
+                    <div class="ev-grid">
+                        <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#1e3a5f,#2d5a8e)"><span>📸</span></div><div class="ev-lbl">Site Inspection</div><div class="ev-id">e4-si1</div><span class="ev-tag ev-red">CONTRADICTION</span></div>
+                        <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#1a3d2e,#2d6e4e)"><span>📋</span></div><div class="ev-lbl">Measurement Book</div><div class="ev-id">e2-mb1</div><span class="ev-tag ev-green">SUPPORTS</span></div>
+                        <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#2a2a4e,#3d3d7e)"><span>🛰</span></div><div class="ev-lbl">Satellite Image</div><div class="ev-id">e5-geo1</div><span class="ev-tag ev-amber">INSUFFICIENT</span></div>
+                        <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#3d2a1a,#6e4d2d)"><span>📷</span></div><div class="ev-lbl">Field Photo</div><div class="ev-id">e6-photo1</div><span class="ev-tag ev-amber">INSUFFICIENT</span></div>
                     </div>
                 </div>
 
-                <div class="trust-principle">
-                    <div class="trust-number">04</div>
-                    <div class="trust-content">
-                        <h4>Every Claim Is Traceable</h4>
-                        <p>No black boxes. Every finding links to a specific document, a specific measurement, a specific photo. The database is the source of truth — not the AI's opinion.</p>
+                <div class="card card-memory" id="case-memory-card">
+                    <div class="card-head"><span class="card-icon icon-purple"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span><span class="card-title">CASE MEMORY &amp; LEARNING</span><a class="card-link">View All &rarr;</a></div>
+                    <div class="mem-body">
+                        <div class="mem-count"><strong>3</strong> relevant precedents found</div>
+                        <p class="mem-desc" id="memory-plain-explanation">Similar measurement mismatches in drainage projects. Often due to underground work or backfilling.</p>
+                        <div class="mem-quote"><span class="mq-icon">&#10077;</span><p id="memory-precedent-rule">"Surface inspection may not reflect full underground pipeline completion. Verify with sectional drawings."</p><a class="mq-link">Past Human Correction</a></div>
                     </div>
                 </div>
+            </section>
+        </main>
+    </div>
 
-                <div class="trust-cross-check-visual">
-                    <div class="cross-check-title">THE CROSS-CHECK MATRIX</div>
-                    <div class="cross-check-desc">Each source is checked against every other. If any two disagree, it's flagged.</div>
-                    <div class="cross-check-grid">
-                        <div class="cc-node cc-mb">MB Record<br><span>400m certified</span></div>
-                        <div class="cc-line cc-line-1"></div>
-                        <div class="cc-node cc-photo">Site Photo<br><span>180m visible</span></div>
-                        <div class="cc-line cc-line-2"></div>
-                        <div class="cc-node cc-bank">Bank Record<br><span>₹7.2L released</span></div>
-                        <div class="cc-line cc-line-3"></div>
-                        <div class="cc-node cc-invoice">Invoice<br><span>Materials for 400m</span></div>
-                        <div class="cc-line cc-line-4"></div>
-                        <div class="cc-node cc-citizen">Citizen Report<br><span>Partial work seen</span></div>
-                    </div>
-                    <div class="cross-check-result">
-                        <span class="cc-result-icon">✕</span>
-                        <span>MB claims 400m but photo shows 180m — <strong>220m discrepancy flagged</strong></span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- AGENTIC ARCHITECTURE VISUALIZATION -->
-        <section class="section" id="screen-architecture">
-            <div class="section-header">
-                <h2>🤖 How Sentinel Works</h2>
-                <p>Three specialized AI agents collaborate through a safety-constrained orchestrator. The AI reasons and plans — but the database holds the truth, and humans have final authority.</p>
-            </div>
-            <div class="arch-container">
-                <div class="arch-grid">
-                    <div class="agent-card agent-intake">
-                        <div class="agent-icon">📋</div>
-                        <h4>Evidence Intake Agent</h4>
-                        <p>Classifies evidence items, links to claims, identifies gaps in documentation</p>
-                        <div class="agent-tech">Claude Sonnet 4 + Deterministic Fallback</div>
-                    </div>
-                    <div class="agent-card agent-financial">
-                        <div class="agent-icon">💰</div>
-                        <h4>Financial Cross-Check Agent</h4>
-                        <p>Validates fund releases against claims, detects disbursement anomalies</p>
-                        <div class="agent-tech">Rule Engine + Threshold Analysis</div>
-                    </div>
-                    <div class="agent-card agent-historical">
-                        <div class="agent-icon">🧠</div>
-                        <h4>Historical Context Agent</h4>
-                        <p>Retrieves case memory precedents, applies learned corrections to new cases</p>
-                        <div class="agent-tech">Pattern Matching + Case Memory DB</div>
-                    </div>
-                </div>
-                <div class="arch-flow">
-                    <div class="arch-flow-item">
-                        <span class="flow-badge">ORCHESTRATOR</span>
-                        <span>14-State Investigation Machine</span>
-                    </div>
-                    <span class="arch-arrow">→</span>
-                    <div class="arch-flow-item">
-                        <span class="flow-badge flow-badge-red">CONTRADICTION ENGINE</span>
-                        <span>Pairwise Evidence Comparison</span>
-                    </div>
-                    <span class="arch-arrow">→</span>
-                    <div class="arch-flow-item">
-                        <span class="flow-badge flow-badge-green">DECISION ENGINE</span>
-                        <span>Deterministic State Resolution</span>
-                    </div>
-                </div>
-                <div class="arch-tech-bar">
-                    <span class="tech-chip">Python</span>
-                    <span class="tech-chip">SQLite</span>
-                    <span class="tech-chip">Claude API</span>
-                    <span class="tech-chip">PIL Vision</span>
-                    <span class="tech-chip">Evidence Contract</span>
-                    <span class="tech-chip">Vercel Serverless</span>
-                    <span class="tech-chip">Case-Based Learning</span>
-                </div>
-            </div>
-
-            <!-- VIABILITY / REVENUE MODEL -->
-            <div class="viability-card">
-                <div class="viability-header">
-                    <span class="viability-icon">💡</span>
-                    <h4>Path to Sustainability</h4>
-                </div>
-                <div class="viability-models">
-                    <div class="viability-item">
-                        <span class="viability-tag primary">PRIMARY</span>
-                        <span><strong>B2G SaaS for Municipal Audit Departments</strong> — CAG mandates infrastructure audits. Sentinel automates what's currently done manually. Municipalities pay per-project or annual license.</span>
-                    </div>
-                    <div class="viability-item">
-                        <span class="viability-tag secondary">SCALE</span>
-                        <span><strong>NGO &amp; Development Agency Tool</strong> — World Bank, UNDP, and CSR-funded transparency programs (SDG 16: Strong Institutions) fund audit infrastructure.</span>
-                    </div>
-                    <div class="viability-item">
-                        <span class="viability-tag tertiary">EXPAND</span>
-                        <span><strong>Media &amp; Investigative Licensing</strong> — News organizations pay for structured evidence packages on suspect infrastructure projects.</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- AGENT TRACE: Live Investigation Loop -->
-        <section class="section agent-trace-section" id="screen-agent-trace">
-            <div class="section-header">
-                <h2>🤖 Watch the AI Investigate</h2>
-                <p>Sentinel's AI agent dynamically decides what to check next — not a fixed script. Watch each reasoning step as it cross-checks evidence, searches for precedents, and reaches a conclusion.</p>
-            </div>
-            <div class="agent-trace-container" id="agent-trace-container">
-                <div class="trace-header">
-                    <div class="trace-status" id="trace-status">
-                        <span class="trace-dot idle"></span>
-                        <span id="trace-status-text">Agent idle — click RUN INVESTIGATION to start</span>
-                    </div>
-                    <div class="trace-meta">
-                        <span id="trace-iteration-count">0 iterations</span>
-                        <span id="trace-tool-count">0 tool calls</span>
-                    </div>
-                </div>
-                <div class="trace-log" id="trace-log">
-                    <!-- Agent steps rendered here dynamically -->
-                </div>
-            </div>
-        </section>
-
-        <!-- SCREEN 4: INVESTIGATION STATUS -->
-        <section class="section status-section" id="screen-status">
-            <div class="section-header">
-                <h2>🔍 Investigation Result</h2>
-                <p>What stages Sentinel completed and what it concluded. Every step is traceable — nothing happens behind closed doors.</p>
-            </div>
-
-            <div class="pipeline-card">
-                <div class="headline-box">
-                    <span class="pulse-dot"></span>
-                    <h3 id="headline-status">Sentinel is reviewing project evidence</h3>
-                </div>
-
-                <div class="stages-timeline" id="stages-timeline">
-                    <!-- Timeline items -->
-                </div>
-
-                <div class="human-review-box" id="human-review-box">
-                    <div class="review-icon">⚖️</div>
-                    <div class="review-text">
-                        <h4>Human Auditor Review Required</h4>
-                        <p id="review-notice-text">Some evidence conflicts or important evidence is missing. Sentinel cannot resolve the difference automatically.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SCREEN 5: WHY, AUDITOR CORRECTION & CASE MEMORY -->
-        <section class="section why-section" id="screen-why">
-            <div class="section-header">
-                <h2>💡 What This Means (Plain Language)</h2>
-                <p>Sentinel explains its findings in everyday language — no jargon. If a human auditor has corrected a similar case before, that learning is shown here too.</p>
-            </div>
-
-            <!-- CITIZEN-SAFE EXPLANATION -->
-            <div class="explanation-card">
-                <h3>What Sentinel Found</h3>
-                <ul class="explanation-bullets" id="explanation-found-bullets">
-                    <!-- Populated dynamically -->
-                </ul>
-                <div class="why-matters-box">
-                    <strong>Why This Matters:</strong> <span id="explanation-why-matters">The available evidence does not fully reconcile the reported completion with what was visibly observed.</span>
-                </div>
-                <div class="grounding-note">
-                    🔒 <strong>Evidence Grounding Guarantee:</strong> Every factual statement shown above is traced directly to stored empirical evidence.
-                </div>
-            </div>
-
-            <!-- HUMAN AUDITOR CORRECTION PANEL -->
-            <div class="auditor-correction-panel" id="auditor-panel">
-                <h3>⚖️ Auditor Correction (Human Override)</h3>
-                <p class="panel-desc">If you're an auditor and the AI got it wrong, submit a correction below. The original finding is preserved — your correction is added alongside it, and Sentinel learns from it for future investigations.</p>
-
-                <div class="form-group">
-                    <label for="corr-interp">Corrected Interpretation:</label>
-                    <input type="text" id="corr-interp" class="custom-input" value="The missing section was underground/backfilled and therefore was not visible during inspection.">
-                </div>
-
-                <div class="form-group">
-                    <label for="corr-reason">Auditor Reason / Finding:</label>
-                    <textarea id="corr-reason" class="custom-textarea" rows="2">Subsurface drainage installation confirmed via excavation logs and staging delivery records.</textarea>
-                </div>
-
-                <button id="btn-submit-correction" class="btn-submit-correction">Submit Correction (Sentinel will learn from this)</button>
-                <div id="correction-success-msg" class="success-msg" style="display:none;">✓ Auditor correction saved. Case Memory precedent created!</div>
-            </div>
-
-            <!-- HISTORICAL PRECEDENT / CASE MEMORY CARD -->
-            <div class="case-memory-card" id="case-memory-card">
-                <div class="memory-badge" id="memory-badge-label">🧠 SENTINEL LEARNED FROM A PREVIOUS CASE</div>
-                <h3 id="memory-title">Pattern: STAGED_MATERIAL_DISCREPANCY</h3>
-                <p id="memory-plain-explanation" class="memory-text">
-                    Previously, a surface inspection photo reported less visible length than certified MB records. A human auditor clarified that the missing section was laid underground and backfilled prior to inspection.
-                </p>
-                <div class="precedent-rule-box">
-                    <strong>What Sentinel learned:</strong> <span id="memory-precedent-rule">When physical trench photo inspection shows less visible length than certified MB record, check backfilling/staging records before flagging unexecuted work.</span>
-                </div>
-            </div>
-        </section>
-    </main>
-
+    <!-- FOOTER -->
     <footer class="app-footer">
-        <div class="footer-container">
-            <p><strong>SENTINEL</strong> — Making Every Rupee of Public Money Accountable</p>
-            <p class="footer-sub">Database is Source of Truth • Evidence-Grounded Reasoning • Non-Accusatory • Human Authority Preserved</p>
-            <p class="footer-team">Built by <span class="footer-pegasus">✦ Team Pegasus</span></p>
-        </div>
+        <span class="foot-left">SENTINEL v1.0.0 &nbsp;|&nbsp; Built by Team Pegasus</span>
+        <span class="foot-center">"REAL EVIDENCE BUILDS A BRIGHTER TOMORROW."</span>
+        <span class="foot-right">Public Infrastructure &nbsp;&bull;&nbsp; Government Accountability &nbsp;&bull;&nbsp; Citizen Trust</span>
     </footer>
+
+    <!-- Hidden compat elements for app.js -->
+    <div hidden>
+        <span id="proj-desc"></span>
+        <span id="metric-claimed"></span><span id="metric-claimed-pct"></span><span id="metric-completion"></span>
+        <span id="trail-sanctioned"></span><span id="trail-released"></span><span id="trail-claimed"></span>
+        <span id="badge-released-pct"></span><span id="badge-claimed-pct"></span>
+        <div id="discrepancy-bar-container"><div id="bar-claimed"></div><span id="bar-gap-label"></span></div>
+        <div id="money-callout"><span id="money-callout-text"></span></div>
+        <div id="financial-evidence-list"></div>
+        <span id="claim-ref-tag"></span><span id="claim-desc-text"></span><span id="claim-val-text"></span><span id="claim-by-text"></span>
+        <div id="evidence-nodes-container"></div>
+        <div id="stages-timeline"></div>
+        <span id="decision-state-tag"></span>
+        <div id="decision-node-card"><span id="decision-icon"></span><span id="decision-summary-text"></span></div>
+        <div id="human-review-box"></div>
+        <ul id="explanation-found-bullets"></ul>
+        <span id="explanation-why-matters"></span>
+        <span id="memory-badge-label"></span><span id="memory-title"></span>
+        <div id="verdict-banner-section"><div id="verdict-banner"><span id="verdict-banner-icon"></span><span id="verdict-banner-headline"></span><span id="verdict-banner-detail"></span><span id="verdict-banner-tag"></span></div></div>
+        <div id="state-machine-section"><span class="sm-step" id="step-discover"></span><span class="sm-step" id="step-investigate"></span><span class="sm-step" id="step-analyzing"></span><span class="sm-step" id="step-graph"></span><span class="sm-step" id="step-conflict"></span><span class="sm-step" id="step-review"></span><span class="sm-step" id="step-correction"></span><span class="sm-step" id="step-memory"></span><span class="sm-step" id="step-second-case"></span></div>
+        <div id="vision-panel"><span id="vision-edge-density"></span><span id="vision-activity-level"></span><span id="vision-brightness"></span><span id="vision-dimensions"></span><span id="vision-observation"></span><div id="vision-edge-bar"></div><div id="vision-brightness-bar"></div><span id="vision-activity-badge"></span><span id="swatch-r"></span></div>
+        <span id="trace-status-text"></span><span id="trace-iteration-count"></span><span id="trace-tool-count"></span>
+        <input id="corr-interp" value=""><textarea id="corr-reason"></textarea>
+        <button id="btn-submit-correction"></button><div id="correction-success-msg"></div>
+    </div>
 
     <script src="app.js"></script>
 </body>
