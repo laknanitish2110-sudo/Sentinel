@@ -13,7 +13,7 @@ from sentinel.validator import validate_and_normalize_output, OutputValidationEr
 
 
 class ClaudeClient:
-    def __init__(self, api_key: Optional[str] = None, model: str = "claude-3-5-sonnet-20241022"):
+    def __init__(self, api_key: Optional[str] = None, model: str = "claude-sonnet-4-20250514"):
         self.api_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
         self.model = model
         self.mock_provider: Optional[Callable[[str], str]] = None
@@ -96,7 +96,7 @@ class ClaudeClient:
         url = "https://api.anthropic.com/v1/messages"
         headers = {
             "x-api-key": self.api_key,
-            "anthropic-version": "2023-06-01",
+            "anthropic-version": "2024-10-22",
             "content-type": "application/json"
         }
         payload = {
