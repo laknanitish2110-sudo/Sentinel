@@ -344,6 +344,8 @@ class InvestigationAgent:
                 cross_results = []
                 for mb in mb_items:
                     for insp in insp_items:
+                        if mb.unit and insp.unit and mb.unit != insp.unit:
+                            continue
                         cross = self._tool_cross_check(mb, insp)
                         cross_results.append(cross)
                         self._log_step("tool_call",

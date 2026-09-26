@@ -164,6 +164,34 @@ def init_demo_db():
     orch = Orchestrator(db_instance)
     orch.run_investigation(p1.id)
 
+    # Pre-seed case memory so the agentic loop can find precedents
+    from sentinel.types import HumanCorrection, CaseMemoryRecord
+    inv_rows = db_instance.conn.execute(
+        "SELECT id FROM investigations WHERE project_id = ? LIMIT 1", (p1.id,)
+    ).fetchone()
+    if inv_rows:
+        seed_inv_id = inv_rows["id"]
+        hc_id = "hc_seed_001"
+        db_instance.save_human_correction(HumanCorrection(
+            id=hc_id, investigation_id=seed_inv_id, project_id=p1.id,
+            claim_id=None, corrected_by="Senior Auditor (Historical)",
+            original_interpretation="Work not completed — only 180m visible in trench vs 400m claimed.",
+            corrected_interpretation="The missing 220m section was underground/backfilled prior to inspection.",
+            reason_for_correction="Excavation logs and staging delivery records confirm subsurface installation.",
+            evidence_ids_involved=["e1-mb", "e2-photo"]
+        ), user_role="auditor")
+        db_instance.save_case_memory(CaseMemoryRecord(
+            id="mem_seed_staged_1", human_correction_id=hc_id,
+            investigation_id=seed_inv_id, project_id=p1.id,
+            pattern_type="STAGED_MATERIAL_DISCREPANCY",
+            context_summary="Surface inspection photo reported less visible length than certified MB records. "
+                            "A human auditor clarified that the missing section was laid underground and backfilled prior to inspection.",
+            precedent_rule="When physical trench photo inspection shows less visible length than certified MB record, "
+                           "check backfilling/staging records before flagging unexecuted work.",
+            lessons_learned="Not all installed infrastructure is surface-visible. Underground/backfilled work may not appear in site photos. "
+                            "Always cross-reference delivery receipts and excavation logs before concluding work was not performed."
+        ), user_role="service_role")
+
     api_instance = SentinelCitizenAPI(db_instance)
 
 
