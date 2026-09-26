@@ -387,6 +387,49 @@ async function loadMoneyTrail(projectId) {
     document.getElementById("trail-released").innerText = formatINR(data.released_amount);
     document.getElementById("trail-claimed").innerText = formatINR(data.claimed_amount);
 
+    // Update percentage badges dynamically
+    const sanctioned = data.sanctioned_amount || 0;
+    const released = data.released_amount || 0;
+    const claimed = data.claimed_amount || 0;
+    const releasedPct = sanctioned > 0 ? ((released / sanctioned) * 100).toFixed(1) : 0;
+    const claimedPct = sanctioned > 0 ? ((claimed / sanctioned) * 100).toFixed(1) : 0;
+
+    const relBadge = document.getElementById("badge-released-pct");
+    if (relBadge) relBadge.innerText = `${releasedPct}% DISBURSED`;
+    const clmBadge = document.getElementById("badge-claimed-pct");
+    if (clmBadge) clmBadge.innerText = `${claimedPct}% WORK CLAIM`;
+
+    // Discrepancy bar
+    const barContainer = document.getElementById("discrepancy-bar-container");
+    if (barContainer && sanctioned > 0) {
+        barContainer.style.display = "block";
+        const barReleased = document.getElementById("bar-released");
+        const barClaimed = document.getElementById("bar-claimed");
+        if (barReleased) setTimeout(() => { barReleased.style.width = `${Math.min(releasedPct, 100)}%`; }, 100);
+        if (barClaimed) setTimeout(() => { barClaimed.style.width = `${Math.min(claimedPct, 100)}%`; }, 100);
+        const relLabel = document.getElementById("bar-released-label");
+        const clmLabel = document.getElementById("bar-claimed-label");
+        const gapLabel = document.getElementById("bar-gap-label");
+        if (relLabel) relLabel.innerText = `${releasedPct}% released`;
+        if (clmLabel) clmLabel.innerText = `${claimedPct}% claimed`;
+        if (gapLabel && claimed > released) {
+            const gapPct = (((claimed - released) / sanctioned) * 100).toFixed(1);
+            gapLabel.innerText = `⚠ ${gapPct}% gap`;
+        }
+    }
+
+    // Dynamic callout
+    const callout = document.getElementById("money-callout");
+    const calloutText = document.getElementById("money-callout-text");
+    if (callout && calloutText && claimed > released && released > 0) {
+        const claimedL = (claimed / 100000).toFixed(1);
+        const releasedL = (released / 100000).toFixed(1);
+        calloutText.innerText = `Notice: The contractor claims ₹${claimedL}L of work done, but the government has only released ₹${releasedL}L. That's a gap worth investigating.`;
+        callout.style.display = "flex";
+    } else if (callout) {
+        callout.style.display = "none";
+    }
+
     const listContainer = document.getElementById("financial-evidence-list");
     listContainer.innerHTML = "";
 

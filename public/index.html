@@ -129,7 +129,7 @@
                 <p>How much was sanctioned, how much was released, and how much the contractor claims to have earned. Do the numbers add up?</p>
             </div>
 
-            <div class="money-trail-cards">
+            <div class="money-trail-flow">
                 <div class="trail-card card-sanctioned">
                     <div class="card-header">
                         <span class="card-title">SANCTIONED BUDGET</span>
@@ -139,28 +139,52 @@
                     <p class="trail-note">Total authorized budget for storm water drain.</p>
                 </div>
 
+                <div class="trail-arrow">→</div>
+
                 <div class="trail-card card-released">
                     <div class="card-header">
                         <span class="card-title">FUNDS RELEASED</span>
-                        <span class="badge-tag tag-blue">40.0% DISBURSED</span>
+                        <span class="badge-tag tag-blue" id="badge-released-pct">40.0% DISBURSED</span>
                     </div>
                     <div class="amount-display" id="trail-released">₹7,20,000</div>
                     <p class="trail-note">Tranche 1 released via treasury voucher.</p>
                 </div>
 
+                <div class="trail-arrow">→</div>
+
                 <div class="trail-card card-claimed">
                     <div class="card-header">
                         <span class="card-title">CONTRACTOR CLAIM</span>
-                        <span class="badge-tag tag-amber">80.0% WORK CLAIM</span>
+                        <span class="badge-tag tag-amber" id="badge-claimed-pct">80.0% WORK CLAIM</span>
                     </div>
                     <div class="amount-display" id="trail-claimed">₹14,40,000</div>
                     <p class="trail-note">Submitted via 2nd Running Account (RA) Bill.</p>
                 </div>
             </div>
 
-            <div class="callout-box callout-amber">
+            <!-- Visual discrepancy bar -->
+            <div class="discrepancy-bar-container" id="discrepancy-bar-container" style="display:none;">
+                <div class="discrepancy-label-row">
+                    <span class="discrepancy-label">Budget Utilization</span>
+                    <span class="discrepancy-legend">
+                        <span class="legend-dot" style="background:var(--color-neutral)"></span> Released
+                        <span class="legend-dot" style="background:var(--color-insufficient)"></span> Claimed
+                    </span>
+                </div>
+                <div class="discrepancy-bar-track">
+                    <div class="discrepancy-bar-fill bar-released" id="bar-released" style="width:0%"></div>
+                    <div class="discrepancy-bar-fill bar-claimed" id="bar-claimed" style="width:0%"></div>
+                </div>
+                <div class="discrepancy-label-row" style="margin-top:6px;">
+                    <span class="discrepancy-pct" id="bar-released-label">0% released</span>
+                    <span class="discrepancy-pct discrepancy-gap" id="bar-gap-label"></span>
+                    <span class="discrepancy-pct" id="bar-claimed-label">0% claimed</span>
+                </div>
+            </div>
+
+            <div class="callout-box callout-amber" id="money-callout" style="display:none;">
                 <span class="callout-icon">👀</span>
-                <span>Notice: The contractor claims ₹14.4L of work done, but the government has only released ₹7.2L. That's a gap worth investigating.</span>
+                <span id="money-callout-text"></span>
             </div>
 
             <div class="milestones-box">
@@ -265,7 +289,7 @@
                     <span class="tech-chip">Python</span>
                     <span class="tech-chip">SQLite</span>
                     <span class="tech-chip">Claude API</span>
-                    <span class="tech-chip">YOLO11</span>
+                    <span class="tech-chip">PIL Vision</span>
                     <span class="tech-chip">Evidence Contract</span>
                     <span class="tech-chip">Vercel Serverless</span>
                     <span class="tech-chip">Case-Based Learning</span>
