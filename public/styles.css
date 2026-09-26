@@ -720,6 +720,129 @@ body {
     padding-top: 10px;
 }
 
+/* VISION ANALYSIS PANEL */
+.tier-vision {
+    margin-top: 8px;
+}
+.vision-panel {
+    background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.06));
+    border: 1px solid rgba(59,130,246,0.25);
+    border-radius: 12px;
+    padding: 20px;
+}
+.vision-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+.vision-icon {
+    font-size: 20px;
+}
+.vision-header h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    flex: 1;
+}
+.vision-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: rgba(59,130,246,0.2);
+    color: #60A5FA;
+    border: 1px solid rgba(59,130,246,0.3);
+}
+.vision-badge.high { background: rgba(16,185,129,0.2); color: #34D399; border-color: rgba(16,185,129,0.3); }
+.vision-badge.low { background: rgba(245,158,11,0.2); color: #FBBF24; border-color: rgba(245,158,11,0.3); }
+.vision-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 14px;
+}
+.vision-metric {
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 12px;
+}
+.vision-metric-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.vision-metric-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 6px;
+}
+.vision-meter {
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+.vision-meter-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3B82F6, #8B5CF6);
+    border-radius: 2px;
+    transition: width 1s ease;
+}
+.vision-meter-fill.brightness-fill {
+    background: linear-gradient(90deg, #374151, #FBBF24);
+}
+.vision-activity-dots {
+    display: flex;
+    gap: 4px;
+}
+.vision-activity-dots .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+}
+.vision-activity-dots .dot.active {
+    background: #3B82F6;
+    box-shadow: 0 0 6px rgba(59,130,246,0.5);
+}
+.vision-color-swatch {
+    display: flex;
+    gap: 4px;
+}
+.vision-color-swatch .swatch {
+    width: 20px;
+    height: 8px;
+    border-radius: 2px;
+}
+.vision-observation {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    padding: 10px 12px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 6px;
+    border-left: 3px solid #3B82F6;
+    margin-bottom: 10px;
+}
+.vision-tech-tag {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    opacity: 0.7;
+}
+@media (max-width: 640px) {
+    .vision-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 .decision-node-card {
     background-color: rgba(245, 158, 11, 0.1);
     border: 2px solid var(--border-insufficient);

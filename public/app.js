@@ -117,6 +117,7 @@ async function runInvestigationFlow() {
 
                 // Update state machine based on step type
                 if (step.step_type === "plan" || step.step_type === "replan") updateStateMachine("step-investigate");
+                if (step.step_type === "tool_call" && step.data.tool === "analyze_photo" && step.data.result) updateVisionPanel(step.data.result);
                 if (step.step_type === "tool_call" && (step.data.tool === "cross_check_values" || step.description.includes("Cross-check"))) updateStateMachine("step-analyzing");
                 if (step.step_type === "tool_call" && (step.data.tool === "flag_discrepancy" || step.description.includes("Discrepancy"))) updateStateMachine("step-conflict");
                 if (step.step_type === "tool_call" && (step.data.tool === "search_precedents" || step.description.includes("case memory"))) updateStateMachine("step-graph");
@@ -318,6 +319,45 @@ function formatINR(val) {
     }).format(val);
 }
 
+// ========== VISION PANEL ==========
+function updateVisionPanel(result) {
+    if (!result || !result.analyzed) return;
+
+    const edgeDensity = result.edge_density || 0;
+    const activity = result.activity_level || "unknown";
+    const brightness = result.brightness || 0;
+    const dims = result.dimensions || "—";
+    const colors = result.dominant_colors || {};
+    const obs = result.observation || "";
+
+    const el = (id) => document.getElementById(id);
+
+    el("vision-edge-density").innerText = edgeDensity.toFixed(3);
+    el("vision-activity-level").innerText = activity;
+    el("vision-brightness").innerText = brightness.toFixed(1);
+    el("vision-dimensions").innerText = dims;
+    el("vision-observation").innerText = obs;
+
+    setTimeout(() => {
+        el("vision-edge-bar").style.width = `${Math.min(edgeDensity * 333, 100)}%`;
+        el("vision-brightness-bar").style.width = `${(brightness / 255) * 100}%`;
+    }, 100);
+
+    const badge = el("vision-activity-badge");
+    badge.innerText = `${activity.toUpperCase()} ACTIVITY`;
+    badge.className = "vision-badge " + (activity === "high" ? "high" : activity === "low" ? "low" : "");
+
+    const dots = el("vision-panel").querySelectorAll(".vision-activity-dots .dot");
+    const level = activity === "high" ? 3 : activity === "moderate" ? 2 : 1;
+    dots.forEach((d, i) => d.classList.toggle("active", i < level));
+
+    if (colors.r !== undefined) {
+        el("swatch-r").style.background = `rgb(${Math.round(colors.r)},${Math.round(colors.g)},${Math.round(colors.b)})`;
+    }
+
+    el("vision-analysis-tier").style.animation = "fadeInUp 0.5s ease both";
+}
+
 // ========== AGENT TRACE RENDERER ==========
 function appendTraceStep(type, description, data) {
     const log = document.getElementById("trace-log");
@@ -336,8 +376,12 @@ function appendTraceStep(type, description, data) {
         deliver: "DELIVER", system: "SYSTEM", error: "ERROR"
     };
 
-    const icon = icons[type] || "•";
-    const label = labels[type] || type.toUpperCase();
+    let icon = icons[type] || "•";
+    let label = labels[type] || type.toUpperCase();
+    if (type === "tool_call" && data && data.tool === "analyze_photo") {
+        icon = "📸";
+        label = "VISION";
+    }
 
     let detailHTML = "";
     if (data && typeof data === "object" && Object.keys(data).length > 0) {

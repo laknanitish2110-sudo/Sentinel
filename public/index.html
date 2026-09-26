@@ -226,6 +226,54 @@
                     </div>
                 </div>
 
+                <!-- VISION ANALYSIS PANEL -->
+                <div class="graph-tier tier-vision" id="vision-analysis-tier">
+                    <div class="tier-label">SENTINEL VISION — PIL PHOTO ANALYSIS</div>
+                    <div class="vision-panel" id="vision-panel">
+                        <div class="vision-header">
+                            <span class="vision-icon">📸</span>
+                            <h4>Computer Vision Analysis</h4>
+                            <span class="vision-badge" id="vision-activity-badge">MODERATE ACTIVITY</span>
+                        </div>
+                        <div class="vision-metrics-grid">
+                            <div class="vision-metric">
+                                <div class="vision-metric-label">Edge Density</div>
+                                <div class="vision-metric-value" id="vision-edge-density">0.142</div>
+                                <div class="vision-meter">
+                                    <div class="vision-meter-fill" id="vision-edge-bar" style="width: 47%"></div>
+                                </div>
+                            </div>
+                            <div class="vision-metric">
+                                <div class="vision-metric-label">Activity Level</div>
+                                <div class="vision-metric-value" id="vision-activity-level">moderate</div>
+                                <div class="vision-activity-dots">
+                                    <span class="dot active"></span>
+                                    <span class="dot active"></span>
+                                    <span class="dot"></span>
+                                </div>
+                            </div>
+                            <div class="vision-metric">
+                                <div class="vision-metric-label">Brightness</div>
+                                <div class="vision-metric-value" id="vision-brightness">127.4</div>
+                                <div class="vision-meter">
+                                    <div class="vision-meter-fill brightness-fill" id="vision-brightness-bar" style="width: 50%"></div>
+                                </div>
+                            </div>
+                            <div class="vision-metric">
+                                <div class="vision-metric-label">Dimensions</div>
+                                <div class="vision-metric-value" id="vision-dimensions">1920x1080</div>
+                                <div class="vision-color-swatch" id="vision-colors">
+                                    <span class="swatch" id="swatch-r" style="background: rgb(140,120,100);" title="Dominant color"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="vision-observation" id="vision-observation">
+                            Site photo analysis: moderate construction activity detected. Edge density 0.142 suggests active work zone.
+                        </div>
+                        <div class="vision-tech-tag">PIL/Pillow ImageFilter.FIND_EDGES + ImageStat</div>
+                    </div>
+                </div>
+
                 <div class="flow-arrow">↓ SENTINEL'S CONCLUSION ↓</div>
 
                 <!-- INVESTIGATION DECISION NODE -->
