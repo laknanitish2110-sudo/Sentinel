@@ -96,7 +96,7 @@ def run_phase5_demo():
     db.save_evidence(e1_mb)
     db.save_evidence(e1_insp)
 
-    # Attach specialized construction vision perception nodes (machinery, PPE, workers)
+    # Attach specialized construction vision perception nodes (machinery, PPE, site personnel)
     adapter = ConstructionPerceptionAdapter(db=db, confidence_threshold=0.25)
     sample_img = os.path.join("data", "vision_eval_real", "real_eval_02_construction_works_osaka.jpg")
     if os.path.exists(sample_img):

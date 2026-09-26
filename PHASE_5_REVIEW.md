@@ -55,7 +55,7 @@ The Ward 7 demonstration uses 4 genuine evidence sources adhering strictly to th
 1. **Financial & Project Records**: ₹18,00,000 sanctioned, ₹7,20,000 released, 80% completion claimed.
 2. **Official Measurement Records**: MB-402 entry certifying 400 meters completed.
 3. **Inspection Evidence**: Visual/physical survey report recording 180 meters visible.
-4. **Vision / Construction Perception**: YOLOv8 visual observations (excavator, dump truck, personnel present).
+4. **Vision / Construction Perception**: YOLO visual observations (construction machinery, PPE, site personnel present).
 
 Every record retains complete hash/source provenance (`source_url`, `author`, `confidence`, `timestamp`).
 
