@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <canvas id="star-canvas"></canvas>
@@ -30,24 +30,25 @@
                 <path d="M23 14C18 7 10 3 3 1C1 1 0 3 2 4C7 3 12 6 17 11C19 14 22 15 23 14Z" fill="url(#pgGrad)" opacity="0.35"/>
             </svg>
             <div class="brand-text">
-                <h1>SENTINEL</h1>
+                <h1>S E N T I N E L</h1>
                 <p class="brand-sub">PUBLIC FUNDS. REAL EVIDENCE. BRIGHTER TOMORROW.</p>
                 <p class="brand-team">BY TEAM PEGASUS</p>
             </div>
         </div>
         <div class="header-center">
-            <div class="search-bar">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                <input type="text" placeholder="Search projects, claims, evidence...">
-            </div>
+            <p class="header-quote">&ldquo;EVIDENCE NEVER LIES,<br>IT JUST NEEDS A CLEARER VIEW.&rdquo;</p>
         </div>
         <div class="header-right">
-            <div class="gov-mode-badge">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+            <div class="team-badge">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 000 20 14.5 14.5 0 000-20M2 12h20"/></svg>
                 <div>
-                    <strong>Government Mode</strong>
-                    <span>Accountability Dashboard</span>
+                    <strong>TEAM PEGASUS</strong>
+                    <span>IDEAS &gt; EVIDENCE &gt; ACCOUNTABILITY</span>
                 </div>
+            </div>
+            <div class="header-clock" id="header-clock">
+                <span class="clock-time" id="clock-time">00:00</span>
+                <span class="clock-date" id="clock-date">Mon, 01 Jan 2024</span>
             </div>
         </div>
     </header>
@@ -90,7 +91,7 @@
                 <span>Settings</span>
             </a>
             <div class="sidebar-motto">
-                <p>TRANSPARENT<br>INFRASTRUCTURE<br>STRONGER INDIA</p>
+                <p>A MORE<br>TRANSPARENT<br>TOMORROW</p>
             </div>
             <div class="sidebar-version">v1.0.0 &nbsp;|&nbsp; Team Pegasus</div>
         </nav>
@@ -98,69 +99,68 @@
         <!-- ===== DASHBOARD ===== -->
         <main class="dashboard">
 
-            <!-- ROW 1: Project + Financial + Risk -->
-            <section class="dash-row dash-row-top">
-                <div class="card card-project">
-                    <div class="card-head"><span class="card-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m-7-7h6m6 0h6"/></svg></span><span class="card-title">PROJECT</span><span class="card-tag" id="proj-tag">PRJ-001</span></div>
-                    <h2 class="proj-name" id="proj-name">Riverside Drainage Improvement</h2>
-                    <p class="proj-loc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> <span id="proj-location">Ward 12, Chennai, Tamil Nadu</span></p>
-                    <div class="proj-grid">
-                        <div class="proj-thumb"></div>
-                        <div class="proj-meta">
-                            <div class="pm"><span>Implementing Agency</span><strong id="proj-agency">Chennai Municipal Corp.</strong></div>
-                            <div class="pm"><span>Start Date</span><strong>12 Mar 2024</strong></div>
-                            <div class="pm"><span>Target Completion</span><strong>30 Dec 2024</strong></div>
-                            <div class="pm"><span>Status</span><span class="status-pill" id="proj-status-pill">IN PROGRESS</span></div>
-                        </div>
+            <!-- FINANCIAL STRIP -->
+            <section class="fin-strip">
+                <div class="fin-card fin-blue-card">
+                    <div class="fin-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 00-8 0v2"/></svg></div>
+                    <div class="fin-card-data">
+                        <span class="fin-big" id="metric-sanctioned">&#8377; 18,00,000</span>
+                        <span class="fin-label">Sanctioned Amount</span>
+                    </div>
+                </div>
+                <div class="fin-card fin-cyan-card">
+                    <div class="fin-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+                    <div class="fin-card-data">
+                        <span class="fin-big" id="metric-released">&#8377; 7,20,000</span>
+                        <span class="fin-label">Released Amount<br>(40%)</span>
+                    </div>
+                </div>
+                <div class="fin-card fin-teal-card">
+                    <div class="fin-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></div>
+                    <div class="fin-card-data">
+                        <span class="fin-big" id="fin-balance">&#8377; 10,80,000</span>
+                        <span class="fin-label">Balance Amount</span>
+                    </div>
+                </div>
+                <div class="fin-card fin-progress-card">
+                    <div class="progress-ring-wrap">
+                        <svg class="progress-ring" viewBox="0 0 80 80">
+                            <circle cx="40" cy="40" r="32" stroke="rgba(100,140,255,0.12)" stroke-width="6" fill="none"/>
+                            <circle cx="40" cy="40" r="32" stroke="url(#progGrad)" stroke-width="6" fill="none" stroke-dasharray="201" stroke-dashoffset="121" stroke-linecap="round" transform="rotate(-90 40 40)" id="progress-arc"/>
+                            <defs><linearGradient id="progGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#60A5FA"/><stop offset="100%" stop-color="#22D3EE"/></linearGradient></defs>
+                        </svg>
+                        <div class="progress-num"><strong>40</strong>%</div>
+                    </div>
+                    <div class="fin-card-data">
+                        <span class="fin-prog-title">Project Progress</span>
+                        <span class="fin-label">(As per records)</span>
+                        <div class="fin-bar-mini"><div class="fin-bar-mini-fill" id="bar-released" style="width:40%"></div></div>
+                        <span class="fin-bar-pct">60% remaining</span>
+                    </div>
+                </div>
+                <div class="fin-card fin-project-card">
+                    <div class="fin-proj-head"><span>PROJECT</span><span class="proj-tag" id="proj-tag">PRJ-001</span></div>
+                    <h3 class="proj-name" id="proj-name">Riverside Drainage Improvement</h3>
+                    <div class="proj-details">
+                        <div class="pd"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> <span id="proj-location">Ward 12, Chennai, Tamil Nadu</span></div>
+                        <div class="pd"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7h18M3 14h18"/></svg> <span id="proj-agency">Chennai Municipal Corp.</span></div>
+                        <div class="pd"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Target Completion: <strong>30 Dec 2024</strong></div>
                     </div>
                     <select id="project-select" class="proj-select">
-                        <option value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11" selected>Ward 7 — Storm Drain (₹18L)</option>
+                        <option value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11" selected>Ward 7 — Storm Drain (&#8377;18L)</option>
                         <option value="b1ffcd00-8d1c-5fg9-cc7e-7cc0ce491b22">Ward 8 — Drainage Extension</option>
                     </select>
                 </div>
-
-                <div class="card card-financial">
-                    <div class="card-head"><span class="card-icon icon-gold"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 00-8 0v2"/></svg></span><span class="card-title">FINANCIAL OVERVIEW</span></div>
-                    <div class="fin-cards">
-                        <div class="fin-item"><div class="fin-icon fin-blue"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/></svg></div><div class="fin-amt" id="metric-sanctioned">₹ 18,00,000</div><div class="fin-lbl">Sanctioned Amount</div></div>
-                        <div class="fin-item"><div class="fin-icon fin-cyan"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div class="fin-amt cyan" id="metric-released">₹ 7,20,000</div><div class="fin-lbl">Released Amount<br><span class="fin-pct" id="metric-released-pct">(40%)</span></div></div>
-                        <div class="fin-item"><div class="fin-icon fin-teal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></div><div class="fin-amt teal" id="fin-balance">₹ 10,80,000</div><div class="fin-lbl">Balance Amount</div></div>
-                    </div>
-                    <div class="fin-bar-wrap">
-                        <div class="fin-bar-track"><div class="fin-bar-fill" id="bar-released" style="width:40%"></div></div>
-                        <div class="fin-bar-labels"><span id="bar-released-label">40% Released</span><span id="bar-claimed-label">60% Remaining</span></div>
-                    </div>
-                </div>
-
-                <div class="card card-risk">
-                    <div class="card-head"><span class="card-icon icon-red"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span><span class="card-title">PROJECT RISK</span><span class="risk-tag">HIGH RISK</span></div>
-                    <div class="risk-body">
-                        <div class="risk-circle-wrap">
-                            <svg class="risk-circle" viewBox="0 0 120 120">
-                                <circle cx="60" cy="60" r="50" stroke="rgba(100,140,255,0.1)" stroke-width="8" fill="none"/>
-                                <circle cx="60" cy="60" r="50" stroke="url(#riskGrad)" stroke-width="8" fill="none" stroke-dasharray="314" stroke-dashoffset="88" stroke-linecap="round" transform="rotate(-90 60 60)" id="risk-arc"/>
-                                <defs><linearGradient id="riskGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#F87171"/><stop offset="100%" stop-color="#FBBF24"/></linearGradient></defs>
-                            </svg>
-                            <div class="risk-score"><span class="risk-num">72</span><span class="risk-lbl">Risk Score<br>(out of 100)</span></div>
-                        </div>
-                        <div class="risk-list">
-                            <div class="rl"><span class="rd rd-red"></span>Critical Issues<strong>2</strong></div>
-                            <div class="rl"><span class="rd rd-orange"></span>Contradictions<strong>3</strong></div>
-                            <div class="rl"><span class="rd rd-amber"></span>Insufficient Evidence<strong>2</strong></div>
-                            <div class="rl"><span class="rd rd-green"></span>Supporting Evidence<strong>5</strong></div>
-                        </div>
-                    </div>
-                </div>
             </section>
 
-            <!-- ROW 2: Constellation + Right Column -->
+            <!-- ROW 2: Constellation + Agent Trace -->
             <section class="dash-row dash-row-main">
                 <div class="card card-constellation">
                     <div class="const-header">
                         <div class="const-title"><span class="card-icon icon-blue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><div><h3>EVIDENCE CONSTELLATION</h3><p>CONNECTING FACTS. REVEALING TRUTHS.</p></div></div>
                         <div class="const-controls">
                             <div class="legend"><span class="li"><span class="ld ld-green"></span>Supporting</span><span class="li"><span class="ld ld-red"></span>Contradiction</span><span class="li"><span class="ld ld-amber"></span>Insufficient</span><span class="li"><span class="ld ld-blue"></span>Related</span></div>
-                            <div class="vtoggle"><button class="vt active">3D View</button><button class="vt">Map View</button><button class="vt">List View</button></div>
+                            <div class="vtoggle"><button class="vt active">Map View</button><button class="vt">Graph View</button><button class="vt">Timeline View</button></div>
                         </div>
                     </div>
                     <div class="const-viewport" id="constellation-viewport">
@@ -175,82 +175,63 @@
                     </div>
                 </div>
 
-                <div class="right-col">
-                    <div class="card card-progress">
-                        <div class="card-head"><span class="card-icon icon-blue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span class="card-title">INVESTIGATION PROGRESS</span><span class="inv-id">INV-001</span></div>
-                        <div class="star-row" id="star-progress">
-                            <div class="ss completed"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Data<br>Collection</span></div>
-                            <div class="ss completed"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Cross<br>Verification</span></div>
-                            <div class="ss active"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Contradiction<br>Analysis</span></div>
-                            <div class="ss pending"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Findings<br>Synthesis</span></div>
-                            <div class="ss pending"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Human<br>Review</span></div>
-                        </div>
-                        <div class="stage-info">
-                            <div class="si-head"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> CURRENT STAGE</div>
-                            <h4 id="headline-status">Analyzing Contradictions <span class="spinner"></span></h4>
-                            <p id="review-notice-text">Comparing measurement book claims with site inspection and satellite imagery...</p>
-                        </div>
+                <div class="card card-trace">
+                    <div class="card-head"><span class="card-icon icon-purple"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg></span><span class="card-title">AGENT INVESTIGATION TRACE</span><span class="live-badge"><span class="live-dot"></span> Live</span></div>
+                    <div class="trace-list" id="trace-log">
+                        <div class="tl-item"><div class="tl-dots"><span class="tl-dot done"></span><span class="tl-line"></span></div><div class="tl-body"><div class="tl-row"><strong>1. Data Ingestion</strong><span class="tl-time">21:28</span></div><p>Loaded project data and financial records</p></div></div>
+                        <div class="tl-item"><div class="tl-dots"><span class="tl-dot done"></span><span class="tl-line"></span></div><div class="tl-body"><div class="tl-row"><strong>2. Evidence Collection</strong><span class="tl-time">21:29</span></div><p>Retrieved 5 claims and 12 evidence items</p></div></div>
+                        <div class="tl-item"><div class="tl-dots"><span class="tl-dot done"></span><span class="tl-line"></span></div><div class="tl-body"><div class="tl-row"><strong>3. Cross-verification</strong><span class="tl-time">21:30</span></div><p>Detected 2 potential contradictions</p></div></div>
+                        <div class="tl-item"><div class="tl-dots"><span class="tl-dot running"></span><span class="tl-line"></span></div><div class="tl-body"><div class="tl-row"><strong class="active-text">4. Analysis &amp; Reasoning</strong><span class="tl-time">21:31</span></div><p>Running comparison and spatial analysis...</p></div></div>
+                        <div class="tl-item"><div class="tl-dots"><span class="tl-dot pending"></span><span class="tl-line"></span></div><div class="tl-body pending-text"><div class="tl-row"><strong>5. Generating Findings</strong><span class="tl-time">&mdash;</span></div><p>Synthesizing evidence and preparing report</p></div></div>
+                        <div class="tl-item"><div class="tl-dots"><span class="tl-dot pending"></span></div><div class="tl-body pending-text"><div class="tl-row"><strong>6. Awaiting Human Review</strong><span class="tl-time">&mdash;</span></div><p>Escalate for auditor verification</p></div></div>
                     </div>
-
-                    <div class="card card-trace">
-                        <div class="card-head"><span class="card-icon icon-purple"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg></span><span class="card-title">AGENT INVESTIGATION TRACE</span><span class="live-badge"><span class="live-dot"></span> Live</span></div>
-                        <div class="trace-list" id="trace-log">
-                            <div class="tl-item"><div class="tl-dots"><span class="tl-dot done"></span><span class="tl-line"></span></div><div class="tl-body"><div class="tl-row"><strong>1. Data Ingestion</strong><span class="tl-time">21:28</span></div><p>Loaded project data and financial records</p></div></div>
-                            <div class="tl-item"><div class="tl-dots"><span class="tl-dot done"></span><span class="tl-line"></span></div><div class="tl-body"><div class="tl-row"><strong>2. Evidence Collection</strong><span class="tl-time">21:29</span></div><p>Retrieved 5 claims and 12 evidence items</p></div></div>
-                            <div class="tl-item"><div class="tl-dots"><span class="tl-dot done"></span><span class="tl-line"></span></div><div class="tl-body"><div class="tl-row"><strong>3. Cross-verification</strong><span class="tl-time">21:30</span></div><p>Detected 2 potential contradictions</p></div></div>
-                            <div class="tl-item"><div class="tl-dots"><span class="tl-dot running"></span><span class="tl-line"></span></div><div class="tl-body"><div class="tl-row"><strong class="active-text">4. Analysis &amp; Reasoning</strong><span class="tl-time">21:31</span></div><p>Running comparison and spatial analysis...</p></div></div>
-                            <div class="tl-item"><div class="tl-dots"><span class="tl-dot pending"></span><span class="tl-line"></span></div><div class="tl-body pending-text"><div class="tl-row"><strong>5. Generating Findings</strong><span class="tl-time">&mdash;</span></div><p>Synthesizing evidence and preparing report</p></div></div>
-                            <div class="tl-item"><div class="tl-dots"><span class="tl-dot pending"></span></div><div class="tl-body pending-text"><div class="tl-row"><strong>6. Awaiting Human Review</strong><span class="tl-time">&mdash;</span></div><p>Escalate for auditor verification</p></div></div>
-                        </div>
-                        <button id="btn-trigger-investigation" class="btn-run"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run AI Investigation</button>
-                    </div>
+                    <button id="btn-trigger-investigation" class="btn-run"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run AI Investigation</button>
                 </div>
             </section>
 
-            <!-- ROW 3: Findings + Evidence + Memory -->
+            <!-- ROW 3: AI Summary + Investigation Progress + Latest Evidence -->
             <section class="dash-row dash-row-bottom">
-                <div class="card card-findings">
-                    <div class="card-head"><span class="card-icon icon-red"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span><span class="card-title">KEY FINDINGS</span><a class="card-link">View All &rarr;</a></div>
-                    <div class="findings-list">
-                        <div class="fi"><span class="fi-icon fi-high"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><div class="fi-body"><strong>Measurement Mismatch</strong><p>Claimed 400m completed, but only ~180m visible in site inspection.</p></div><span class="sev high">HIGH</span></div>
-                        <div class="fi"><span class="fi-icon fi-med"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><div class="fi-body"><strong>Incomplete Material Records</strong><p>Cement supply invoices do not match claimed quantity.</p></div><span class="sev med">MEDIUM</span></div>
-                        <div class="fi"><span class="fi-icon fi-low"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span><div class="fi-body"><strong>Fund Release Verified</strong><p>Bank voucher confirms ₹7,20,000 released to contractor.</p></div><span class="sev low">LOW</span></div>
+                <div class="card card-summary">
+                    <div class="card-head"><span class="card-icon icon-red"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span><span class="card-title">AI INVESTIGATION SUMMARY</span></div>
+                    <div class="summary-body">
+                        <p class="summary-text"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> The measurement book claims 400 meters of drainage work, but site inspection shows only 180 meters visible. Financial records show &#8377;7,20,000 released (40%); however, physical evidence and satellite imagery do not fully support the claimed progress. Requires human review for further verification.</p>
+                        <div class="summary-tags">
+                            <span class="stag stag-red">Measurement Mismatch</span>
+                            <span class="stag stag-amber">Incomplete Records</span>
+                            <span class="stag stag-blue">Requires Human Review</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-progress">
+                    <div class="card-head"><span class="card-icon icon-blue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span class="card-title">INVESTIGATION PROGRESS</span></div>
+                    <div class="star-row" id="star-progress">
+                        <div class="ss completed"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Data<br>Collection</span></div>
+                        <div class="ss completed"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Cross<br>Verification</span></div>
+                        <div class="ss active"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Contradiction<br>Analysis</span></div>
+                        <div class="ss pending"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Findings<br>Synthesis</span></div>
+                        <div class="ss pending"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Human<br>Review</span></div>
                     </div>
                 </div>
 
                 <div class="card card-evidence">
                     <div class="card-head"><span class="card-icon icon-cyan"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span><span class="card-title">LATEST EVIDENCE</span><a class="card-link">View All &rarr;</a></div>
-                    <div class="ev-grid">
-                        <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#1e3a5f,#2d5a8e)"><span>📸</span></div><div class="ev-lbl">Site Inspection</div><div class="ev-id">e4-si1</div><span class="ev-tag ev-red">CONTRADICTION</span></div>
-                        <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#1a3d2e,#2d6e4e)"><span>📋</span></div><div class="ev-lbl">Measurement Book</div><div class="ev-id">e2-mb1</div><span class="ev-tag ev-green">SUPPORTS</span></div>
-                        <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#2a2a4e,#3d3d7e)"><span>🛰</span></div><div class="ev-lbl">Satellite Image</div><div class="ev-id">e5-geo1</div><span class="ev-tag ev-amber">INSUFFICIENT</span></div>
-                        <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#3d2a1a,#6e4d2d)"><span>📷</span></div><div class="ev-lbl">Field Photo</div><div class="ev-id">e6-photo1</div><span class="ev-tag ev-amber">INSUFFICIENT</span></div>
-                    </div>
-                </div>
-
-                <div class="card card-memory" id="case-memory-card">
-                    <div class="card-head"><span class="card-icon icon-purple"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span><span class="card-title">CASE MEMORY &amp; LEARNING</span><a class="card-link">View All &rarr;</a></div>
-                    <div class="mem-body">
-                        <div class="mem-count"><strong>3</strong> relevant precedents found</div>
-                        <p class="mem-desc" id="memory-plain-explanation">Similar measurement mismatches in drainage projects. Often due to underground work or backfilling.</p>
-                        <div class="mem-quote"><span class="mq-icon">&#10077;</span><p id="memory-precedent-rule">"Surface inspection may not reflect full underground pipeline completion. Verify with sectional drawings."</p><a class="mq-link">Past Human Correction</a></div>
+                    <div class="ev-scroll">
+                        <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#1e3a5f,#2d5a8e)"><span>📸</span></div><div class="ev-info"><div class="ev-lbl">Site Inspection</div><div class="ev-id">e4-si1</div><span class="ev-tag ev-red">CONTRADICTION</span></div></div>
+                        <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#1a3d2e,#2d6e4e)"><span>📋</span></div><div class="ev-info"><div class="ev-lbl">Measurement Book</div><div class="ev-id">e2-mb1</div><span class="ev-tag ev-green">SUPPORTS</span></div></div>
+                        <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#2a2a4e,#3d3d7e)"><span>🛰</span></div><div class="ev-info"><div class="ev-lbl">Satellite Image</div><div class="ev-id">e5-geo1</div><span class="ev-tag ev-amber">INSUFFICIENT</span></div></div>
+                        <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#3d2a1a,#6e4d2d)"><span>📷</span></div><div class="ev-info"><div class="ev-lbl">Field Photo</div><div class="ev-id">e6-photo1</div><span class="ev-tag ev-amber">INSUFFICIENT</span></div></div>
+                        <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#1a3d3d,#2d6e6e)"><span>📄</span></div><div class="ev-info"><div class="ev-lbl">Material Invoice</div><div class="ev-id">e3-inv1</div><span class="ev-tag ev-blue">RELATED</span></div></div>
                     </div>
                 </div>
             </section>
         </main>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="app-footer">
-        <span class="foot-left">SENTINEL v1.0.0 &nbsp;|&nbsp; Built by Team Pegasus</span>
-        <span class="foot-center">"REAL EVIDENCE BUILDS A BRIGHTER TOMORROW."</span>
-        <span class="foot-right">Public Infrastructure &nbsp;&bull;&nbsp; Government Accountability &nbsp;&bull;&nbsp; Citizen Trust</span>
-    </footer>
-
     <!-- Hidden compat elements for app.js -->
     <div hidden>
         <span id="proj-desc"></span>
-        <span id="metric-claimed"></span><span id="metric-claimed-pct"></span><span id="metric-completion"></span>
+        <span id="metric-claimed"></span><span id="metric-claimed-pct"></span><span id="metric-completion"></span><span id="metric-released-pct"></span>
         <span id="trail-sanctioned"></span><span id="trail-released"></span><span id="trail-claimed"></span>
         <span id="badge-released-pct"></span><span id="badge-claimed-pct"></span>
         <div id="discrepancy-bar-container"><div id="bar-claimed"></div><span id="bar-gap-label"></span></div>
@@ -264,11 +245,13 @@
         <div id="human-review-box"></div>
         <ul id="explanation-found-bullets"></ul>
         <span id="explanation-why-matters"></span>
-        <span id="memory-badge-label"></span><span id="memory-title"></span>
+        <span id="memory-badge-label"></span><span id="memory-title"></span><span id="memory-plain-explanation"></span><span id="memory-precedent-rule"></span>
         <div id="verdict-banner-section"><div id="verdict-banner"><span id="verdict-banner-icon"></span><span id="verdict-banner-headline"></span><span id="verdict-banner-detail"></span><span id="verdict-banner-tag"></span></div></div>
         <div id="state-machine-section"><span class="sm-step" id="step-discover"></span><span class="sm-step" id="step-investigate"></span><span class="sm-step" id="step-analyzing"></span><span class="sm-step" id="step-graph"></span><span class="sm-step" id="step-conflict"></span><span class="sm-step" id="step-review"></span><span class="sm-step" id="step-correction"></span><span class="sm-step" id="step-memory"></span><span class="sm-step" id="step-second-case"></span></div>
         <div id="vision-panel"><span id="vision-edge-density"></span><span id="vision-activity-level"></span><span id="vision-brightness"></span><span id="vision-dimensions"></span><span id="vision-observation"></span><div id="vision-edge-bar"></div><div id="vision-brightness-bar"></div><span id="vision-activity-badge"></span><span id="swatch-r"></span></div>
         <span id="trace-status-text"></span><span id="trace-iteration-count"></span><span id="trace-tool-count"></span>
+        <span id="headline-status"></span><span id="review-notice-text"></span><span id="proj-status-pill"></span>
+        <span id="bar-released-label"></span><span id="bar-claimed-label"></span>
         <input id="corr-interp" value=""><textarea id="corr-reason"></textarea>
         <button id="btn-submit-correction"></button><div id="correction-success-msg"></div>
     </div>

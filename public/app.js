@@ -11,6 +11,7 @@ async function initSentinelApp() {
     setupEventListeners();
     initConstellationCanvas();
     initSidebarNav();
+    initClock();
     await loadProjectData(currentProjectId);
 }
 
@@ -361,6 +362,22 @@ function showToast(msg, borderColor, bgColor) {
         toast.style.transition = "all 0.3s ease";
         setTimeout(() => toast.remove(), 300);
     }, 4000);
+}
+
+// ========== CLOCK ==========
+function initClock() {
+    const timeEl = document.getElementById("clock-time");
+    const dateEl = document.getElementById("clock-date");
+    if (!timeEl || !dateEl) return;
+
+    function tick() {
+        const now = new Date();
+        timeEl.textContent = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false });
+        dateEl.textContent = now.toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    tick();
+    setInterval(tick, 10000);
 }
 
 // ========== UTILITIES ==========
