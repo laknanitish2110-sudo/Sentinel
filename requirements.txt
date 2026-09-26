@@ -1,0 +1,2 @@
+# Sentinel Vercel Deployment Dependencies
+# Lightweight standard dependencies for fast serverless cold starts
