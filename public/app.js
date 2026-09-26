@@ -35,11 +35,22 @@ function setupEventListeners() {
             await submitAuditorCorrection();
         });
     }
+
+    // Make progress bar tabs clickable — scroll to corresponding section
+    document.querySelectorAll(".sm-step").forEach(step => {
+        step.style.cursor = "pointer";
+        step.addEventListener("click", () => {
+            const targetId = step.dataset.target;
+            if (targetId) {
+                const target = document.getElementById(targetId);
+                if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        });
+    });
 }
 
 async function loadProjectData(projectId) {
     try {
-        updateStateMachine("step-discover");
         await loadProjectInfo(projectId);
         await loadMoneyTrail(projectId);
         await loadEvidenceGraph(projectId);
@@ -67,6 +78,14 @@ async function runInvestigationFlow() {
         traceLog.innerHTML = "";
         traceDot.className = "trace-dot running";
         traceStatus.innerText = "Agent initializing...";
+
+        // Reveal progress bar
+        const smSection = document.getElementById("state-machine-section");
+        if (smSection) {
+            smSection.style.display = "";
+            smSection.style.animation = "fadeInUp 0.4s ease both";
+            smSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
 
         // Stage 1: Discovery
         updateStateMachine("step-discover");

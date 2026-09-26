@@ -58,20 +58,20 @@
             </div>
         </section>
 
-        <!-- INVESTIGATION PROGRESS BAR -->
-        <section class="section state-machine-section">
+        <!-- INVESTIGATION PROGRESS BAR (hidden until investigation runs) -->
+        <section class="section state-machine-section" id="state-machine-section" style="display:none;">
             <div class="state-machine-bar">
                 <span class="sm-title">INVESTIGATION PROGRESS:</span>
                 <div class="sm-steps" id="sm-steps-container">
-                    <span class="sm-step active" id="step-discover">1. DISCOVER</span>
-                    <span class="sm-step" id="step-investigate">2. INVESTIGATE</span>
-                    <span class="sm-step" id="step-analyzing">3. ANALYZING</span>
-                    <span class="sm-step" id="step-graph">4. EVIDENCE GRAPH</span>
-                    <span class="sm-step" id="step-conflict">5. CONFLICT / GAP</span>
-                    <span class="sm-step" id="step-review">6. HUMAN REVIEW</span>
-                    <span class="sm-step" id="step-correction">7. CORRECTION</span>
-                    <span class="sm-step" id="step-memory">8. LEARNING STORED</span>
-                    <span class="sm-step" id="step-second-case">9. SIMILAR CASE</span>
+                    <span class="sm-step active" id="step-discover" data-target="screen-discovery">1. DISCOVER</span>
+                    <span class="sm-step" id="step-investigate" data-target="screen-agent-trace">2. INVESTIGATE</span>
+                    <span class="sm-step" id="step-analyzing" data-target="screen-agent-trace">3. ANALYZING</span>
+                    <span class="sm-step" id="step-graph" data-target="screen-evidence-graph">4. EVIDENCE</span>
+                    <span class="sm-step" id="step-conflict" data-target="screen-money-trail">5. CONFLICT</span>
+                    <span class="sm-step" id="step-review" data-target="screen-status">6. REVIEW</span>
+                    <span class="sm-step" id="step-correction" data-target="screen-why">7. CORRECTION</span>
+                    <span class="sm-step" id="step-memory" data-target="screen-why">8. LEARNED</span>
+                    <span class="sm-step" id="step-second-case" data-target="screen-why">9. SIMILAR CASE</span>
                 </div>
             </div>
         </section>
