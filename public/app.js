@@ -97,11 +97,16 @@ async function runInvestigationFlow() {
                 appendTraceStep(step.step_type, step.description, step.data);
 
                 // Update state machine based on step type
-                if (step.step_type === "plan") updateStateMachine("step-investigate");
-                if (step.step_type === "tool_call" && step.data.tool === "cross_check_values") updateStateMachine("step-analyzing");
-                if (step.step_type === "tool_call" && step.data.tool === "flag_discrepancy") updateStateMachine("step-conflict");
-                if (step.step_type === "check") updateStateMachine("step-graph");
-                if (step.step_type === "deliver") updateStateMachine("step-review");
+                if (step.step_type === "plan" || step.step_type === "replan") updateStateMachine("step-investigate");
+                if (step.step_type === "tool_call" && (step.data.tool === "cross_check_values" || step.description.includes("Cross-check"))) updateStateMachine("step-analyzing");
+                if (step.step_type === "tool_call" && (step.data.tool === "flag_discrepancy" || step.description.includes("Discrepancy"))) updateStateMachine("step-conflict");
+                if (step.step_type === "tool_call" && (step.data.tool === "search_precedents" || step.description.includes("case memory"))) updateStateMachine("step-graph");
+                if (step.step_type === "tool_call" && (step.data.tool === "verify_financial_trail" || step.description.includes("financial"))) updateStateMachine("step-graph");
+                if (step.step_type === "deliver") {
+                    const state = step.data.final_state || "";
+                    if (state.includes("HUMAN_REVIEW")) updateStateMachine("step-review");
+                    else updateStateMachine("step-review");
+                }
             }
         }
 
@@ -124,14 +129,17 @@ async function runInvestigationFlow() {
 
         showSuccess(`Agentic investigation complete: ${finalState.replace(/_/g, ' ')}. ${agentResult.contradiction_count || 0} discrepancies found.`);
 
-        // Also run the legacy orchestrator to populate evidence graph data
+        // Reload data sections without resetting state machine
         await fetch("/api/investigate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ project_id: currentProjectId })
         });
 
-        await loadProjectData(currentProjectId);
+        await loadProjectInfo(currentProjectId);
+        await loadMoneyTrail(currentProjectId);
+        await loadEvidenceGraph(currentProjectId);
+        await loadInvestigationStatus(currentProjectId);
 
     } catch (err) {
         console.error("Failed to run investigation:", err);

@@ -91,8 +91,11 @@ class SentinelCitizenAPI:
             contradiction_ev_ids.add(row["evidence_a_id"])
             contradiction_ev_ids.add(row["evidence_b_id"])
 
+        priority = {"PHYSICAL_QUANTITY": 0, "PHYSICAL_MEASUREMENT": 0, "COMPLETION_PERCENTAGE": 1}
+        sorted_claims = sorted(claims, key=lambda c: priority.get(c.claim_type, 2))
+
         claims_nodes = []
-        for c in claims:
+        for c in sorted_claims:
             claims_nodes.append({
                 "id": c.id,
                 "claim_ref": c.claim_ref,
@@ -109,13 +112,17 @@ class SentinelCitizenAPI:
             if e.id in contradiction_ev_ids and rel != "SUPPORTS":
                 rel = "CONTRADICTS"
 
+            obs = e.observation
+            if e.source_type == "GEO_PHOTO" and "Construction Perception" in obs:
+                obs = self._simplify_vision_observation(obs)
+
             evidence_nodes.append({
                 "id": e.id,
                 "claim_id": e.claim_id,
                 "source_type": e.source_type,
                 "source_name": self._friendly_source_name(e.source_type),
                 "source_id": e.source_id,
-                "observation": e.observation,
+                "observation": obs,
                 "value": e.value,
                 "unit": e.unit,
                 "date": e.timestamp,
@@ -323,6 +330,16 @@ class SentinelCitizenAPI:
         return cur.fetchone() is not None
 
 
+
+    def _simplify_vision_observation(self, obs: str) -> str:
+        import re
+        detected = re.search(r"Detected '(\w+)'", obs)
+        conf = re.search(r"conf:\s*([\d.]+)", obs)
+        obj_name = detected.group(1).replace("_", " ") if detected else "construction activity"
+        confidence = f"{float(conf.group(1)) * 100:.0f}%" if conf else ""
+        if confidence:
+            return f"AI vision analysis detected {obj_name} at construction site (confidence: {confidence})."
+        return f"AI vision analysis detected {obj_name} at construction site."
 
     def _friendly_source_name(self, source_type: str) -> str:
         names = {
