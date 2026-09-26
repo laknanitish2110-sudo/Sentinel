@@ -269,90 +269,230 @@ class InvestigationAgent:
         claims: List[Claim], evidence: List[EvidenceItem],
         uploaded_image_path: Optional[str]
     ) -> tuple:
-        """Deterministic fallback that still follows the plan-execute-check pattern."""
+        """
+        Dynamic investigation planner. Instead of running a fixed sequence,
+        the planner reasons about what evidence exists, what's missing,
+        and selects the right action at each step.
 
-        # PLAN
-        self._log_step("plan", "Planning investigation (deterministic mode)",
-                       {"project": project.name, "claims": len(claims), "evidence": len(evidence),
-                        "mode": "deterministic"})
+        This is the core agentic shift:
+        FROM: pipeline that runs agents
+        TO:   agent that operates a pipeline
+        """
 
-        # EXECUTE: Analyze photo if provided
-        if uploaded_image_path:
-            photo_result = self._tool_analyze_photo(uploaded_image_path, "infrastructure")
-            self._log_step("tool_call", "Analyzing uploaded site photo",
-                           {"tool": "analyze_photo", "result": photo_result})
+        # --- PHASE 1: ASSESS — What do we have? What's missing? ---
+        evidence_map = {e.id: e for e in evidence}
+        source_types = {e.source_type for e in evidence}
+        numeric_evidence = [e for e in evidence if e.value and e.value > 0]
 
-        # EXECUTE: Cross-check evidence values
-        mb_items = [e for e in evidence if e.source_type == "MB_RECORD"]
-        inspection_items = [e for e in evidence if e.source_type in ("PHYSICAL_INSPECTION", "GEO_PHOTO")]
+        assessment = {
+            "has_official_records": bool(source_types & {"MB_RECORD"}),
+            "has_physical_inspection": bool(source_types & {"PHYSICAL_INSPECTION", "GEO_PHOTO"}),
+            "has_financial_docs": bool(source_types & {"INVOICE", "BANK_STATEMENT"}),
+            "has_uploaded_photo": bool(uploaded_image_path),
+            "has_numeric_values": len(numeric_evidence) >= 2,
+            "evidence_count": len(evidence),
+            "claim_count": len(claims),
+        }
 
-        for mb in mb_items:
-            for insp in inspection_items:
-                if mb.value and insp.value and mb.value > 0:
-                    cross = self._tool_cross_check(mb, insp)
-                    self._log_step("tool_call", f"Cross-checking {mb.source_type} vs {insp.source_type}",
-                                   {"tool": "cross_check_values", "result": cross})
+        gaps = []
+        if not assessment["has_official_records"]:
+            gaps.append("No official measurement book records available")
+        if not assessment["has_physical_inspection"] and not assessment["has_uploaded_photo"]:
+            gaps.append("No physical site inspection or photo evidence")
+        if not assessment["has_financial_docs"]:
+            gaps.append("No financial documents (invoices/bank statements)")
 
-                    if cross.get("discrepancy_pct", 0) > 10:
-                        disc = self._tool_flag_discrepancy(
-                            investigation_id, project.id,
-                            mb.id, insp.id,
-                            f"Measurement variance: {mb.source_type} reports {mb.value}{mb.unit} "
-                            f"but {insp.source_type} shows {insp.value}{insp.unit} "
-                            f"({cross['discrepancy_pct']:.1f}% gap)",
-                            "HIGH" if cross["discrepancy_pct"] > 30 else "MEDIUM"
-                        )
-                        self._log_step("tool_call", "Flagging measurement discrepancy",
-                                       {"tool": "flag_discrepancy", "result": disc})
+        self._log_step("plan", "Assessing available evidence and identifying gaps", {
+            "available_sources": sorted(source_types),
+            "evidence_count": len(evidence),
+            "gaps_identified": len(gaps),
+            "gaps": gaps,
+        })
 
-        # EXECUTE: Verify financial trail
-        financial = self._tool_verify_financial(project, claims, evidence)
-        self._log_step("tool_call", "Verifying financial trail",
-                       {"tool": "verify_financial_trail", "result": financial})
+        # Track investigation state
+        findings = {}  # tool_name → result
+        iteration = 0
 
-        # EXECUTE: Search precedents
-        precedents = self._tool_search_precedents("STAGED_MATERIAL_DISCREPANCY")
-        self._log_step("tool_call", "Searching case memory for precedents",
-                       {"tool": "search_precedents", "result": precedents})
+        # --- PHASE 2: INVESTIGATE — Dynamic delegation loop ---
+        for iteration in range(self.MAX_ITERATIONS):
+            next_action = self._decide_next_action(
+                assessment, findings, evidence, uploaded_image_path, iteration
+            )
 
-        # CHECK
+            if next_action is None:
+                break  # Planner says we have enough
+
+            action_name = next_action["action"]
+            action_reason = next_action["reason"]
+
+            self._log_step("plan" if iteration == 0 else "replan",
+                           f"{'Planning' if iteration == 0 else 'Re-evaluating'}: {action_reason}",
+                           {"action": action_name, "iteration": iteration + 1})
+
+            # DELEGATE to the right specialist
+            if action_name == "analyze_photo":
+                result = self._tool_analyze_photo(uploaded_image_path or "", "infrastructure")
+                findings["photo_analysis"] = result
+                self._log_step("tool_call", "Delegating to vision pipeline: analyze site photo",
+                               {"tool": "analyze_photo", "result": result})
+
+            elif action_name == "cross_check_measurements":
+                mb_items = [e for e in evidence if e.source_type == "MB_RECORD" and e.value]
+                insp_items = [e for e in evidence
+                              if e.source_type in ("PHYSICAL_INSPECTION", "GEO_PHOTO") and e.value]
+
+                cross_results = []
+                for mb in mb_items:
+                    for insp in insp_items:
+                        cross = self._tool_cross_check(mb, insp)
+                        cross_results.append(cross)
+                        self._log_step("tool_call",
+                                       f"Cross-checking: {mb.source_type} ({mb.value}{mb.unit}) "
+                                       f"vs {insp.source_type} ({insp.value}{insp.unit})",
+                                       {"tool": "cross_check_values", "result": cross})
+
+                        if cross.get("discrepancy_pct", 0) > 10:
+                            disc = self._tool_flag_discrepancy(
+                                investigation_id, project.id, mb.id, insp.id,
+                                f"{mb.source_type} reports {mb.value}{mb.unit} but "
+                                f"{insp.source_type} shows {insp.value}{insp.unit} "
+                                f"({cross['discrepancy_pct']:.1f}% gap)",
+                                "HIGH" if cross["discrepancy_pct"] > 30 else "MEDIUM"
+                            )
+                            self._log_step("tool_call",
+                                           f"Discrepancy flagged: {cross['discrepancy_pct']:.1f}% gap",
+                                           {"tool": "flag_discrepancy", "result": disc})
+
+                findings["cross_check"] = cross_results
+
+            elif action_name == "verify_financial_trail":
+                result = self._tool_verify_financial(project, claims, evidence)
+                findings["financial"] = result
+                self._log_step("tool_call", "Delegating to financial agent: verify fund trail",
+                               {"tool": "verify_financial_trail", "result": result})
+
+            elif action_name == "search_precedents":
+                result = self._tool_search_precedents("STAGED_MATERIAL_DISCREPANCY")
+                findings["precedents"] = result
+                self._log_step("tool_call", "Delegating to historical agent: search case memory",
+                               {"tool": "search_precedents", "result": result})
+
+            elif action_name == "check_evidence_gaps":
+                gap_detail = {
+                    "gaps": gaps,
+                    "missing_types": [t for t in ["MB_RECORD", "PHYSICAL_INSPECTION", "INVOICE", "BANK_STATEMENT"]
+                                      if t not in source_types],
+                    "insufficient_items": [e.id for e in evidence if e.relationship == "INSUFFICIENT"],
+                }
+                findings["gap_analysis"] = gap_detail
+                self._log_step("tool_call", f"Evidence gap analysis: {len(gaps)} gap(s) identified",
+                               {"tool": "check_evidence_gaps", "result": gap_detail})
+
+            # INSPECT result after each delegation
+            self._log_step("check",
+                           f"Inspecting results after {action_name}",
+                           {"contradictions_so_far": len(self.contradictions),
+                            "tools_completed": list(findings.keys()),
+                            "iteration": iteration + 1})
+
+        # --- PHASE 3: CONVERGE — Make a decision based on accumulated evidence ---
         has_contradictions = len(self.contradictions) > 0
-        has_precedent = precedents.get("count", 0) > 0
+        has_precedent = findings.get("precedents", {}).get("count", 0) > 0
         has_insufficient = any(e.relationship == "INSUFFICIENT" for e in evidence)
+        financial = findings.get("financial", {})
+        fund_gap = financial.get("fund_utilization_gap", 0)
 
-        self._log_step("check", "Evaluating evidence sufficiency",
-                       {"contradictions": len(self.contradictions),
-                        "precedents_found": precedents.get("count", 0),
-                        "has_insufficient": has_insufficient})
-
-        # DECIDE
         if has_contradictions and has_precedent:
             final_state = InvestigationState.PARTIALLY_SUPPORTED
-            decision = (f"Evidence partially supports claims. {len(self.contradictions)} discrepancy(ies) found "
-                       f"between official records and physical inspection. Historical precedent suggests "
-                       f"underground/backfilled work may account for the gap. Human review recommended to confirm.")
+            decision = (
+                f"Evidence partially supports claims. "
+                f"{len(self.contradictions)} discrepancy(ies) found between official records and physical inspection. "
+                f"Historical precedent suggests underground/backfilled work may account for the gap. "
+                f"Precedent is not proof — human review recommended to confirm with current evidence."
+            )
         elif has_contradictions:
             final_state = InvestigationState.HUMAN_REVIEW_REQUIRED
-            decision = (f"Unresolved discrepancy detected. {len(self.contradictions)} contradiction(s) found. "
-                       f"Agent cannot autonomously resolve — escalating to human auditor.")
-            self._log_step("tool_call", "Requesting human review",
-                           {"tool": "request_human_review",
-                            "result": {"reason": decision, "unresolved": len(self.contradictions)}})
-        elif has_insufficient:
+            decision = (
+                f"Unresolved discrepancy: {len(self.contradictions)} contradiction(s) found. "
+                f"No historical precedent available to explain the gap. "
+                f"Agent cannot autonomously resolve — escalating to human auditor."
+            )
+            self._log_step("tool_call", "Escalating: requesting human review", {
+                "tool": "request_human_review",
+                "result": {"reason": decision, "contradictions": len(self.contradictions)}
+            })
+        elif has_insufficient or len(gaps) > 1:
             final_state = InvestigationState.INSUFFICIENT_EVIDENCE
-            decision = "Insufficient evidence to verify claims. Additional documentation required."
-        elif all(e.relationship == "SUPPORTS" for e in evidence if e.relationship != "NEUTRAL"):
+            decision = (
+                f"Insufficient evidence to verify claims. "
+                f"Missing: {', '.join(gaps) if gaps else 'additional corroborating documentation'}."
+            )
+        elif all(e.relationship in ("SUPPORTS", "NEUTRAL") for e in evidence):
             final_state = InvestigationState.SUPPORTED
             decision = "All evidence supports the contractor's claims. No discrepancies found."
         else:
             final_state = InvestigationState.PARTIALLY_SUPPORTED
             decision = "Evidence partially supports claims. Some items could not be independently verified."
 
-        self._log_step("deliver", f"Investigation complete: {str(final_state).replace('InvestigationState.', '')}",
+        self._log_step("deliver",
+                       f"Investigation converged: {str(final_state).replace('InvestigationState.', '')}",
                        {"final_state": str(final_state).replace("InvestigationState.", ""),
-                        "decision": decision})
+                        "decision": decision,
+                        "total_tools_used": len(findings),
+                        "contradictions": len(self.contradictions),
+                        "iterations": iteration + 1})
 
         return final_state, decision
+
+    def _decide_next_action(
+        self, assessment: Dict, findings: Dict,
+        evidence: List[EvidenceItem], image_path: Optional[str],
+        iteration: int
+    ) -> Optional[Dict]:
+        """
+        The planner's brain. Looks at what we know so far and decides
+        what investigation action to take next. Returns None when done.
+
+        This is where the agentic reasoning happens — not a fixed sequence,
+        but a dynamic decision based on the state of the investigation.
+        """
+
+        # Priority 1: If we have a photo we haven't analyzed, start there
+        if assessment["has_uploaded_photo"] and "photo_analysis" not in findings:
+            return {"action": "analyze_photo",
+                    "reason": "Uploaded photo available — analyzing for physical evidence"}
+
+        # Priority 2: If we have numeric values from different sources, cross-check them
+        if assessment["has_numeric_values"] and "cross_check" not in findings:
+            if assessment["has_official_records"] and assessment["has_physical_inspection"]:
+                return {"action": "cross_check_measurements",
+                        "reason": "Official records and physical inspection both contain measurements — cross-checking for consistency"}
+            elif assessment["has_official_records"]:
+                return {"action": "cross_check_measurements",
+                        "reason": "Official records have numeric values — comparing against available evidence"}
+
+        # Priority 3: If contradictions were found, check for precedents before escalating
+        if len(self.contradictions) > 0 and "precedents" not in findings:
+            return {"action": "search_precedents",
+                    "reason": f"{len(self.contradictions)} discrepancy(ies) found — checking if historical precedent explains the gap"}
+
+        # Priority 4: Verify financial trail if we have financial docs
+        if assessment["has_financial_docs"] and "financial" not in findings:
+            return {"action": "verify_financial_trail",
+                    "reason": "Financial documents available — verifying fund release against completion claims"}
+
+        # Priority 5: If no cross-check happened but we have evidence, check gaps
+        if "cross_check" not in findings and "gap_analysis" not in findings:
+            return {"action": "check_evidence_gaps",
+                    "reason": "Insufficient measurement data for cross-checking — analyzing evidence gaps"}
+
+        # Priority 6: If we have contradictions + precedents, verify financial trail too
+        if len(self.contradictions) > 0 and "financial" not in findings:
+            return {"action": "verify_financial_trail",
+                    "reason": "Contradictions detected — also verifying financial trail for corroboration"}
+
+        # Converged — we've done everything useful
+        return None
 
     # --- Tool implementations ---
 
