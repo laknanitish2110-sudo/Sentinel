@@ -125,6 +125,111 @@ body {
     margin-bottom: 20px;
 }
 
+/* HERO INTRO */
+.hero-intro {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(17, 24, 39, 1) 100%);
+    border: 1px solid var(--accent-blue);
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+}
+
+.hero-headline {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #FFF 0%, var(--text-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-body {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 680px;
+    margin: 0 auto 24px;
+    line-height: 1.7;
+}
+
+.hero-body strong {
+    color: var(--text-primary);
+}
+
+.hero-how {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.hero-how-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.hero-how-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    color: #FFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.hero-how-arrow {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* CALLOUT BOXES */
+.callout-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.callout-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.callout-amber {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    color: var(--color-insufficient);
+}
+
+.callout-blue {
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    color: var(--accent-blue);
+}
+
+.callout-red {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: var(--color-contradicts);
+}
+
 /* SCREEN 1: PROJECT DISCOVERY */
 .discovery-bar {
     display: flex;
@@ -1133,6 +1238,11 @@ body {
     .arch-grid { grid-template-columns: 1fr; }
     .sm-steps { overflow-x: auto; }
     .main-content { padding: 16px; }
+    .hero-headline { font-size: 22px; }
+    .hero-intro { padding: 24px 16px; }
+    .hero-how { gap: 8px; }
+    .hero-how-arrow { display: none; }
+    .hero-how-step { font-size: 12px; }
 }
 
 /* FOOTER */

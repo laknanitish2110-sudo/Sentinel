@@ -17,25 +17,51 @@
                 <div class="logo-shield">🛡️</div>
                 <div class="brand-text">
                     <h1>SENTINEL</h1>
-                    <p class="subtitle">Agentic Evidence Intelligence for Public Infrastructure</p>
+                    <p class="subtitle">Public Infrastructure Accountability System</p>
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:12px;">
-                <div class="header-badge" style="background:rgba(99,102,241,0.1);border-color:var(--accent-blue);color:var(--accent-blue);">
-                    Claude Sonnet 4 + YOLO11
-                </div>
                 <div class="header-badge">
-                    <span class="live-dot"></span> Live Evidence Pipeline
+                    <span class="live-dot"></span> Live Evidence Verification
                 </div>
             </div>
         </div>
     </header>
 
     <main class="main-content">
-        <!-- DEMO STATE MACHINE BAR -->
+        <!-- HERO INTRO -->
+        <section class="section hero-intro-section">
+            <div class="hero-intro">
+                <h2 class="hero-headline">Where is your tax money going?</h2>
+                <p class="hero-body">Sentinel cross-checks government infrastructure claims against <strong>multiple independent evidence sources</strong> — official records, site inspections, financial documents, and photos. When the evidence doesn't match, it flags the discrepancy so auditors and citizens can act.</p>
+                <div class="hero-how">
+                    <div class="hero-how-step">
+                        <span class="hero-how-num">1</span>
+                        <span>Select a project</span>
+                    </div>
+                    <span class="hero-how-arrow">→</span>
+                    <div class="hero-how-step">
+                        <span class="hero-how-num">2</span>
+                        <span>See the evidence</span>
+                    </div>
+                    <span class="hero-how-arrow">→</span>
+                    <div class="hero-how-step">
+                        <span class="hero-how-num">3</span>
+                        <span>Run investigation</span>
+                    </div>
+                    <span class="hero-how-arrow">→</span>
+                    <div class="hero-how-step">
+                        <span class="hero-how-num">4</span>
+                        <span>See the verdict</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INVESTIGATION PROGRESS BAR -->
         <section class="section state-machine-section">
             <div class="state-machine-bar">
-                <span class="sm-title">DEMO STATE MACHINE:</span>
+                <span class="sm-title">INVESTIGATION PROGRESS:</span>
                 <div class="sm-steps" id="sm-steps-container">
                     <span class="sm-step active" id="step-discover">1. DISCOVER</span>
                     <span class="sm-step" id="step-investigate">2. INVESTIGATE</span>
@@ -56,11 +82,11 @@
                 <div class="selector-group">
                     <label for="project-select">Select Infrastructure Project:</label>
                     <select id="project-select" class="custom-select">
-                        <option value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11" selected>Ward 7 Drainage Improvement [PRIMARY DEMO CASE]</option>
-                        <option value="b1ffcd00-8d1c-5fg9-cc7e-7cc0ce491b22">Ward 8 Drainage Extension [SECOND SIMILAR CASE]</option>
+                        <option value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11" selected>Ward 7 — Storm Drain Construction (₹18L sanctioned)</option>
+                        <option value="b1ffcd00-8d1c-5fg9-cc7e-7cc0ce491b22">Ward 8 — Drainage Extension (similar case)</option>
                     </select>
                 </div>
-                <button id="btn-trigger-investigation" class="btn-investigate">⚡ RUN INVESTIGATION</button>
+                <button id="btn-trigger-investigation" class="btn-investigate">⚡ Run AI Investigation</button>
             </div>
 
             <div class="project-hero-card">
@@ -99,8 +125,8 @@
         <!-- SCREEN 2: MONEY TRAIL -->
         <section class="section money-trail-section" id="screen-money-trail">
             <div class="section-header">
-                <h2>💰 1. Where Did the Money Go? (Money Trail)</h2>
-                <p>Mapping government fund releases against contractor completion claims and physical bills.</p>
+                <h2>💰 Follow the Money</h2>
+                <p>How much was sanctioned, how much was released, and how much the contractor claims to have earned. Do the numbers add up?</p>
             </div>
 
             <div class="money-trail-cards">
@@ -132,8 +158,13 @@
                 </div>
             </div>
 
+            <div class="callout-box callout-amber">
+                <span class="callout-icon">👀</span>
+                <span>Notice: The contractor claims ₹14.4L of work done, but the government has only released ₹7.2L. That's a gap worth investigating.</span>
+            </div>
+
             <div class="milestones-box">
-                <h3>Financial Evidence & Milestone Verification</h3>
+                <h3>Supporting Financial Documents</h3>
                 <div id="financial-evidence-list" class="evidence-list">
                     <!-- Populated dynamically -->
                 </div>
@@ -143,14 +174,14 @@
         <!-- SCREEN 3: EVIDENCE GRAPH -->
         <section class="section graph-section" id="screen-evidence-graph">
             <div class="section-header">
-                <h2>📊 2. Does the Evidence Support What is Claimed? (Evidence Graph)</h2>
-                <p>Interactive evidence graph mapping contractor claims directly to verified physical & financial observations.</p>
+                <h2>📊 Does the Evidence Match the Claim?</h2>
+                <p>The contractor made a claim. Here's what each independent source — official records, inspections, invoices, photos — actually says. Look for the red "CONTRADICTS" badges.</p>
             </div>
 
             <div class="graph-container">
                 <!-- CLAIM NODE -->
                 <div class="graph-tier tier-claim">
-                    <div class="tier-label">TARGET CONTRACTOR CLAIM</div>
+                    <div class="tier-label">WHAT THE CONTRACTOR CLAIMS</div>
                     <div class="claim-node-card" id="claim-node-display">
                         <div class="claim-ref" id="claim-ref-tag">CLAIM-WARD7-PIPE-400M</div>
                         <h3 id="claim-desc-text">Installation of 400m of 600mm RCC hume pipes</h3>
@@ -161,21 +192,21 @@
                     </div>
                 </div>
 
-                <div class="flow-arrow">↓ MAPS TO EMPIRICAL EVIDENCE OBSERVATIONS ↓</div>
+                <div class="flow-arrow">↓ CHECKED AGAINST INDEPENDENT EVIDENCE ↓</div>
 
                 <!-- EVIDENCE NODES GRID -->
                 <div class="graph-tier tier-evidence">
-                    <div class="tier-label">VERIFIED EVIDENCE OBSERVATIONS</div>
+                    <div class="tier-label">WHAT EACH INDEPENDENT SOURCE SAYS</div>
                     <div class="evidence-nodes-grid" id="evidence-nodes-container">
                         <!-- Populated dynamically -->
                     </div>
                 </div>
 
-                <div class="flow-arrow">↓ ACCUMULATED EVIDENCE EVALUATION ↓</div>
+                <div class="flow-arrow">↓ SENTINEL'S CONCLUSION ↓</div>
 
                 <!-- INVESTIGATION DECISION NODE -->
                 <div class="graph-tier tier-decision">
-                    <div class="tier-label">INVESTIGATION DECISION</div>
+                    <div class="tier-label">VERDICT — BASED ON ALL EVIDENCE ABOVE</div>
                     <div class="decision-node-card" id="decision-node-card">
                         <div class="decision-icon" id="decision-icon">⚖️</div>
                         <div class="decision-info">
@@ -190,8 +221,8 @@
         <!-- AGENTIC ARCHITECTURE VISUALIZATION -->
         <section class="section" id="screen-architecture">
             <div class="section-header">
-                <h2>🤖 Agentic Investigation Architecture</h2>
-                <p>Three specialized AI agents collaborate through a deterministic orchestrator with human-in-the-loop oversight.</p>
+                <h2>🤖 How Sentinel Works</h2>
+                <p>Three specialized AI agents collaborate through a safety-constrained orchestrator. The AI reasons and plans — but the database holds the truth, and humans have final authority.</p>
             </div>
             <div class="arch-container">
                 <div class="arch-grid">
@@ -245,8 +276,8 @@
         <!-- AGENT TRACE: Live Investigation Loop -->
         <section class="section agent-trace-section" id="screen-agent-trace">
             <div class="section-header">
-                <h2>🤖 3. Live Agent Investigation Trace</h2>
-                <p>Watch the autonomous agent plan, execute tools, check results, and deliver conclusions in real-time.</p>
+                <h2>🤖 Watch the AI Investigate</h2>
+                <p>Sentinel's AI agent dynamically decides what to check next — not a fixed script. Watch each reasoning step as it cross-checks evidence, searches for precedents, and reaches a conclusion.</p>
             </div>
             <div class="agent-trace-container" id="agent-trace-container">
                 <div class="trace-header">
@@ -268,8 +299,8 @@
         <!-- SCREEN 4: INVESTIGATION STATUS -->
         <section class="section status-section" id="screen-status">
             <div class="section-header">
-                <h2>🔍 4. Investigation Pipeline Status</h2>
-                <p>Traceable execution record showing Sentinel's verification stages.</p>
+                <h2>🔍 Investigation Result</h2>
+                <p>What stages Sentinel completed and what it concluded. Every step is traceable — nothing happens behind closed doors.</p>
             </div>
 
             <div class="pipeline-card">
@@ -295,8 +326,8 @@
         <!-- SCREEN 5: WHY, AUDITOR CORRECTION & CASE MEMORY -->
         <section class="section why-section" id="screen-why">
             <div class="section-header">
-                <h2>💡 5. Evidence-Grounded Explanation & Institutional Memory</h2>
-                <p>Understand Sentinel's conclusion and how past human auditor corrections informed the system.</p>
+                <h2>💡 What This Means (Plain Language)</h2>
+                <p>Sentinel explains its findings in everyday language — no jargon. If a human auditor has corrected a similar case before, that learning is shown here too.</p>
             </div>
 
             <!-- CITIZEN-SAFE EXPLANATION -->
@@ -315,8 +346,8 @@
 
             <!-- HUMAN AUDITOR CORRECTION PANEL -->
             <div class="auditor-correction-panel" id="auditor-panel">
-                <h3>⚖️ Human Auditor Review Action</h3>
-                <p class="panel-desc">Submit an auditor correction to explain evidence discrepancies without overwriting original data. This creates structured Case Memory precedent.</p>
+                <h3>⚖️ Auditor Correction (Human Override)</h3>
+                <p class="panel-desc">If you're an auditor and the AI got it wrong, submit a correction below. The original finding is preserved — your correction is added alongside it, and Sentinel learns from it for future investigations.</p>
 
                 <div class="form-group">
                     <label for="corr-interp">Corrected Interpretation:</label>
@@ -328,19 +359,19 @@
                     <textarea id="corr-reason" class="custom-textarea" rows="2">Subsurface drainage installation confirmed via excavation logs and staging delivery records.</textarea>
                 </div>
 
-                <button id="btn-submit-correction" class="btn-submit-correction">Submit Auditor Correction & Create Case Memory</button>
+                <button id="btn-submit-correction" class="btn-submit-correction">Submit Correction (Sentinel will learn from this)</button>
                 <div id="correction-success-msg" class="success-msg" style="display:none;">✓ Auditor correction saved. Case Memory precedent created!</div>
             </div>
 
             <!-- HISTORICAL PRECEDENT / CASE MEMORY CARD -->
             <div class="case-memory-card" id="case-memory-card">
-                <div class="memory-badge" id="memory-badge-label">🧠 HISTORICAL PRECEDENT SURFACED</div>
+                <div class="memory-badge" id="memory-badge-label">🧠 SENTINEL LEARNED FROM A PREVIOUS CASE</div>
                 <h3 id="memory-title">Pattern: STAGED_MATERIAL_DISCREPANCY</h3>
                 <p id="memory-plain-explanation" class="memory-text">
                     Previously, a surface inspection photo reported less visible length than certified MB records. A human auditor clarified that the missing section was laid underground and backfilled prior to inspection.
                 </p>
                 <div class="precedent-rule-box">
-                    <strong>Precedent Rule Established:</strong> <span id="memory-precedent-rule">When physical trench photo inspection shows less visible length than certified MB record, check backfilling/staging records before flagging unexecuted work.</span>
+                    <strong>What Sentinel learned:</strong> <span id="memory-precedent-rule">When physical trench photo inspection shows less visible length than certified MB record, check backfilling/staging records before flagging unexecuted work.</span>
                 </div>
             </div>
         </section>
@@ -348,8 +379,8 @@
 
     <footer class="app-footer">
         <div class="footer-container">
-            <p><strong>SENTINEL</strong> — Agentic Evidence Intelligence System for Public Infrastructure Fund Utilization</p>
-            <p class="footer-sub">Database is Source of Truth • Evidence Grounded Reasoning • No Fraud Accusations</p>
+            <p><strong>SENTINEL</strong> — Making Every Rupee of Public Money Accountable</p>
+            <p class="footer-sub">Database is Source of Truth • Evidence-Grounded Reasoning • Non-Accusatory • Human Authority Preserved</p>
         </div>
     </footer>
 
