@@ -43,6 +43,7 @@ async function loadProjectData(projectId) {
         await loadInvestigationStatus(projectId);
     } catch (err) {
         console.error("Failed to load Sentinel public data:", err);
+        showError("Failed to load project data. Please refresh the page.");
     }
 }
 
@@ -120,7 +121,9 @@ function formatINR(val) {
 // SCREEN 1: PROJECT DISCOVERY
 async function loadProjectInfo(projectId) {
     const res = await fetch(`/api/project?project_id=${projectId}`);
+    if (!res.ok) throw new Error(`Project API error: ${res.status}`);
     const data = await res.json();
+    if (data.error) throw new Error(data.error);
 
     document.getElementById("proj-name").innerText = data.name || "Infrastructure Project";
     document.getElementById("proj-desc").innerText = data.description || "";
@@ -129,16 +132,17 @@ async function loadProjectInfo(projectId) {
 
     document.getElementById("metric-sanctioned").innerText = formatINR(data.sanctioned_amount);
     document.getElementById("metric-released").innerText = formatINR(data.released_amount);
-    document.getElementById("metric-released-pct").innerText = `${data.released_percentage}% of total budget`;
-    
+    document.getElementById("metric-released-pct").innerText = `${data.released_percentage || 0}% of total budget`;
+
     document.getElementById("metric-claimed").innerText = formatINR(data.claimed_amount);
-    document.getElementById("metric-claimed-pct").innerText = `${data.claimed_percentage}% physical claim`;
-    document.getElementById("metric-completion").innerText = `${data.claimed_percentage}%`;
+    document.getElementById("metric-claimed-pct").innerText = `${data.claimed_percentage || 0}% physical claim`;
+    document.getElementById("metric-completion").innerText = `${data.claimed_percentage || 0}%`;
 }
 
 // SCREEN 2: MONEY TRAIL
 async function loadMoneyTrail(projectId) {
     const res = await fetch(`/api/money-trail?project_id=${projectId}`);
+    if (!res.ok) throw new Error(`Money trail API error: ${res.status}`);
     const data = await res.json();
 
     document.getElementById("trail-sanctioned").innerText = formatINR(data.sanctioned_amount);
@@ -176,6 +180,7 @@ async function loadMoneyTrail(projectId) {
 // SCREEN 3: EVIDENCE GRAPH
 async function loadEvidenceGraph(projectId) {
     const res = await fetch(`/api/evidence-graph?project_id=${projectId}`);
+    if (!res.ok) throw new Error(`Evidence graph API error: ${res.status}`);
     const data = await res.json();
 
     if (data.claims && data.claims.length > 0) {
@@ -220,6 +225,7 @@ async function loadEvidenceGraph(projectId) {
 // SCREEN 4 & 5: INVESTIGATION STATUS, WHY & CASE MEMORY
 async function loadInvestigationStatus(projectId) {
     const res = await fetch(`/api/investigation-status?project_id=${projectId}`);
+    if (!res.ok) throw new Error(`Investigation status API error: ${res.status}`);
     const data = await res.json();
 
     document.getElementById("headline-status").innerText = data.current_status_headline || "Sentinel Evidence Investigation Summary";

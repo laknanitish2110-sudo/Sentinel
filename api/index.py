@@ -131,11 +131,17 @@ def init_demo_db():
     )
     db_instance.save_project(p2)
 
+    c2_0 = Claim(
+        id="c2-w8-ra1", project_id=p2.id, claim_ref="CLAIM-WARD8-RA-01", claimed_by="Apex Infra Works Ltd",
+        claim_type="COMPLETION_PERCENTAGE", description="Contractor submission for 1st RA Bill claiming 75% completion.",
+        claimed_value=75.0, unit="percent", claim_date="2026-09-20"
+    )
     c2_1 = Claim(
         id="c2-w8-pipe500", project_id=p2.id, claim_ref="CLAIM-WARD8-PIPE-500M", claimed_by="Apex Infra Works Ltd",
         claim_type="PHYSICAL_QUANTITY", description="Contractor report asserting installation of 500 meters of RCC pipes.",
         claimed_value=500.0, unit="meters", claim_date="2026-09-20"
     )
+    db_instance.save_claim(c2_0)
     db_instance.save_claim(c2_1)
 
     e2_1 = EvidenceItem(

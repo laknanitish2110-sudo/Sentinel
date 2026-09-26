@@ -13,7 +13,7 @@ import uuid
 from sentinel.db import SentinelDB
 from sentinel.orchestrator import Orchestrator
 from sentinel.engines.case_memory_engine import CaseMemoryEngine
-from sentinel.types import Project, Claim, EvidenceItem, HumanCorrection, CaseMemoryRecord
+from sentinel.types import Project, Claim, EvidenceItem, HumanCorrection, CaseMemoryRecord, ContradictionRecord
 
 
 class SentinelCitizenAPI:
@@ -321,6 +321,8 @@ class SentinelCitizenAPI:
         cur = self.db.conn.cursor()
         cur.execute("SELECT id FROM investigations WHERE id = ?", (investigation_id,))
         return cur.fetchone() is not None
+
+
 
     def _friendly_source_name(self, source_type: str) -> str:
         names = {
