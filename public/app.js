@@ -1,12 +1,15 @@
-// SENTINEL Citizen Experience Frontend Logic (Phase 5)
+// SENTINEL Citizen Experience Frontend Logic — Full Investigation Loop
 document.addEventListener("DOMContentLoaded", () => {
     initSentinelApp();
 });
 
 let currentProjectId = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
+let currentEvidenceIds = [];
+let investigationRunning = false;
 
 async function initSentinelApp() {
     setupEventListeners();
+    animateCounters();
     await loadProjectData(currentProjectId);
 }
 
@@ -47,19 +50,67 @@ async function loadProjectData(projectId) {
     }
 }
 
+// ========== ANIMATED INVESTIGATION FLOW ==========
 async function runInvestigationFlow() {
+    if (investigationRunning) return;
+    investigationRunning = true;
+
+    const btn = document.getElementById("btn-trigger-investigation");
+    const origText = btn.innerText;
+
     try {
+        btn.innerText = "INITIALIZING AGENTS...";
+        btn.disabled = true;
+
+        // Stage 1: Discovery
+        updateStateMachine("step-discover");
+        btn.innerText = "STAGE 1: DISCOVERING...";
+        await sleep(600);
+
+        // Stage 2: Investigation
         updateStateMachine("step-investigate");
+        btn.innerText = "STAGE 2: AGENTS INVESTIGATING...";
+        await sleep(500);
+
+        // Stage 3: Analyzing
+        updateStateMachine("step-analyzing");
+        btn.innerText = "STAGE 3: CROSS-CHECKING EVIDENCE...";
+        await sleep(500);
+
+        // Stage 4: Evidence Graph
+        updateStateMachine("step-graph");
+        btn.innerText = "STAGE 4: BUILDING EVIDENCE GRAPH...";
+        await sleep(400);
+
+        // Actual API call
         const res = await fetch("/api/investigate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ project_id: currentProjectId })
         });
-        const data = await res.json();
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        await res.json();
+
+        // Stage 5: Conflict
         updateStateMachine("step-conflict");
+        btn.innerText = "STAGE 5: CONFLICTS DETECTED...";
+        await sleep(500);
+
+        // Stage 6: Review
+        updateStateMachine("step-review");
+        btn.innerText = "STAGE 6: HUMAN REVIEW REQUIRED";
+        await sleep(400);
+
+        showSuccess("Investigation complete. Evidence pipeline executed successfully.");
         await loadProjectData(currentProjectId);
+
     } catch (err) {
         console.error("Failed to run investigation:", err);
+        showError("Investigation failed. Please try again.");
+    } finally {
+        btn.innerText = origText;
+        btn.disabled = false;
+        investigationRunning = false;
     }
 }
 
@@ -67,8 +118,13 @@ async function submitAuditorCorrection() {
     const interp = document.getElementById("corr-interp").value;
     const reason = document.getElementById("corr-reason").value;
 
+    const btn = document.getElementById("btn-submit-correction");
+    const origText = btn.innerText;
     try {
+        btn.innerText = "STORING CORRECTION...";
+        btn.disabled = true;
         updateStateMachine("step-correction");
+
         const res = await fetch("/api/human-correction", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -77,11 +133,12 @@ async function submitAuditorCorrection() {
                 investigation_id: "inv_demo_phase5",
                 corrected_interpretation: interp,
                 reason_for_correction: reason,
-                evidence_ids: ["e1-mb", "e2-photo"]
+                evidence_ids: currentEvidenceIds.length > 0 ? currentEvidenceIds : ["e1-mb", "e2-photo"]
             })
         });
-        const data = await res.json();
-        
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        await res.json();
+
         const successMsg = document.getElementById("correction-success-msg");
         if (successMsg) {
             successMsg.style.display = "block";
@@ -89,24 +146,108 @@ async function submitAuditorCorrection() {
         }
 
         updateStateMachine("step-memory");
+        showSuccess("Auditor correction stored. Case memory precedent created!");
+
+        await sleep(800);
         await loadInvestigationStatus(currentProjectId);
     } catch (err) {
         console.error("Failed to submit correction:", err);
+        showError("Correction submission failed. Please try again.");
+    } finally {
+        btn.innerText = origText;
+        btn.disabled = false;
     }
 }
 
+// ========== STATE MACHINE ==========
 function updateStateMachine(activeStepId) {
     const steps = ["step-discover", "step-investigate", "step-analyzing", "step-graph", "step-conflict", "step-review", "step-correction", "step-memory", "step-second-case"];
-    steps.forEach(id => {
+    const activeIdx = steps.indexOf(activeStepId);
+    steps.forEach((id, idx) => {
         const el = document.getElementById(id);
         if (el) {
+            el.classList.remove("active", "completed");
             if (id === activeStepId) {
                 el.classList.add("active");
-            } else {
-                el.classList.remove("active");
+            } else if (activeIdx >= 0 && idx < activeIdx) {
+                el.classList.add("completed");
             }
         }
     });
+}
+
+// ========== NOTIFICATIONS ==========
+function showError(msg) {
+    showToast(msg, "#DC2626", "rgba(220,38,38,0.15)");
+}
+
+function showSuccess(msg) {
+    showToast(msg, "#10B981", "rgba(16,185,129,0.15)");
+}
+
+function showToast(msg, borderColor, bgColor) {
+    const existing = document.querySelector(".sentinel-toast");
+    if (existing) existing.remove();
+    const toast = document.createElement("div");
+    toast.className = "sentinel-toast";
+    toast.style.cssText = `position:fixed;top:20px;right:20px;background:${bgColor};backdrop-filter:blur(12px);color:#FFF;padding:14px 24px;border-radius:12px;font-weight:600;z-index:9999;border:1px solid ${borderColor};box-shadow:0 8px 30px rgba(0,0,0,0.4);font-size:14px;max-width:400px;animation:slideIn 0.3s ease;`;
+    toast.innerText = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(-10px)";
+        toast.style.transition = "all 0.3s ease";
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// ========== ANIMATED COUNTERS ==========
+function animateCounters() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                const text = el.innerText;
+                const match = text.match(/[\d,]+/);
+                if (match) {
+                    const target = parseInt(match[0].replace(/,/g, ''));
+                    if (target > 0 && !el.dataset.animated) {
+                        el.dataset.animated = "true";
+                        animateValue(el, 0, target, 1200, text);
+                    }
+                }
+                observer.unobserve(el);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll(".metric-val, .amount-display").forEach(el => {
+        observer.observe(el);
+    });
+}
+
+function animateValue(el, start, end, duration, template) {
+    const startTime = performance.now();
+    const prefix = template.match(/^[^\d]*/)[0] || '';
+
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(start + (end - start) * eased);
+        el.innerText = prefix + new Intl.NumberFormat('en-IN').format(current);
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            el.innerText = template;
+        }
+    }
+    requestAnimationFrame(update);
+}
+
+// ========== UTILITIES ==========
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function formatINR(val) {
@@ -118,7 +259,7 @@ function formatINR(val) {
     }).format(val);
 }
 
-// SCREEN 1: PROJECT DISCOVERY
+// ========== SCREEN 1: PROJECT DISCOVERY ==========
 async function loadProjectInfo(projectId) {
     const res = await fetch(`/api/project?project_id=${projectId}`);
     if (!res.ok) throw new Error(`Project API error: ${res.status}`);
@@ -137,9 +278,11 @@ async function loadProjectInfo(projectId) {
     document.getElementById("metric-claimed").innerText = formatINR(data.claimed_amount);
     document.getElementById("metric-claimed-pct").innerText = `${data.claimed_percentage || 0}% physical claim`;
     document.getElementById("metric-completion").innerText = `${data.claimed_percentage || 0}%`;
+
+    setTimeout(animateCounters, 100);
 }
 
-// SCREEN 2: MONEY TRAIL
+// ========== SCREEN 2: MONEY TRAIL ==========
 async function loadMoneyTrail(projectId) {
     const res = await fetch(`/api/money-trail?project_id=${projectId}`);
     if (!res.ok) throw new Error(`Money trail API error: ${res.status}`);
@@ -153,13 +296,24 @@ async function loadMoneyTrail(projectId) {
     listContainer.innerHTML = "";
 
     if (data.financial_evidence && data.financial_evidence.length > 0) {
-        data.financial_evidence.forEach(item => {
+        data.financial_evidence.forEach((item, idx) => {
             const row = document.createElement("div");
             row.className = "evidence-item-row";
-            
-            const amountText = item.amount ? `${formatINR(item.amount)}` : "Verified Document";
-            const relBadge = item.relationship === "SUPPORTS" ? "✓ Verified" : (item.relationship === "CONTRADICTS" ? "✕ Conflict" : "ℹ Reference");
-            
+            row.style.animationDelay = `${idx * 0.1}s`;
+            row.style.animation = "fadeInUp 0.4s ease both";
+
+            const amountText = item.amount ? formatINR(item.amount) : "Verified Document";
+            let relBadge, relColor;
+            if (item.relationship === "SUPPORTS") {
+                relBadge = "✓ Verified"; relColor = "var(--color-supports)";
+            } else if (item.relationship === "CONTRADICTS") {
+                relBadge = "✕ Conflict"; relColor = "var(--color-contradicts)";
+            } else if (item.relationship === "INSUFFICIENT") {
+                relBadge = "⚠ Missing"; relColor = "var(--color-insufficient)";
+            } else {
+                relBadge = "ℹ Reference"; relColor = "var(--color-neutral)";
+            }
+
             row.innerHTML = `
                 <div class="ev-info">
                     <h4>${item.source_name} (${item.document_id})</h4>
@@ -167,7 +321,7 @@ async function loadMoneyTrail(projectId) {
                 </div>
                 <div style="text-align: right;">
                     <div style="font-weight: 800; font-size: 15px;">${amountText}</div>
-                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${relBadge}</div>
+                    <div style="font-size: 12px; color: ${relColor}; margin-top: 4px; font-weight: 700;">${relBadge}</div>
                 </div>
             `;
             listContainer.appendChild(row);
@@ -177,7 +331,7 @@ async function loadMoneyTrail(projectId) {
     }
 }
 
-// SCREEN 3: EVIDENCE GRAPH
+// ========== SCREEN 3: EVIDENCE GRAPH ==========
 async function loadEvidenceGraph(projectId) {
     const res = await fetch(`/api/evidence-graph?project_id=${projectId}`);
     if (!res.ok) throw new Error(`Evidence graph API error: ${res.status}`);
@@ -194,11 +348,14 @@ async function loadEvidenceGraph(projectId) {
     const container = document.getElementById("evidence-nodes-container");
     container.innerHTML = "";
 
+    currentEvidenceIds = [];
     if (data.evidence && data.evidence.length > 0) {
-        data.evidence.forEach(node => {
+        data.evidence.forEach((node, idx) => {
+            currentEvidenceIds.push(node.id);
             const card = document.createElement("div");
             const relClass = `rel-${node.relationship.toLowerCase()}`;
             card.className = `evidence-card ${relClass}`;
+            card.style.animationDelay = `${idx * 0.15}s`;
 
             card.innerHTML = `
                 <div>
@@ -220,9 +377,15 @@ async function loadEvidenceGraph(projectId) {
             container.appendChild(card);
         });
     }
+
+    // Update evidence count badge
+    const countBadge = document.getElementById("evidence-count-badge");
+    if (countBadge) {
+        countBadge.innerText = `${currentEvidenceIds.length} evidence nodes`;
+    }
 }
 
-// SCREEN 4 & 5: INVESTIGATION STATUS, WHY & CASE MEMORY
+// ========== SCREEN 4 & 5: INVESTIGATION STATUS ==========
 async function loadInvestigationStatus(projectId) {
     const res = await fetch(`/api/investigation-status?project_id=${projectId}`);
     if (!res.ok) throw new Error(`Investigation status API error: ${res.status}`);
@@ -233,9 +396,11 @@ async function loadInvestigationStatus(projectId) {
     const timeline = document.getElementById("stages-timeline");
     timeline.innerHTML = "";
     if (data.completed_stages) {
-        data.completed_stages.forEach(stage => {
+        data.completed_stages.forEach((stage, idx) => {
             const item = document.createElement("div");
             item.className = "timeline-stage completed";
+            item.style.animation = "fadeInUp 0.3s ease both";
+            item.style.animationDelay = `${idx * 0.1}s`;
             item.innerHTML = `
                 <div class="stage-check">✓</div>
                 <span>${stage.name}</span>
@@ -244,8 +409,36 @@ async function loadInvestigationStatus(projectId) {
         });
     }
 
-    document.getElementById("decision-state-tag").innerText = data.final_state || "HUMAN REVIEW REQUIRED";
+    // Update decision node styling based on state
+    const stateTag = document.getElementById("decision-state-tag");
+    const decisionCard = document.getElementById("decision-node-card");
+    const decisionIcon = document.getElementById("decision-icon");
+    const stateRaw = data.final_state_raw || "";
+
+    stateTag.innerText = data.final_state || "HUMAN REVIEW REQUIRED";
     document.getElementById("decision-summary-text").innerText = data.human_review_notice || "Sentinel completed verification pipeline.";
+
+    if (stateRaw.includes("SUPPORTED") && !stateRaw.includes("PARTIALLY")) {
+        decisionCard.style.borderColor = "var(--border-supports)";
+        decisionCard.style.background = "var(--bg-supports)";
+        stateTag.style.backgroundColor = "var(--border-supports)";
+        decisionIcon.innerText = "✓";
+    } else if (stateRaw.includes("CONTRADICTED")) {
+        decisionCard.style.borderColor = "var(--border-contradicts)";
+        decisionCard.style.background = "var(--bg-contradicts)";
+        stateTag.style.backgroundColor = "var(--border-contradicts)";
+        decisionIcon.innerText = "✕";
+    } else if (stateRaw.includes("HUMAN_REVIEW")) {
+        decisionCard.style.borderColor = "var(--border-insufficient)";
+        decisionCard.style.background = "rgba(245, 158, 11, 0.1)";
+        stateTag.style.backgroundColor = "var(--border-insufficient)";
+        decisionIcon.innerText = "⚖️";
+    } else if (stateRaw.includes("PARTIALLY")) {
+        decisionCard.style.borderColor = "var(--accent-blue)";
+        decisionCard.style.background = "rgba(99, 102, 241, 0.1)";
+        stateTag.style.backgroundColor = "var(--accent-blue)";
+        decisionIcon.innerText = "◐";
+    }
 
     if (data.human_review_notice) {
         document.getElementById("human-review-box").style.display = "flex";
@@ -258,8 +451,10 @@ async function loadInvestigationStatus(projectId) {
     const bulletsList = document.getElementById("explanation-found-bullets");
     bulletsList.innerHTML = "";
     if (data.evidence_grounded_explanation && data.evidence_grounded_explanation.what_sentinel_found) {
-        data.evidence_grounded_explanation.what_sentinel_found.forEach(bullet => {
+        data.evidence_grounded_explanation.what_sentinel_found.forEach((bullet, idx) => {
             const li = document.createElement("li");
+            li.style.animation = "fadeInUp 0.3s ease both";
+            li.style.animationDelay = `${idx * 0.15}s`;
             li.innerText = bullet;
             bulletsList.appendChild(li);
         });
@@ -270,6 +465,7 @@ async function loadInvestigationStatus(projectId) {
     const memCard = document.getElementById("case-memory-card");
     if (data.historical_precedent) {
         memCard.style.display = "block";
+        memCard.style.animation = "fadeInUp 0.5s ease both";
         if (data.historical_precedent.label) {
             document.getElementById("memory-badge-label").innerText = `🧠 ${data.historical_precedent.label}`;
         }

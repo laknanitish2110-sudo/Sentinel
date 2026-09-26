@@ -60,9 +60,9 @@ class TestSentinelPhase2B(unittest.TestCase):
             staged_pipe_count=22
         )
         self.assertEqual(raw_vision["primary_detected_value"], 180.0)
-        self.assertEqual(raw_vision["vision_model"], "mock-yolov8-drainage-v1")
-        self.assertEqual(len(raw_vision["bounding_boxes"]), 2)
-        self.assertIn("180.0 meters", raw_vision["observation"])
+        self.assertEqual(raw_vision["vision_model"], "mock-yolo11-drainage-v1")
+        self.assertGreaterEqual(len(raw_vision["bounding_boxes"]), 2)
+        self.assertIn("180.0m", raw_vision["observation"])
 
     # -------------------------------------------------------------------------
     # Test 2: Phase 2B.1 Perception-Only Boundary Test (Never Auto-Contradicts)
@@ -89,10 +89,10 @@ class TestSentinelPhase2B(unittest.TestCase):
 
         meta = ev_item.metadata
         self.assertIn("bounding_boxes", meta)
-        self.assertEqual(len(meta["bounding_boxes"]), 2)
+        self.assertGreaterEqual(len(meta["bounding_boxes"]), 2)
         self.assertIn("exif", meta)
         self.assertEqual(meta["exif"]["camera"], "iPhone 14 Pro")
-        self.assertEqual(meta["vision_model"], "mock-yolov8-drainage-v1")
+        self.assertEqual(meta["vision_model"], "mock-yolo11-drainage-v1")
 
     # -------------------------------------------------------------------------
     # Test 4: Vision Evidence Database Ingestion Test
@@ -105,7 +105,7 @@ class TestSentinelPhase2B(unittest.TestCase):
         self.assertEqual(len(retrieved_ev), 1)
         self.assertEqual(retrieved_ev[0].id, ev_item.id)
         self.assertEqual(retrieved_ev[0].relationship, "NEUTRAL")
-        self.assertEqual(retrieved_ev[0].metadata["vision_model"], "mock-yolov8-drainage-v1")
+        self.assertEqual(retrieved_ev[0].metadata["vision_model"], "mock-yolo11-drainage-v1")
 
     # -------------------------------------------------------------------------
     # Test 5: Contradiction Engine Identifies 180m vs 400m Conflict

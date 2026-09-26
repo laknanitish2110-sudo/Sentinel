@@ -17,11 +17,16 @@
                 <div class="logo-shield">🛡️</div>
                 <div class="brand-text">
                     <h1>SENTINEL</h1>
-                    <p class="subtitle">Public Infrastructure Evidence Portal</p>
+                    <p class="subtitle">Agentic Evidence Intelligence for Public Infrastructure</p>
                 </div>
             </div>
-            <div class="header-badge">
-                <span class="live-dot"></span> Public Transparency Core
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div class="header-badge" style="background:rgba(99,102,241,0.1);border-color:var(--accent-blue);color:var(--accent-blue);">
+                    Claude Sonnet 4 + YOLO11
+                </div>
+                <div class="header-badge">
+                    <span class="live-dot"></span> Live Evidence Pipeline
+                </div>
             </div>
         </div>
     </header>
@@ -178,6 +183,61 @@
                             <p id="decision-summary-text">Evaluating physical discrepancy...</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AGENTIC ARCHITECTURE VISUALIZATION -->
+        <section class="section" id="screen-architecture">
+            <div class="section-header">
+                <h2>🤖 Agentic Investigation Architecture</h2>
+                <p>Three specialized AI agents collaborate through a deterministic orchestrator with human-in-the-loop oversight.</p>
+            </div>
+            <div class="arch-container">
+                <div class="arch-grid">
+                    <div class="agent-card agent-intake">
+                        <div class="agent-icon">📋</div>
+                        <h4>Evidence Intake Agent</h4>
+                        <p>Classifies evidence items, links to claims, identifies gaps in documentation</p>
+                        <div class="agent-tech">Claude Sonnet 4 + Deterministic Fallback</div>
+                    </div>
+                    <div class="agent-card agent-financial">
+                        <div class="agent-icon">💰</div>
+                        <h4>Financial Cross-Check Agent</h4>
+                        <p>Validates fund releases against claims, detects disbursement anomalies</p>
+                        <div class="agent-tech">Rule Engine + Threshold Analysis</div>
+                    </div>
+                    <div class="agent-card agent-historical">
+                        <div class="agent-icon">🧠</div>
+                        <h4>Historical Context Agent</h4>
+                        <p>Retrieves case memory precedents, applies learned corrections to new cases</p>
+                        <div class="agent-tech">Pattern Matching + Case Memory DB</div>
+                    </div>
+                </div>
+                <div class="arch-flow">
+                    <div class="arch-flow-item">
+                        <span class="flow-badge">ORCHESTRATOR</span>
+                        <span>14-State Investigation Machine</span>
+                    </div>
+                    <span class="arch-arrow">→</span>
+                    <div class="arch-flow-item">
+                        <span class="flow-badge flow-badge-red">CONTRADICTION ENGINE</span>
+                        <span>Pairwise Evidence Comparison</span>
+                    </div>
+                    <span class="arch-arrow">→</span>
+                    <div class="arch-flow-item">
+                        <span class="flow-badge flow-badge-green">DECISION ENGINE</span>
+                        <span>Deterministic State Resolution</span>
+                    </div>
+                </div>
+                <div class="arch-tech-bar">
+                    <span class="tech-chip">Python</span>
+                    <span class="tech-chip">SQLite</span>
+                    <span class="tech-chip">Claude API</span>
+                    <span class="tech-chip">YOLO11</span>
+                    <span class="tech-chip">Evidence Contract</span>
+                    <span class="tech-chip">Vercel Serverless</span>
+                    <span class="tech-chip">Case-Based Learning</span>
                 </div>
             </div>
         </section>
