@@ -677,3 +677,67 @@ async function loadInvestigationStatus(projectId) {
         memCard.style.display = "none";
     }
 }
+
+// ========== PEGASUS STAR FIELD ==========
+(function initStarField() {
+    const canvas = document.getElementById("star-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    let stars = [];
+    const STAR_COUNT = 120;
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    function createStars() {
+        stars = [];
+        for (let i = 0; i < STAR_COUNT; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 1.6 + 0.3,
+                alpha: Math.random() * 0.6 + 0.2,
+                drift: (Math.random() - 0.5) * 0.15,
+                twinkleSpeed: Math.random() * 0.008 + 0.003,
+                phase: Math.random() * Math.PI * 2
+            });
+        }
+    }
+
+    let frame = 0;
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        frame++;
+
+        for (const s of stars) {
+            const twinkle = Math.sin(frame * s.twinkleSpeed + s.phase) * 0.3 + 0.7;
+            const a = s.alpha * twinkle;
+
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(200, 210, 255, ${a})`;
+            ctx.fill();
+
+            if (s.r > 1.2) {
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r * 2.5, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(124, 143, 255, ${a * 0.12})`;
+                ctx.fill();
+            }
+
+            s.y += s.drift;
+            if (s.y < -5) s.y = canvas.height + 5;
+            if (s.y > canvas.height + 5) s.y = -5;
+        }
+
+        requestAnimationFrame(draw);
+    }
+
+    resize();
+    createStars();
+    draw();
+    window.addEventListener("resize", () => { resize(); createStars(); });
+})();
