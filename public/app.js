@@ -40,15 +40,15 @@ function setupEventListeners() {
 }
 
 function initSidebarNav() {
-    const sectionMap = {
-        'Dashboard': '.fin-strip',
-        'Projects': '.fin-project-card',
-        'Investigations': '.card-trace',
-        'Evidence Hub': '.card-evidence',
-        'Evidence Graph': '.card-constellation',
-        'Case Memory': '.card-summary',
-        'Reports': '.card-progress',
-        'Settings': '.app-header',
+    const screenMap = {
+        'Dashboard': 'dashboard',
+        'Projects': 'projects',
+        'Investigations': 'investigations',
+        'Evidence Hub': 'evidence',
+        'Evidence Graph': 'graph',
+        'Case Memory': 'memory',
+        'Reports': 'reports',
+        'Settings': 'settings',
     };
 
     document.querySelectorAll(".nav-item").forEach(item => {
@@ -59,10 +59,14 @@ function initSidebarNav() {
 
             const label = item.querySelector("span");
             if (!label) return;
-            const target = sectionMap[label.textContent.trim()];
-            if (target) {
-                const el = document.querySelector(target);
-                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+            const screenName = screenMap[label.textContent.trim()];
+            if (screenName) {
+                document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+                const target = document.querySelector('[data-screen="' + screenName + '"]');
+                if (target) {
+                    target.classList.add("active");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                }
             }
         });
     });

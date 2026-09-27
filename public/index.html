@@ -99,6 +99,12 @@
         <!-- ===== DASHBOARD ===== -->
         <main class="dashboard">
 
+            <!-- SCREEN: Dashboard Overview -->
+            <div class="screen active" data-screen="dashboard">
+            <div class="screen-header">
+                <h2 class="screen-title">Dashboard Overview</h2>
+                <p class="screen-subtitle">Real-time financial and project monitoring at a glance</p>
+            </div>
             <!-- FINANCIAL STRIP -->
             <section class="fin-strip">
                 <div class="fin-card fin-blue-card">
@@ -152,7 +158,42 @@
                     </select>
                 </div>
             </section>
+            </div><!-- /screen: dashboard -->
 
+            <!-- SCREEN: Projects -->
+            <div class="screen" data-screen="projects">
+            <div class="screen-header">
+                <h2 class="screen-title">Project Details</h2>
+                <p class="screen-subtitle">Deep-dive into project financials, timelines, and contractor data</p>
+            </div>
+            <section class="screen-content screen-projects-inner">
+                <div class="card card-project-detail">
+                    <div class="card-head"><span class="card-icon icon-blue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></span><span class="card-title">ACTIVE PROJECT</span></div>
+                    <h3 class="proj-detail-name">Riverside Drainage Improvement</h3>
+                    <div class="proj-detail-grid">
+                        <div class="proj-detail-item"><span class="proj-detail-label">Location</span><span class="proj-detail-val">Ward 12, Chennai, Tamil Nadu</span></div>
+                        <div class="proj-detail-item"><span class="proj-detail-label">Agency</span><span class="proj-detail-val">Chennai Municipal Corp.</span></div>
+                        <div class="proj-detail-item"><span class="proj-detail-label">Sanctioned</span><span class="proj-detail-val proj-amt">&#8377; 18,00,000</span></div>
+                        <div class="proj-detail-item"><span class="proj-detail-label">Released</span><span class="proj-detail-val proj-amt">&#8377; 7,20,000 (40%)</span></div>
+                        <div class="proj-detail-item"><span class="proj-detail-label">Contractor</span><span class="proj-detail-val">M/s Lakshmi Constructions</span></div>
+                        <div class="proj-detail-item"><span class="proj-detail-label">Target Date</span><span class="proj-detail-val">30 Dec 2024</span></div>
+                    </div>
+                    <div class="proj-detail-bar">
+                        <div class="proj-bar-label"><span>Claimed Progress</span><span>40%</span></div>
+                        <div class="proj-bar-track"><div class="proj-bar-fill" style="width:40%"></div></div>
+                        <div class="proj-bar-label"><span>Verified Progress</span><span class="proj-bar-warn">~22%</span></div>
+                        <div class="proj-bar-track"><div class="proj-bar-fill proj-bar-warn-fill" style="width:22%"></div></div>
+                    </div>
+                </div>
+            </section>
+            </div><!-- /screen: projects -->
+
+            <!-- SCREEN: Investigations -->
+            <div class="screen" data-screen="investigations">
+            <div class="screen-header">
+                <h2 class="screen-title">AI Investigation</h2>
+                <p class="screen-subtitle">Sentinel's 3-agent pipeline: Collect, Cross-verify, Analyze, Report</p>
+            </div>
             <!-- ROW 2: Constellation + Agent Trace -->
             <section class="dash-row dash-row-main">
                 <div class="card card-constellation">
@@ -188,9 +229,7 @@
                     <button id="btn-trigger-investigation" class="btn-run"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run AI Investigation</button>
                 </div>
             </section>
-
-            <!-- ROW 3: AI Summary + Investigation Progress + Latest Evidence -->
-            <section class="dash-row dash-row-bottom">
+            <section class="dash-row dash-row-bottom" style="grid-template-columns:1fr 1fr;">
                 <div class="card card-summary">
                     <div class="card-head"><span class="card-icon icon-red"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span><span class="card-title">AI INVESTIGATION SUMMARY</span></div>
                     <div class="summary-body">
@@ -202,7 +241,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="card card-progress">
                     <div class="card-head"><span class="card-icon icon-blue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span class="card-title">INVESTIGATION PROGRESS</span></div>
                     <div class="star-row" id="star-progress">
@@ -213,20 +251,197 @@
                         <div class="ss pending"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Human<br>Review</span></div>
                     </div>
                 </div>
+            </section>
+            </div><!-- /screen: investigations -->
 
-                <div class="card card-evidence">
-                    <div class="card-head"><span class="card-icon icon-cyan"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span><span class="card-title">LATEST EVIDENCE</span><a class="card-link">View All &rarr;</a></div>
-                    <div class="ev-scroll">
+            <!-- SCREEN: Evidence Hub -->
+            <div class="screen" data-screen="evidence">
+            <div class="screen-header">
+                <h2 class="screen-title">Evidence Hub</h2>
+                <p class="screen-subtitle">All collected evidence items — documents, photos, satellite imagery, invoices</p>
+            </div>
+            <section class="dash-row" style="display:block;">
+                <div class="card card-evidence" style="grid-column:auto;">
+                    <div class="card-head"><span class="card-icon icon-cyan"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span><span class="card-title">COLLECTED EVIDENCE</span></div>
+                    <div class="ev-scroll ev-scroll-full">
                         <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#1e3a5f,#2d5a8e)"><span>📸</span></div><div class="ev-info"><div class="ev-lbl">Site Inspection</div><div class="ev-id">e4-si1</div><span class="ev-tag ev-red">CONTRADICTION</span></div></div>
                         <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#1a3d2e,#2d6e4e)"><span>📋</span></div><div class="ev-info"><div class="ev-lbl">Measurement Book</div><div class="ev-id">e2-mb1</div><span class="ev-tag ev-green">SUPPORTS</span></div></div>
                         <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#2a2a4e,#3d3d7e)"><span>🛰</span></div><div class="ev-info"><div class="ev-lbl">Satellite Image</div><div class="ev-id">e5-geo1</div><span class="ev-tag ev-amber">INSUFFICIENT</span></div></div>
                         <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#3d2a1a,#6e4d2d)"><span>📷</span></div><div class="ev-info"><div class="ev-lbl">Field Photo</div><div class="ev-id">e6-photo1</div><span class="ev-tag ev-amber">INSUFFICIENT</span></div></div>
                         <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#1a3d3d,#2d6e6e)"><span>📄</span></div><div class="ev-info"><div class="ev-lbl">Material Invoice</div><div class="ev-id">e3-inv1</div><span class="ev-tag ev-blue">RELATED</span></div></div>
+                        <div class="ev-card"><div class="ev-img" style="background:linear-gradient(135deg,#1a2a3d,#2d4a6e)"><span>🏦</span></div><div class="ev-info"><div class="ev-lbl">Bank Voucher</div><div class="ev-id">e1-ra2</div><span class="ev-tag ev-green">SUPPORTS</span></div></div>
                     </div>
                 </div>
             </section>
+            </div><!-- /screen: evidence -->
 
-            <!-- ROW 4: Pre-Sanction Risk Card -->
+            <!-- SCREEN: Evidence Graph -->
+            <div class="screen" data-screen="graph">
+            <div class="screen-header">
+                <h2 class="screen-title">Evidence Constellation</h2>
+                <p class="screen-subtitle">Visual map of how evidence connects — green lines support, red lines contradict</p>
+            </div>
+            <section class="dash-row" style="display:block;">
+                <div class="card card-constellation" style="grid-column:auto;">
+                    <div class="const-header">
+                        <div class="const-title"><span class="card-icon icon-blue"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><div><h3>EVIDENCE CONSTELLATION</h3><p>CONNECTING FACTS. REVEALING TRUTHS.</p></div></div>
+                        <div class="const-controls">
+                            <div class="legend"><span class="li"><span class="ld ld-green"></span>Supporting</span><span class="li"><span class="ld ld-red"></span>Contradiction</span><span class="li"><span class="ld ld-amber"></span>Insufficient</span><span class="li"><span class="ld ld-blue"></span>Related</span></div>
+                        </div>
+                    </div>
+                    <div class="const-viewport" id="constellation-viewport" style="height:420px;">
+                        <canvas id="constellation-canvas"></canvas>
+                        <div class="c-node" id="cnode-e1" style="left:8%;top:18%"><div class="c-star green">&#10022;</div><div class="c-card"><div class="c-head"><span class="c-id">e1-ra2</span><span class="c-badge green">SUPPORTS</span></div><div class="c-thumb blue"></div><div class="c-name">Bank Voucher</div><div class="c-val">&#8377; 7,20,000</div><div class="c-date">10 Feb 2024</div></div></div>
+                        <div class="c-node" id="cnode-e4" style="left:35%;top:8%"><div class="c-star red">&#10038;</div><div class="c-card"><div class="c-head"><span class="c-id">e4-si1</span><span class="c-badge red">CONTRADICTION</span></div><div class="c-thumb red"></div><div class="c-name">Site Inspection</div><div class="c-val warn">180 m (observed)</div><div class="c-date">12 Mar 2024</div></div></div>
+                        <div class="c-node" id="cnode-e3" style="left:66%;top:14%"><div class="c-star blue">&#10022;</div><div class="c-card"><div class="c-head"><span class="c-id">e3-inv1</span><span class="c-badge blue">RELATED</span></div><div class="c-thumb teal"></div><div class="c-name">Material Invoice</div><div class="c-val">Cement Supply</div><div class="c-date">03 Mar 2024</div></div></div>
+                        <div class="c-node" id="cnode-e2" style="left:12%;top:60%"><div class="c-star green">&#10022;</div><div class="c-card"><div class="c-head"><span class="c-id">e2-mb1</span><span class="c-badge green">SUPPORTS</span></div><div class="c-thumb green"></div><div class="c-name">Measurement Book</div><div class="c-val">400 m (claimed)</div><div class="c-date">05 Mar 2024</div></div></div>
+                        <div class="c-node" id="cnode-e5" style="left:42%;top:52%"><div class="c-star amber">&#10022;</div><div class="c-card"><div class="c-head"><span class="c-id">e5-geo1</span><span class="c-badge amber">INSUFFICIENT</span></div><div class="c-thumb amber"></div><div class="c-name">Satellite Image</div><div class="c-val warn">Work Visible (Partial)</div><div class="c-date">08 Mar 2024</div></div></div>
+                        <div class="c-node" id="cnode-e6" style="left:68%;top:56%"><div class="c-star amber">&#10038;</div><div class="c-card"><div class="c-head"><span class="c-id">e6-photo1</span><span class="c-badge amber">INSUFFICIENT</span></div><div class="c-thumb orange"></div><div class="c-name">Field Photo</div><div class="c-val warn">Quality Unclear</div><div class="c-date">11 Mar 2024</div></div></div>
+                        <div class="const-zoom"><button>+</button><button>&minus;</button><button><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+                    </div>
+                </div>
+            </section>
+            </div><!-- /screen: graph -->
+
+            <!-- SCREEN: Case Memory -->
+            <div class="screen" data-screen="memory">
+            <div class="screen-header">
+                <h2 class="screen-title">Case Memory</h2>
+                <p class="screen-subtitle">AI learns from every investigation — patterns, corrections, and historical precedents</p>
+            </div>
+            <section class="dash-row" style="display:block;">
+                <div class="card card-summary">
+                    <div class="card-head"><span class="card-icon icon-red"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></span><span class="card-title">AI INVESTIGATION SUMMARY</span></div>
+                    <div class="summary-body">
+                        <p class="summary-text"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> The measurement book claims 400 meters of drainage work, but site inspection shows only 180 meters visible. Financial records show &#8377;7,20,000 released (40%); however, physical evidence and satellite imagery do not fully support the claimed progress. Requires human review for further verification.</p>
+                        <div class="summary-tags">
+                            <span class="stag stag-red">Measurement Mismatch</span>
+                            <span class="stag stag-amber">Incomplete Records</span>
+                            <span class="stag stag-blue">Requires Human Review</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:14px;">
+                    <div class="card-head"><span class="card-icon icon-purple"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></span><span class="card-title">MEMORY LOG</span></div>
+                    <div class="memory-entries">
+                        <div class="memory-entry">
+                            <span class="memory-date">Mar 2024</span>
+                            <span class="memory-text">Ward 7 drainage: 55% measurement gap flagged. Contractor M/s Lakshmi — 2nd occurrence.</span>
+                            <span class="ev-tag ev-red" style="font-size:9px;">PATTERN</span>
+                        </div>
+                        <div class="memory-entry">
+                            <span class="memory-date">Nov 2023</span>
+                            <span class="memory-text">Ward 5 road project: 35% gap between MB and site. Same contractor. Auditor correction applied.</span>
+                            <span class="ev-tag ev-amber" style="font-size:9px;">CORRECTED</span>
+                        </div>
+                        <div class="memory-entry">
+                            <span class="memory-date">Aug 2023</span>
+                            <span class="memory-text">Ward 3 toilet construction: Invoice-treasury date mismatch (32 days). Flagged, verified as admin delay.</span>
+                            <span class="ev-tag ev-green" style="font-size:9px;">RESOLVED</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            </div><!-- /screen: memory -->
+
+            <!-- SCREEN: Reports & Revenue -->
+            <div class="screen" data-screen="reports">
+            <div class="screen-header">
+                <h2 class="screen-title">Revenue Model</h2>
+                <p class="screen-subtitle">How Sentinel sustains itself — B2G SaaS subscriptions that pay for themselves in Month 1</p>
+            </div>
+            <section class="revenue-section">
+                <div class="rev-hero">
+                    <div class="rev-hero-stat">
+                        <span class="rev-hero-num">&#8377;25K</span>
+                        <span class="rev-hero-label">Monthly Cost<br>to District</span>
+                    </div>
+                    <div class="rev-hero-arrow">
+                        <svg width="48" height="24" viewBox="0 0 48 24"><path d="M4 12h36M36 6l8 6-8 6" stroke="#34D399" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+                    </div>
+                    <div class="rev-hero-stat">
+                        <span class="rev-hero-num rev-green">&#8377;10.9L</span>
+                        <span class="rev-hero-label">Discrepancies Found<br>in Month 1</span>
+                    </div>
+                    <div class="rev-hero-arrow">
+                        <svg width="48" height="24" viewBox="0 0 48 24"><path d="M4 12h36M36 6l8 6-8 6" stroke="#60A5FA" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+                    </div>
+                    <div class="rev-hero-stat">
+                        <span class="rev-hero-num rev-blue">2.2x</span>
+                        <span class="rev-hero-label">ROI in<br>Month 1</span>
+                    </div>
+                </div>
+
+                <div class="rev-tiers">
+                    <div class="rev-tier-card rev-tier-district">
+                        <div class="rev-tier-badge">DISTRICT</div>
+                        <div class="rev-tier-price">&#8377;2-4L<span>/year</span></div>
+                        <div class="rev-tier-who">District Collectors, BDOs</div>
+                        <ul class="rev-tier-features">
+                            <li>Monitor 50-200 projects</li>
+                            <li>Automated monthly reports</li>
+                            <li>Pre-sanction risk cards</li>
+                        </ul>
+                    </div>
+                    <div class="rev-tier-card rev-tier-state">
+                        <div class="rev-tier-badge">STATE</div>
+                        <div class="rev-tier-price">&#8377;15-25L<span>/year</span></div>
+                        <div class="rev-tier-who">State Planning/Finance</div>
+                        <ul class="rev-tier-features">
+                            <li>Cross-district pattern detection</li>
+                            <li>1000+ project dashboards</li>
+                            <li>Contractor risk scoring</li>
+                        </ul>
+                    </div>
+                    <div class="rev-tier-card rev-tier-central">
+                        <div class="rev-tier-badge">CENTRAL</div>
+                        <div class="rev-tier-price">&#8377;50L-1Cr<span>/year</span></div>
+                        <div class="rev-tier-who">MoRD, MoHUA, MoF</div>
+                        <ul class="rev-tier-features">
+                            <li>National-scale monitoring</li>
+                            <li>Scheme comparison</li>
+                            <li>Policy-level insights</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="rev-example card">
+                    <div class="card-head"><span class="card-icon icon-cyan"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></span><span class="card-title">REAL-WORLD: JHANSI DISTRICT, UP</span></div>
+                    <div class="rev-example-grid">
+                        <div class="rev-ex-item"><span class="rev-ex-num">147</span><span class="rev-ex-label">Projects Monitored</span></div>
+                        <div class="rev-ex-item"><span class="rev-ex-num">&#8377;82Cr</span><span class="rev-ex-label">Total Budget</span></div>
+                        <div class="rev-ex-item"><span class="rev-ex-num">1.5%</span><span class="rev-ex-label">Current Audit Coverage</span></div>
+                        <div class="rev-ex-item"><span class="rev-ex-num rev-green">&#8377;35-50L</span><span class="rev-ex-label">Projected Annual Flags</span></div>
+                    </div>
+                    <p class="rev-example-pitch">"Jhansi pays us &#8377;25,000/month. In Month 1, we found &#8377;10.9 lakh in discrepancies. A manual audit would cost &#8377;12 lakh and take 6 weeks. We did it in minutes."</p>
+                </div>
+
+                <div class="rev-scale">
+                    <div class="rev-scale-row">
+                        <span class="rev-scale-year">Year 1</span>
+                        <div class="rev-scale-bar" style="width:12%"><span>&#8377;45L</span></div>
+                        <span class="rev-scale-desc">12 district pilots</span>
+                    </div>
+                    <div class="rev-scale-row">
+                        <span class="rev-scale-year">Year 2</span>
+                        <div class="rev-scale-bar" style="width:45%"><span>&#8377;2.8Cr</span></div>
+                        <span class="rev-scale-desc">40 districts + 3 states</span>
+                    </div>
+                    <div class="rev-scale-row">
+                        <span class="rev-scale-year">Year 3</span>
+                        <div class="rev-scale-bar" style="width:100%"><span>&#8377;8Cr</span></div>
+                        <span class="rev-scale-desc">120+ districts + 5 states + central</span>
+                    </div>
+                </div>
+            </section>
+            </div><!-- /screen: reports -->
+
+            <!-- SCREEN: Risk Card -->
+            <div class="screen" data-screen="risk">
+            <div class="screen-header">
+                <h2 class="screen-title">Pre-Sanction Risk Card</h2>
+                <p class="screen-subtitle">Advisory intelligence before fund release — the officer decides, Sentinel informs</p>
+            </div>
             <section class="dash-row dash-row-risk" id="risk-card-section">
                 <div class="card card-risk-full">
                     <div class="risk-card-header">
@@ -248,7 +463,6 @@
                     </div>
 
                     <div class="risk-grid">
-                        <!-- Signal 1 -->
                         <div class="risk-signal risk-high">
                             <div class="risk-signal-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>
                             <div class="risk-signal-body">
@@ -258,8 +472,6 @@
                             </div>
                             <span class="risk-level-badge risk-badge-high">HIGH</span>
                         </div>
-
-                        <!-- Signal 2 -->
                         <div class="risk-signal risk-medium">
                             <div class="risk-signal-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
                             <div class="risk-signal-body">
@@ -269,8 +481,6 @@
                             </div>
                             <span class="risk-level-badge risk-badge-medium">MEDIUM</span>
                         </div>
-
-                        <!-- Signal 3 -->
                         <div class="risk-signal risk-low">
                             <div class="risk-signal-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
                             <div class="risk-signal-body">
@@ -280,8 +490,6 @@
                             </div>
                             <span class="risk-level-badge risk-badge-low">LOW</span>
                         </div>
-
-                        <!-- Signal 4 -->
                         <div class="risk-signal risk-info">
                             <div class="risk-signal-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
                             <div class="risk-signal-body">
@@ -308,6 +516,28 @@
                     <p class="risk-disclaimer">Decision authority remains with the sanctioning officer. Sentinel provides evidence-based advisory only.</p>
                 </div>
             </section>
+            </div><!-- /screen: risk -->
+
+            <!-- SCREEN: Settings -->
+            <div class="screen" data-screen="settings">
+            <div class="screen-header">
+                <h2 class="screen-title">Settings</h2>
+                <p class="screen-subtitle">System configuration and preferences</p>
+            </div>
+            <section class="dash-row" style="display:block;">
+                <div class="card">
+                    <div class="card-head"><span class="card-icon icon-purple"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span><span class="card-title">SYSTEM</span></div>
+                    <div class="settings-grid">
+                        <div class="settings-item"><span class="settings-label">Version</span><span class="settings-val">v1.0.0</span></div>
+                        <div class="settings-item"><span class="settings-label">Team</span><span class="settings-val">Team Pegasus</span></div>
+                        <div class="settings-item"><span class="settings-label">Data Sources</span><span class="settings-val">PFMS, GeoTag, MB, Invoices, Citizen Reports</span></div>
+                        <div class="settings-item"><span class="settings-label">AI Model</span><span class="settings-val">Sentinel Evidence Engine v1</span></div>
+                        <div class="settings-item"><span class="settings-label">Refresh Rate</span><span class="settings-val">Daily automated scan</span></div>
+                    </div>
+                </div>
+            </section>
+            </div><!-- /screen: settings -->
+
         </main>
     </div>
 
