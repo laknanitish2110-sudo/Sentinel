@@ -40,11 +40,30 @@ function setupEventListeners() {
 }
 
 function initSidebarNav() {
+    const sectionMap = {
+        'Dashboard': '.fin-strip',
+        'Projects': '.fin-project-card',
+        'Investigations': '.card-trace',
+        'Evidence Hub': '.card-evidence',
+        'Evidence Graph': '.card-constellation',
+        'Case Memory': '.card-summary',
+        'Reports': '.card-progress',
+        'Settings': '.app-header',
+    };
+
     document.querySelectorAll(".nav-item").forEach(item => {
         item.addEventListener("click", (e) => {
             e.preventDefault();
             document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
             item.classList.add("active");
+
+            const label = item.querySelector("span");
+            if (!label) return;
+            const target = sectionMap[label.textContent.trim()];
+            if (target) {
+                const el = document.querySelector(target);
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
         });
     });
 }
@@ -711,24 +730,41 @@ function updateVerdictBanner(statusData) {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
 
-    let stars = [];
-    const STAR_COUNT = 100;
+    let stars = [], shooters = [], nebulae = [];
 
     function resize() {
         canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.height = Math.max(window.innerHeight, document.documentElement.scrollHeight);
     }
 
     function createStars() {
         stars = [];
-        for (let i = 0; i < STAR_COUNT; i++) {
+        const count = Math.min(Math.floor((canvas.width * canvas.height) / 2500), 600);
+        const colors = ['#fff', '#C4D9FF', '#A0C4FF', '#BDB2FF', '#8BE9FD'];
+        for (let i = 0; i < count; i++) {
             stars.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                r: Math.random() * 1.4 + 0.3,
-                alpha: Math.random() * 0.5 + 0.15,
-                drift: (Math.random() - 0.5) * 0.1,
-                speed: Math.random() * 0.006 + 0.002,
+                r: Math.random() * 1.6 + 0.3,
+                a: Math.random() * 0.6 + 0.2,
+                drift: (Math.random() - 0.5) * 0.12,
+                speed: Math.random() * 0.008 + 0.002,
+                phase: Math.random() * Math.PI * 2,
+                color: colors[Math.floor(Math.random() * colors.length)]
+            });
+        }
+    }
+
+    function createNebulae() {
+        nebulae = [];
+        const nColors = ['96,165,250', '167,139,250', '34,211,238', '52,211,153'];
+        for (let i = 0; i < 5; i++) {
+            nebulae.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height * 0.7 + canvas.height * 0.1,
+                rx: 140 + Math.random() * 220,
+                ry: 70 + Math.random() * 120,
+                color: nColors[i % nColors.length],
                 phase: Math.random() * Math.PI * 2
             });
         }
@@ -738,18 +774,31 @@ function updateVerdictBanner(statusData) {
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         frame++;
+        const t = frame * 0.008;
+
+        for (const n of nebulae) {
+            const pulse = 0.035 + Math.sin(t * 0.4 + n.phase) * 0.018;
+            const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.rx);
+            g.addColorStop(0, `rgba(${n.color},${pulse})`);
+            g.addColorStop(1, `rgba(${n.color},0)`);
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.ellipse(n.x, n.y, n.rx, n.ry, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
         for (const s of stars) {
-            const t = Math.sin(frame * s.speed + s.phase) * 0.3 + 0.7;
+            const twinkle = s.a * (0.55 + 0.45 * Math.sin(frame * s.speed * 18 + s.phase));
+            ctx.globalAlpha = twinkle;
+            ctx.fillStyle = s.color;
             ctx.beginPath();
             ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(200,210,255,${s.alpha * t})`;
             ctx.fill();
 
             if (s.r > 1.2) {
+                ctx.globalAlpha = twinkle * 0.12;
                 ctx.beginPath();
-                ctx.arc(s.x, s.y, s.r * 2.5, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(124,143,255,${s.alpha * t * 0.12})`;
+                ctx.arc(s.x, s.y, s.r * 3, 0, Math.PI * 2);
                 ctx.fill();
             }
 
@@ -757,12 +806,52 @@ function updateVerdictBanner(statusData) {
             if (s.y < -5) s.y = canvas.height + 5;
             if (s.y > canvas.height + 5) s.y = -5;
         }
+        ctx.globalAlpha = 1;
+
+        if (Math.random() < 0.007 && shooters.length < 3) {
+            const sx = Math.random() * canvas.width;
+            const sy = Math.random() * canvas.height * 0.5;
+            const angle = Math.PI / 4 + Math.random() * Math.PI / 5;
+            shooters.push({ x: sx, y: sy, vx: Math.cos(angle) * 7, vy: Math.sin(angle) * 5, life: 1, len: 50 + Math.random() * 70 });
+        }
+
+        for (let i = shooters.length - 1; i >= 0; i--) {
+            const sh = shooters[i];
+            sh.x += sh.vx;
+            sh.y += sh.vy;
+            sh.life -= 0.016;
+            if (sh.life <= 0) { shooters.splice(i, 1); continue; }
+            const tx = sh.x - sh.vx * (sh.len / 7);
+            const ty = sh.y - sh.vy * (sh.len / 7);
+            const g = ctx.createLinearGradient(tx, ty, sh.x, sh.y);
+            g.addColorStop(0, 'rgba(255,255,255,0)');
+            g.addColorStop(1, `rgba(255,255,255,${sh.life * 0.7})`);
+            ctx.strokeStyle = g;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(tx, ty);
+            ctx.lineTo(sh.x, sh.y);
+            ctx.stroke();
+        }
 
         requestAnimationFrame(draw);
     }
 
     resize();
     createStars();
+    createNebulae();
     draw();
-    window.addEventListener("resize", () => { resize(); createStars(); });
+    window.addEventListener("resize", () => { resize(); createStars(); createNebulae(); });
+
+    let resizeTimer;
+    new ResizeObserver(() => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            const newH = document.documentElement.scrollHeight;
+            if (Math.abs(canvas.height - newH) > 100) {
+                canvas.height = newH;
+                createStars();
+            }
+        }, 200);
+    }).observe(document.body);
 })();
