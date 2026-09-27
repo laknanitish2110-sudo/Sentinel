@@ -724,6 +724,42 @@ function updateVerdictBanner(statusData) {
     section.style.display = "";
 }
 
+// ========== RISK CARD ACTIONS ==========
+(function initRiskCard() {
+    const btns = {
+        hold: document.getElementById("btn-hold-funds"),
+        flag: document.getElementById("btn-flag-audit"),
+        release: document.getElementById("btn-release-funds"),
+    };
+    if (!btns.hold) return;
+
+    const labels = {
+        hold: "HELD — Pending Site Inspection",
+        flag: "FLAGGED — Sent for Formal Audit",
+        release: "RELEASED — Officer Decision Recorded",
+    };
+    const colors = { hold: "#FBBF24", flag: "#F87171", release: "#34D399" };
+
+    Object.entries(btns).forEach(([key, btn]) => {
+        btn.addEventListener("click", () => {
+            Object.values(btns).forEach(b => {
+                b.classList.remove("chosen-active");
+                b.classList.add("chosen");
+            });
+            btn.classList.remove("chosen");
+            btn.classList.add("chosen-active");
+
+            let rec = document.querySelector(".risk-rec-text span");
+            if (rec) {
+                rec.innerHTML = "<strong>Decision Recorded:</strong> " + labels[key]
+                    + " <span style='opacity:0.5;font-size:10px;'>(" + new Date().toLocaleTimeString() + ")</span>";
+            }
+            let ring = document.getElementById("risk-score-arc");
+            if (ring) ring.style.stroke = colors[key];
+        });
+    });
+})();
+
 // ========== STAR FIELD ==========
 (function initStarField() {
     const canvas = document.getElementById("star-canvas");
