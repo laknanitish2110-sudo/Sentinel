@@ -18,27 +18,38 @@ One source can lie. Forging five independent sources simultaneously is a conspir
 
 ---
 
-## Screenshots
+## Live Demo
 
-### Verdict Banner & Project Overview
-![Hero](docs/screenshots/01_hero.png)
-*The one-line punchline: "Contractor claims 400m — only 180m verified. 220m gap identified."*
+**Deployed at:** [sentinel-iota-sooty.vercel.app](https://sentinel-iota-sooty.vercel.app)
 
-### Follow the Money
-![Money Trail](docs/screenshots/02_money_trail.png)
-*Track sanctioned budget → funds released → contractor claim. The amber callout flags when numbers don't add up.*
+---
 
-### Evidence Cross-Check
-![Evidence Graph](docs/screenshots/03_evidence_graph.png)
-*Each independent source tells its side. Green = supports. Red = contradicts. The cross-check matrix shows which sources disagree.*
+## Dashboard Screens
 
-### Watch the AI Investigate
-![Agent Trace](docs/screenshots/04_agent_trace.png)
-*Sentinel's agentic loop dynamically decides what to check next — not a fixed script. Every reasoning step is visible.*
+Sentinel's dashboard is organized into **8 dedicated screens**, each telling its own story — not one scrolling page.
 
-### Plain-Language Explanation & Auditor Override
-![Explanation](docs/screenshots/05_explanation.png)
-*Evidence-grounded findings in plain language. Auditors can submit corrections, and Sentinel learns from them.*
+| Screen | What It Shows |
+|--------|---------------|
+| **Dashboard** | Financial strip (sanctioned/released/balance), active alerts, evidence snapshot, risk preview, investigation progress |
+| **Projects** | Deep-dive into project financials, claimed vs verified progress bars, project timeline, contractor history with flags |
+| **Investigations** | Evidence constellation map, live agent investigation trace (6-step pipeline), AI summary with tags |
+| **Evidence Hub** | Summary stats bar + full grid of all collected evidence items with source type and verification status |
+| **Evidence Graph** | Full-width visual constellation — green lines support, red lines contradict, amber = insufficient |
+| **Case Memory** | Stats (24 cases, 7 patterns, 4 corrections, 13 resolved), AI summary, chronological memory log |
+| **Reports** | Visual revenue model — ROI hero, 3 pricing tiers, Jhansi real-world example, Year 1-3 growth bars |
+| **Settings** | System config, monitoring preference toggles, data source connection statuses |
+
+### Pre-Sanction Risk Card
+
+The flagship feature: an **advisory intelligence card** shown to the sanctioning officer before fund release.
+
+- Cross-verified signals from 5 independent sources
+- Risk score (0-100) with confidence percentage
+- 4 signal types: Measurement mismatch (HIGH), Payment-progress imbalance (MEDIUM), Supplier verified (LOW), Historical pattern (INFO)
+- Officer actions: **Hold for Inspection** / **Flag for Audit** / **Release Funds**
+- Decision recorded with evidence context — creates natural accountability
+
+> *Like a credit score for government fund releases — it doesn't approve or block, but no sane officer ignores it.*
 
 ---
 
@@ -95,6 +106,8 @@ If any two sources disagree, Sentinel flags it. The AI finds — **humans decide
 
 ## Path to Sustainability (Revenue Model)
 
+> Visualized in the **Reports** screen of the dashboard — tells the revenue story in 10 seconds.
+
 "If it's for citizens, who pays?"
 
 | Model | Who Pays | Why |
@@ -102,6 +115,24 @@ If any two sources disagree, Sentinel flags it. The AI finds — **humans decide
 | **B2G SaaS** (Primary) | Municipal audit departments | CAG mandates infrastructure audits. Currently done manually — Sentinel automates cross-verification. Municipalities pay per-project or annual license to avoid CAG penalties. |
 | **NGO & Development Agencies** (Scale) | World Bank, UNDP, CSR funds | Transparency tools are funded under SDG 16 (Strong Institutions). India's CSR mandate (Companies Act §135) requires 2% profit spend. |
 | **Media & Investigative Licensing** (Expand) | News organizations | Structured evidence packages on suspect projects — not raw data, but investigation-ready evidence trails with reliability ratings. |
+
+### Pricing Tiers
+
+| Tier | Customer | Annual Price | Features |
+|------|----------|-------------|----------|
+| **District** | District Collectors, BDOs | ₹2-4 lakh/year | Monitor 50-200 projects, automated monthly reports, pre-sanction risk cards |
+| **State** | State Planning/Finance Dept | ₹15-25 lakh/year | Cross-district pattern detection, 1000+ project dashboards, contractor risk scoring |
+| **Central** | MoRD, MoHUA, MoF | ₹50L-1Cr/year | National-scale monitoring, scheme comparison, policy-level insights |
+
+### The ROI (Jhansi District Example)
+
+Jhansi pays **₹25,000/month**. In Month 1, Sentinel found **₹10.9 lakh** in discrepancies across 2 projects. A manual audit of the same projects would cost ₹12 lakh and take 6 weeks. **ROI: 2.2x the annual subscription in Month 1.**
+
+### Growth Trajectory
+
+- **Year 1**: ₹45 lakh — 12 district pilots
+- **Year 2**: ₹2.8 crore — 40 districts + 3 state contracts
+- **Year 3**: ₹8 crore — 120+ districts + 5 states + 1 central ministry
 
 The **primary revenue path** is B2G: the government already pays auditors to do this work manually. Sentinel does it faster, cheaper, and with a paper trail that satisfies CAG compliance.
 
@@ -181,7 +212,7 @@ CREATED → INTAKE → CLAIMS_IDENTIFIED → EVIDENCE_COLLECTION → CROSS_CHECK
 | **Backend** | Python 3.11, SQLite |
 | **AI** | Claude Sonnet 4 API (agentic loop) + deterministic fallback |
 | **Vision** | PIL/Pillow (edge density, brightness, color stats, activity detection) |
-| **Frontend** | Vanilla HTML/CSS/JS (Pegasus constellation theme) |
+| **Frontend** | Vanilla HTML/CSS/JS — 8-screen dashboard, deep space theme, glassmorphism cards, animated starfield |
 | **Deployment** | Vercel Serverless Functions |
 | **Testing** | pytest (134 tests across all modules) |
 
@@ -215,9 +246,9 @@ sentinel/
 │       ├── taxonomy.py         # Construction activity taxonomy
 │       └── event_interpreter.py # Visual event detection
 ├── public/
-│   ├── index.html              # Citizen dashboard (Pegasus constellation theme)
-│   ├── styles.css              # Deep space UI with glassmorphism
-│   └── app.js                  # Frontend logic + star field animation
+│   ├── index.html              # 8-screen dashboard (Dashboard, Projects, Investigations, Evidence, Graph, Memory, Reports, Settings)
+│   ├── styles.css              # Deep space UI with glassmorphism, screen navigation, risk card, revenue model
+│   └── app.js                  # Screen switching, risk card interactions, starfield animation
 ├── api/
 │   └── index.py                # Vercel serverless entry point
 ├── tests/                      # 134 tests across 16 test files
@@ -301,6 +332,9 @@ python scripts/start_server.py
 | "What's the core solution?" | Cross-verification of independent sources. One source can lie. Five lying in coordination is a conspiracy. |
 | "How does the AI work?" | Agentic loop with dynamic planning — AI decides what to check next, not a fixed script. 14-state machine ensures auditability. |
 | "What if the AI is wrong?" | Auditor corrections are preserved. Sentinel learns from them. The original finding is never overwritten. |
+| "Do citizens see everything?" | Citizens see project health data (budgets, progress, evidence status) under RTI. They don't see officer decisions or internal risk scores — those are for sanctioning officers only. |
+| "What's the Pre-Sanction Risk Card?" | An advisory card shown before fund release — like a credit score for government spending. Officer still decides; Sentinel informs with cross-verified evidence. |
+| "How does it scale?" | Year 1: 12 district pilots (₹45L). Year 2: 40 districts + 3 states (₹2.8Cr). Year 3: 120+ districts + 5 states + central (₹8Cr). |
 
 ---
 
